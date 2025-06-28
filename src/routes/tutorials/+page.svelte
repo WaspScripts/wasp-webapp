@@ -50,13 +50,13 @@
 				</button>
 			</a>
 
-			<a href="https://api.waspscripts.com/docs" class="mx-auto">
+			<a href="https://api.waspscripts.dev/docs" class="mx-auto">
 				<button class="btn ring-primary-500 preset-filled-primary-200-800 ring-2">
 					Stats API Documentation
 				</button>
 			</a>
 
-			<a href="https://map.waspscripts.com" class="mx-auto">
+			<a href="https://map.waspscripts.dev" class="mx-auto">
 				<button class="btn ring-primary-500 preset-filled-primary-200-800 ring-2">
 					Interactive Map
 				</button>

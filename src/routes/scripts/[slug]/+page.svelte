@@ -78,11 +78,11 @@
 				</div>
 			</form>
 
-			{#if !script.published && canEdit(profile?.id, roles, script.protected.author_id)}
+			{#if !script.published && canEdit(profile?.id, roles, script.protected.author)}
 				<h4 class="text-shadow text-error-500 my-4 text-center drop-shadow-2xl">Unpublished</h4>
 			{/if}
 		</header>
-		{#if canEdit(profile?.id, roles, script.protected.author_id)}
+		{#if canEdit(profile?.id, roles, script.protected.author)}
 			<ScriptData id={script.id} />
 		{/if}
 
@@ -106,7 +106,7 @@
 								/>
 								<ZipDownload id={script.id} />
 							</div>
-							{#if canEdit(profile?.id, roles, script.protected.author_id)}
+							{#if canEdit(profile?.id, roles, script.protected.author)}
 								<div class="my-8 grid place-items-center">
 									<a href="{page.url.pathname}/edit" class="btn preset-filled-secondary-500">Edit</a
 									>

@@ -31,7 +31,7 @@ export const load = async ({ data, depends, fetch }) => {
 		const { data, error: err } = await supabaseClient
 			.schema("profiles")
 			.from("profiles")
-			.select(`id, discord, username, avatar, customer_id`)
+			.select(`id, discord, stripe username, avatar, role`)
 			.eq("id", user.id)
 			.single()
 
@@ -39,22 +39,6 @@ export const load = async ({ data, depends, fetch }) => {
 
 		return data
 	}
-
-	const getRoles = async () => {
-		if (!user) return null
-		const { data, error: err } = await supabaseClient
-			.schema("profiles")
-			.from("roles")
-			.select("banned, premium, vip, tester, scripter, moderator, administrator")
-			.eq("id", user.id)
-			.single()
-
-		if (err) return null
-
-		return data
-	}
-
-	const promises = await Promise.all([getProfile(), getRoles()])
 
 	return {
 		darkMode: data.darkMode,
@@ -62,7 +46,6 @@ export const load = async ({ data, depends, fetch }) => {
 		supabaseClient,
 		session,
 		user,
-		profile: promises[0],
-		roles: promises[1]
+		profile: await getProfile()
 	}
 }

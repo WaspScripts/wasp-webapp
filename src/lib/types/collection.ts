@@ -1,24 +1,16 @@
 import type { Database } from "./supabase"
 
 //profile
+
 export type ProfileBase = Database["profiles"]["Tables"]["profiles"]["Row"]
-export interface ProfileRoles {
-	administrator: boolean
-	moderator: boolean
-	scripter: boolean
-	tester: boolean
-	vip: boolean
-	premium: boolean
-	banned: boolean
-}
+export type ProfileRole = ProfileBase["role"]
+
 export interface Profile extends ProfileBase {
-	private: Database["profiles"]["Tables"]["private"]["Row"]
-	roles: ProfileRoles
-	subscription: Database["profiles"]["Tables"]["subscription"]["Row"][]
+	subscriptions: Database["profiles"]["Tables"]["subscriptions"]["Row"][]
 	free_access: Database["profiles"]["Tables"]["free_access"]["Row"][]
 }
 
-export type ProfileSubscription = Database["profiles"]["Tables"]["subscription"]["Row"]
+export type ProfileSubscriptions = Database["profiles"]["Tables"]["subscriptions"]["Row"]
 
 export interface ScripterBase {
 	realname: string | undefined
@@ -48,7 +40,7 @@ export interface ScripterProfile {
 }
 
 //stats
-export type StatsTotal = Database["public"]["Functions"]["get_stats_total"]["Returns"][number]
+export type StatsTotal = Database["stats"]["Views"]["totals"]["Row"]
 
 export type ScripterStats = Database["scripts"]["Functions"]["get_site_stats"]["Returns"][number]
 
@@ -104,12 +96,10 @@ export interface ScriptPublic {
 }
 
 export interface ScriptProtected {
-	assets: Database["scripts"]["Tables"]["protected"]["Row"]["assets"]
-	username: Database["scripts"]["Tables"]["protected"]["Row"]["username"]
-	author_id: Database["scripts"]["Tables"]["protected"]["Row"]["author_id"]
+	author: Database["scripts"]["Tables"]["protected"]["Row"]["author"]
 	revision: Database["scripts"]["Tables"]["protected"]["Row"]["revision"]
 	revision_date: Database["scripts"]["Tables"]["protected"]["Row"]["revision_date"]
-	broken: Database["scripts"]["Tables"]["protected"]["Row"]["broken"]
+	assets: Database["scripts"]["Tables"]["protected"]["Row"]["assets"]
 }
 
 export type TScriptStatus = Database["scripts"]["Tables"]["metadata"]["Row"]["status"]

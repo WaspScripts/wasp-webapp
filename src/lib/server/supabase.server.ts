@@ -1,6 +1,6 @@
 import { SUPABASE_SERVICE_KEY } from "$env/static/private"
 import { PUBLIC_SUPABASE_URL } from "$env/static/public"
-import type { Price, Product, Profile, ProfileSubscription } from "$lib/types/collection"
+import type { Price, Product, Profile, ProfileSubscriptions } from "$lib/types/collection"
 import type { Database } from "$lib/types/supabase"
 import { UUID_V4_REGEX, formatError } from "$lib/utils"
 import { type SupabaseClient, createClient, type Provider } from "@supabase/supabase-js"
@@ -100,7 +100,7 @@ export async function getProfile(id: string) {
 	const { data, error } = await supabaseAdmin
 		.schema("profiles")
 		.from("profiles")
-		.select("id, discord, username, avatar, customer_id, private (email)")
+		.select("id, discord, stripe, username, avatar, private (email)")
 		.eq("id", id)
 		.limit(1)
 		.limit(1, { foreignTable: "private" })
@@ -268,51 +268,51 @@ export async function updateScripterAccount(id: string, account_id: string) {
 }
 
 export class WaspSubscription {
-	static async insert(subscription: ProfileSubscription) {
-		console.log("INSERT profile.subscription for user: ", subscription.id)
+	static async insert(subscriptions: ProfileSubscriptions) {
+		console.log("INSERT profile.subscriptions for user: ", subscriptions.user)
 
 		const { error } = await supabaseAdmin
 			.schema("profiles")
-			.from("subscription")
-			.insert(subscription)
+			.from("subscriptions")
+			.insert(subscriptions)
 		return { error }
 	}
 
-	static async upsert(subscription: ProfileSubscription) {
-		console.log("UPDATE profile.subscription for user: ", subscription.id)
+	static async upsert(subscriptions: ProfileSubscriptions) {
+		console.log("UPDATE profile.subscription for user: ", subscriptions.user)
 
 		const { data: activeData, error: errSub } = await supabaseAdmin
 			.schema("profiles")
-			.from("subscription")
+			.from("subscriptions")
 			.update({
-				date_end: subscription.date_end,
-				date_start: subscription.date_start,
-				cancel: subscription.cancel
+				date_end: subscriptions.date_end,
+				date_start: subscriptions.date_start,
+				cancel: subscriptions.cancel
 			})
-			.eq("subscription", subscription.subscription)
+			.eq("subscription", subscriptions.subscription)
 			.select()
 			.single()
 
 		if (!activeData) {
-			console.log("UPDATE profile.subscriptions_old for user: ", subscription.id)
+			console.log("UPDATE profile.subscriptions_old for user: ", subscriptions.user)
 			const { data: oldData, error: errSubOld } = await supabaseAdmin
 				.schema("profiles")
 				.from("subscriptions_old")
 				.update({
-					date_end: subscription.date_end,
-					date_start: subscription.date_start,
-					cancel: subscription.cancel
+					date_end: subscriptions.date_end,
+					date_start: subscriptions.date_start,
+					cancel: subscriptions.cancel
 				})
-				.eq("subscription", subscription.subscription)
+				.eq("subscription", subscriptions.subscription)
 				.select()
 				.single()
 
 			if (!oldData) {
-				console.log("UPSERT profile.subscription for user: ", subscription.id)
+				console.log("UPSERT profile.subscriptions for user: ", subscriptions.user)
 				const { error: errInsert } = await supabaseAdmin
 					.schema("profiles")
-					.from("subscription")
-					.insert(subscription)
+					.from("subscriptions")
+					.insert(subscriptions)
 
 				if (errInsert) {
 					console.error("errSub: " + errSub)
@@ -321,7 +321,7 @@ export class WaspSubscription {
 					return {
 						error:
 							"id: " +
-							subscription.id +
+							subscriptions.user +
 							"errSub:" +
 							JSON.stringify(errSub) +
 							"errSubOld: " +
@@ -329,7 +329,7 @@ export class WaspSubscription {
 							"errInsert: " +
 							JSON.stringify(errInsert) +
 							"subscriptionData:" +
-							JSON.stringify(subscription)
+							JSON.stringify(subscriptions)
 					}
 				}
 			}
@@ -339,13 +339,13 @@ export class WaspSubscription {
 	}
 
 	static async delete(id: string) {
-		console.log("DELETE profile.subscription: ", id)
+		console.log("DELETE profile.subscriptions: ", id)
 
 		const { error: errSubscription } = await supabaseAdmin
 			.schema("profiles")
-			.from("subscription")
+			.from("subscriptions")
 			.delete()
-			.eq("subscription", id)
+			.eq("subscriptions", id)
 
 		if (errSubscription) {
 			console.error(errSubscription)

@@ -7,7 +7,7 @@ import { error } from "@sveltejs/kit"
 export const load = async ({
 	url,
 	params: { slug },
-	locals: { supabaseServer, user, getRoles },
+	locals: { supabaseServer, user, getProfile },
 	depends
 }) => {
 	depends("wasp:dashboard")
@@ -15,8 +15,9 @@ export const load = async ({
 	if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
 
 	if (user.id !== slug) {
-		const roles = await getRoles()
-		if (!roles?.administrator) error(403, "You cannot access another scripter dashboard.")
+		const profile = await getProfile()
+		if (profile?.role != "administrator")
+			error(403, "You cannot access another scripter dashboard.")
 	}
 
 	async function getScripts() {
@@ -24,7 +25,7 @@ export const load = async ({
 
 		return scripts.reduce(
 			(result, script) => {
-				if (script.protected.author_id === slug && script.metadata.type === "premium") {
+				if (script.protected.author === slug && script.metadata.type === "premium") {
 					result.push({
 						id: script.id,
 						name: script.title,

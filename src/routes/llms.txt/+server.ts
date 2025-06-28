@@ -5,7 +5,7 @@ import type { Database } from "$lib/types/supabase"
 import { getPublishedScripts } from "$lib/server/scripts.server"
 import { tutorialsPromise } from "$lib/server/tutorials.server"
 
-const website = "https://waspscripts.com"
+const website = "https://waspscripts.dev"
 
 const getScripts = async () => {
 	const scripts = await getPublishedScripts()
@@ -97,8 +97,8 @@ For setup instructions you visit the setup [page](${website}/setup)
 - [Simba](https://villavu.github.io/Simba/): Simba documentation
 - [SRL-T](https://Torwent.github.io/SRL-T/): SRL-T documentation
 - [WaspLib](https://Torwent.github.io/WaspLib/): SRL-T documentation
-- [Wasp Stats API](https://api.waspscripts.com/docs): Stats API documentation
-- [Map](https://map.waspscripts.com/): Interactive OSRS map
+- [Wasp Stats API](https://api.waspscripts.dev/docs): Stats API documentation
+- [Map](https://map.waspscripts.dev/): Interactive OSRS map
 
 ## Scripts
 

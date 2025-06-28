@@ -1,6 +1,6 @@
 import type {
 	FAQEntry,
-	ProfileRoles,
+	ProfileRole,
 	Script,
 	Scripter,
 	SimpleScripter,
@@ -74,13 +74,19 @@ export async function getStatsTotal(supabase: SupabaseClient) {
 		return statsTotal.data
 	}
 
-	const { data, error: err } = await supabase.rpc("get_stats_total").single<StatsTotal>()
+	const { data, error: err } = await supabase
+		.schema("stats")
+		.from("totals")
+		.select("*")
+		.limit(1)
+		.single()
+		.overrideTypes<StatsTotal>()
 
 	if (err) {
 		error(
 			500,
 			"Server error, this is probably not an issue on your end!\n" +
-				"SELECT get_stats_total postgres function failed!\n\n" +
+				"SELECT stats.totals postgres function failed!\n\n" +
 				formatError(err)
 		)
 	}
@@ -91,11 +97,11 @@ export async function getStatsTotal(supabase: SupabaseClient) {
 
 export function canEdit(
 	id: string | null | undefined,
-	roles: ProfileRoles | null | undefined,
+	role: ProfileRole,
 	author: string | null | undefined
 ) {
-	if (!id || !roles || !author) return false
-	if (roles.administrator || roles.moderator) return true
+	if (!id || !role || !author) return false
+	if (["administrator", "moderator"].includes(role)) return true
 	return id === author
 }
 
@@ -173,12 +179,13 @@ export async function fetchScriptByID(supabase: SupabaseClient<Database>, id: st
 		.from("scripts")
 		.select(
 			`id, title, description, content, url, published,
-			protected!inner (assets, username, avatar, author_id, revision, revision_date, broken),
-			metadata!inner (status, type, categories),
-			stats_limits!inner (xp_min, xp_max, gp_min, gp_max)`
+			protected!protected_id_fkey (author, revision, revision_date, assets),
+			metadata!metadata_id_fkey (status, type, categories),
+			stats_limits!stats_limits_id_fkey (xp_min, xp_max, gp_min, gp_max)`
 		)
 		.eq("id", id)
-		.single<Script>()
+		.single()
+		.overrideTypes<Script>()
 
 	if (error) {
 		console.error(error)
@@ -200,12 +207,14 @@ export async function scriptExists(
 		.schema("scripts")
 		.from("scripts")
 		.select(
-			`id, title, description, content, url, categories, subcategories, published,
-				min_xp, max_xp, min_gp, max_gp,
-				protected!inner (assets, username, author_id, revision, revision_date, broken)`
+			`id, url, title, description, content, published,
+			protected!protected_id_fkey (author, revision, revision_date, assets),
+			stats_limits!stats_limits_id_fkey (min_xp, max_xp, min_gp, max_gp)
+			`
 		)
 		.eq((isUUID == null && UUID_V4_REGEX.test(slug)) || isUUID ? "id" : "url", slug)
-		.single<Script>()
+		.single()
+		.overrideTypes<Script>()
 
 	if (err) return false
 
@@ -215,13 +224,11 @@ export async function scriptExists(
 
 export async function canDownload(
 	supabase: SupabaseClient,
-	roles: ProfileRoles | null,
+	role: ProfileRole,
 	script_id: string | null
 ) {
-	if (!roles || !script_id) return false
-	if (roles.administrator) return true
-	if (roles.moderator) return true
-	if (roles.tester) return true
+	if (!script_id) return false
+	if (role && ["administrator", "moderator", "tester"].includes(role)) return true
 
 	const { data } = await supabase
 		.schema("profiles")

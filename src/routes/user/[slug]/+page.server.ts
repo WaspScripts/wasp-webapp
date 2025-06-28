@@ -25,7 +25,7 @@ export const actions = {
 
 		if (form.data.email || form.data.password) {
 			const { error: err } = await supabaseServer.auth.updateUser(form.data, {
-				emailRedirectTo: "https://waspscripts.com/auth/mail-change/"
+				emailRedirectTo: "https://waspscripts.dev/auth/mail-change/"
 			})
 			if (err) return setError(form, "", formatError(err))
 		}

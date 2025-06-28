@@ -24,11 +24,11 @@ export const POST = async ({ request }) => {
 
 	const params: Stripe.AccountCreateParams = {
 		business_profile: {
-			name: profile.username ?? undefined,
-			url: "https://waspscripts.com/scripters/" + url
+			name: profile.username,
+			url: "https://waspscripts.dev/scripters/" + url
 		},
 		metadata: { id: profile.id, discord: profile.discord, email: profile.private.email },
-		email: profile.private.email ?? undefined,
+		email: profile.private.email,
 		type: "custom"
 	}
 

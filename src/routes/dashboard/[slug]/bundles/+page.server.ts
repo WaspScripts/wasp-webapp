@@ -119,7 +119,7 @@ export const load = async ({ locals: { supabaseServer }, params: { slug }, paren
 export const actions = {
 	bundleEdit: async ({
 		request,
-		locals: { supabaseServer, user, getRoles },
+		locals: { supabaseServer, user, getProfile },
 		url: { origin, searchParams, pathname },
 		params: { slug }
 	}) => {
@@ -128,11 +128,14 @@ export const actions = {
 
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
 
-		const promises = await Promise.all([getRoles(), superValidate(request, zod(bundleArraySchema))])
-		const roles = promises[0]
+		const promises = await Promise.all([
+			getProfile(),
+			superValidate(request, zod(bundleArraySchema))
+		])
+		const profile = promises[0]
 		const form = promises[1]
 
-		if (user.id !== slug && !roles?.administrator)
+		if (user.id !== slug && profile?.role != "administrator")
 			error(403, "You cannot access another scripter dashboard.")
 
 		if (!form.valid) return setError(form, "", "The form is not valid!")
@@ -147,7 +150,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"Something went wrong! Seems like no product was selected. If this keeps occuring please contact support@waspscripts.com"
+				"Something went wrong! Seems like no product was selected. If this keeps occuring please contact support@waspscripts.dev"
 			)
 		}
 
@@ -157,7 +160,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"Something went wrong! Seems like the selected bundle product is invalid. If this keeps occuring please contact support@waspscripts.com"
+				"Something went wrong! Seems like the selected bundle product is invalid. If this keeps occuring please contact support@waspscripts.dev"
 			)
 		}
 
@@ -239,7 +242,7 @@ export const actions = {
 	},
 	bundleAdd: async ({
 		request,
-		locals: { supabaseServer, user, getRoles },
+		locals: { supabaseServer, user, getProfile },
 		url: { origin, pathname },
 		params: { slug }
 	}) => {
@@ -248,11 +251,11 @@ export const actions = {
 
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
 
-		const promises = await Promise.all([getRoles(), superValidate(request, zod(newBundleSchema))])
-		const roles = promises[0]
+		const promises = await Promise.all([getProfile(), superValidate(request, zod(newBundleSchema))])
+		const profile = promises[0]
 		const form = promises[1]
 
-		if (user.id !== slug && !roles?.administrator)
+		if (!profile || !profile.role || (user.id !== slug && profile.role != "administrator"))
 			error(403, "You cannot access another scripter dashboard.")
 
 		if (!form.valid) return setError(form, "", "The form is not valid!")
@@ -260,8 +263,7 @@ export const actions = {
 		const scripter = await getScripter(supabaseServer, slug)
 
 		if (!scripter.stripe) return setError(form, "", "Stripe account is not setup!")
-
-		if (!roles?.moderator || !roles?.administrator) form.data.user_id = user.id
+		if (!["administrator", "moderator"].includes(profile.role)) form.data.user_id = user.id
 
 		const err = await createStripeBundleProduct(supabaseServer, form.data)
 
@@ -272,7 +274,7 @@ export const actions = {
 
 	addFree: async ({
 		request,
-		locals: { supabaseServer, user, getRoles },
+		locals: { supabaseServer, user, getProfile },
 		url: { origin, searchParams },
 		params: { slug }
 	}) => {
@@ -281,10 +283,10 @@ export const actions = {
 
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
 
-		const promises = await Promise.all([getRoles(), request.formData()])
-		const roles = promises[0]
+		const promises = await Promise.all([getProfile(), request.formData()])
+		const profile = promises[0]
 
-		if (user.id !== slug && !roles?.administrator)
+		if (user.id !== slug && profile?.role != "administrator")
 			error(403, "You cannot access another scripter dashboard.")
 
 		const product = searchParams.get("product")
@@ -309,7 +311,7 @@ export const actions = {
 	},
 	cancelFree: async ({
 		request,
-		locals: { supabaseServer, user, getRoles },
+		locals: { supabaseServer, user, getProfile },
 		url: { origin, searchParams },
 		params: { slug }
 	}) => {
@@ -318,10 +320,10 @@ export const actions = {
 
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
 
-		const promises = await Promise.all([getRoles(), request.formData()])
-		const roles = promises[0]
+		const promises = await Promise.all([getProfile(), request.formData()])
+		const profile = promises[0]
 
-		if (user.id !== slug && !roles?.administrator)
+		if (user.id !== slug && profile?.role != "administrator")
 			error(403, "You cannot access another scripter dashboard.")
 
 		const product = searchParams.get("product")
@@ -338,7 +340,7 @@ export const actions = {
 	},
 
 	cancelSub: async ({
-		locals: { supabaseServer, user, getRoles },
+		locals: { supabaseServer, user, getProfile },
 		url: { origin, searchParams },
 		params: { slug }
 	}) => {
@@ -347,8 +349,8 @@ export const actions = {
 
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
 
-		const roles = await getRoles()
-		if (user.id !== slug && !roles?.administrator)
+		const profile = await getProfile()
+		if (user.id !== slug && profile?.role != "administrator")
 			error(403, "You cannot access another scripter dashboard.")
 
 		const subscription = searchParams.get("subscription")
@@ -383,7 +385,7 @@ export const actions = {
 		return { success: true }
 	},
 	cancelAllSubs: async ({
-		locals: { supabaseServer, user, getRoles },
+		locals: { supabaseServer, user, getProfile },
 		url: { origin, searchParams },
 		params: { slug }
 	}) => {
@@ -392,9 +394,9 @@ export const actions = {
 
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
 
-		const roles = await getRoles()
+		const profile = await getProfile()
 
-		if (user.id !== slug && !roles?.administrator)
+		if (user.id !== slug && profile?.role != "administrator")
 			error(403, "You cannot access another scripter dashboard.")
 
 		const product = searchParams.get("product")

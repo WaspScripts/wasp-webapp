@@ -37,7 +37,7 @@ export const load = async ({
 		else scripts = await getPublishedScripts()
 	}
 
-	scripts = scripts.filter((script) => script.protected.author_id === scripter.id)
+	scripts = scripts.filter((script) => script.protected.author === scripter.id)
 
 	const filteredScripts = scripts.slice(Math.max(0, start), Math.min(scripts.length, finish + 1))
 

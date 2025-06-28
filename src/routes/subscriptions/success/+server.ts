@@ -8,7 +8,7 @@ export const GET = async ({ url: { searchParams } }) => {
 		console.error("Checkout session id not found. params: " + searchParams.toString())
 		throw error(
 			403,
-			"Something went wrong during checkout! If you got charged please send an email to support@waspscripts.com"
+			"Something went wrong during checkout! If you got charged please send an email to support@waspscripts.dev"
 		)
 	}
 
@@ -19,7 +19,7 @@ export const GET = async ({ url: { searchParams } }) => {
 		console.error("Checkout session " + sessionID + " status is not complete!")
 		throw error(
 			402,
-			"The payment seem to have failed! If you got charges please contact support@waspscripts.com"
+			"The payment seem to have failed! If you got charges please contact support@waspscripts.dev"
 		)
 	}
 
@@ -29,7 +29,7 @@ export const GET = async ({ url: { searchParams } }) => {
 			console.error("Checkout session " + sessionID + " subscription missing!")
 			throw error(
 				403,
-				"Something went wrong retrieving your subscription! If you got charged please send an email to support@waspscripts.com"
+				"Something went wrong retrieving your subscription! If you got charged please send an email to support@waspscripts.dev"
 			)
 		}
 	} else if (session.mode === "payment") {

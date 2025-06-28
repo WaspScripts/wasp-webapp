@@ -60,7 +60,7 @@ export const actions = {
 					form,
 					"",
 					`You don't seem to have a customer_id assign for some reason. This shouldn't happen and has to be fixed manually.
-					Refresh the page, if that doesn't solve the issue please contact support@waspscripts.com and send the following:
+					Refresh the page, if that doesn't solve the issue please contact support@waspscripts.dev and send the following:
 					id: ${profile.id} discord_id: ${profile.discord} registered_email: ${user.email} username: ${profile.username}`
 				)
 			}
@@ -74,7 +74,7 @@ export const actions = {
 					form,
 					"",
 					`You don't seem to have a customer_id assign for some reason and one couldn't be created. This shouldn't happen and has to be fixed manually.
-					Refresh the page, if that doesn't solve the issue please contact support@waspscripts.com and send the following:
+					Refresh the page, if that doesn't solve the issue please contact support@waspscripts.dev and send the following:
 					id: ${profile.id} discord_id: ${profile.discord} registered_email: ${user.email}  username: ${profile.username}`
 				)
 			}
@@ -86,7 +86,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"Something went wrong! Seems like no product was selected. If this keeps occuring please contact support@waspscripts.com"
+				"Something went wrong! Seems like no product was selected. If this keeps occuring please contact support@waspscripts.dev"
 			)
 		}
 
@@ -96,7 +96,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"Something went wrong! Seems like the selected product is invalid. If this keeps occuring please contact support@waspscripts.com"
+				"Something went wrong! Seems like the selected product is invalid. If this keeps occuring please contact support@waspscripts.dev"
 			)
 		}
 
@@ -104,7 +104,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"Something went wrong! Seems like are already subscribed to this product. If this is not the case and this keeps occuring please contact support@waspscripts.com"
+				"Something went wrong! Seems like are already subscribed to this product. If this is not the case and this keeps occuring please contact support@waspscripts.dev"
 			)
 		}
 
@@ -112,7 +112,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"Something went wrong! Seems like already have free access to this product. If this is not the case and this keeps occuring please contact support@waspscripts.com"
+				"Something went wrong! Seems like already have free access to this product. If this is not the case and this keeps occuring please contact support@waspscripts.dev"
 			)
 		}
 
@@ -122,7 +122,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"Something went wrong! Seems like the selected price is invalid. If this keeps occuring please contact support@waspscripts.com Erorr message:"
+				"Something went wrong! Seems like the selected price is invalid. If this keeps occuring please contact support@waspscripts.dev Erorr message:"
 			)
 		}
 
@@ -141,7 +141,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"Something went wrong! Seems like that product doesn't exist on the database. If this keeps occuring please contact support@waspscripts.com Erorr message:"
+				"Something went wrong! Seems like that product doesn't exist on the database. If this keeps occuring please contact support@waspscripts.dev Erorr message:"
 			)
 		}
 
@@ -178,7 +178,7 @@ export const actions = {
 				error(
 					404,
 					`You don't seem to have a customer_id assign for some reason. This shouldn't happen and has to be fixed manually.
-					Refresh the page, if that doesn't solve the issue please contact support@waspscripts.com and send the following:
+					Refresh the page, if that doesn't solve the issue please contact support@waspscripts.dev and send the following:
 					id: ${profile.id} discord_id: ${profile.discord} registered_email: ${user.email} username: ${profile.username}`
 				)
 			}
@@ -191,7 +191,7 @@ export const actions = {
 				return error(
 					404,
 					`You don't seem to have a customer_id assign for some reason and one couldn't be created. This shouldn't happen and has to be fixed manually.
-					Refresh the page, if that doesn't solve the issue please contact support@waspscripts.com and send the following:
+					Refresh the page, if that doesn't solve the issue please contact support@waspscripts.dev and send the following:
 					id: ${profile.id} discord_id: ${profile.discord} registered_email: ${user.email}  username: ${profile.username}`
 				)
 			}
@@ -227,7 +227,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"You don't have a customer id. This should not be possible! Please contact support@waspscripts.com"
+				"You don't have a customer id. This should not be possible! Please contact support@waspscripts.dev"
 			)
 		}
 
@@ -237,7 +237,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"Something went wrong! Seems like no subscription was selected. If this keeps occuring please contact support@waspscripts.com"
+				"Something went wrong! Seems like no subscription was selected. If this keeps occuring please contact support@waspscripts.dev"
 			)
 		}
 
@@ -249,7 +249,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"That customer profile does not exist. Refresh the page, if the issue persists please contact support@waspscripts.com"
+				"That customer profile does not exist. Refresh the page, if the issue persists please contact support@waspscripts.dev"
 			)
 		}
 
@@ -262,7 +262,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"You don't have any subscription active. Refresh the page, if this keeps happening, please contact support@waspscripts.com"
+				"You don't have any subscription active. Refresh the page, if this keeps happening, please contact support@waspscripts.dev"
 			)
 		}
 
@@ -272,7 +272,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"The subscription you want to cancel either doesn't exist or doesn't belong to you. Refresh the page, if this keeps happening, please contact support@waspscripts.com"
+				"The subscription you want to cancel either doesn't exist or doesn't belong to you. Refresh the page, if this keeps happening, please contact support@waspscripts.dev"
 			)
 		}
 

@@ -78,7 +78,7 @@ export const actions = {
 			return setError(form, "", "You cannot a script official!")
 		}
 
-		if (!canEdit(user.id, roles, script.protected.author_id)) {
+		if (!canEdit(user.id, roles, script.protected.author)) {
 			return setError(form, "", "You can't edit a script that doesn't belong to you!")
 		}
 

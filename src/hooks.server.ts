@@ -1,5 +1,4 @@
 import { type Handle, redirect } from "@sveltejs/kit"
-
 import { createServerClient } from "@supabase/ssr"
 import { sequence } from "@sveltejs/kit/hooks"
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from "$env/static/public"
@@ -94,21 +93,7 @@ const authGuard: Handle = async ({ event, resolve }) => {
 		const { data, error: err } = await event.locals.supabaseServer
 			.schema("profiles")
 			.from("profiles")
-			.select("id, discord, username, avatar, customer_id")
-			.eq("id", user.id)
-			.single()
-
-		if (err) return null
-		return data
-	}
-
-	event.locals.getRoles = async () => {
-		if (!user) return null
-
-		const { data, error: err } = await event.locals.supabaseServer
-			.schema("profiles")
-			.from("roles")
-			.select("banned, premium, vip, tester, scripter, moderator, administrator")
+			.select("id, discord, stripe, username, avatar, role")
 			.eq("id", user.id)
 			.single()
 

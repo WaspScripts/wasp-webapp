@@ -5,10 +5,10 @@ import { error, redirect } from "@sveltejs/kit"
 import { zod } from "sveltekit-superforms/adapters"
 import { setError, superValidate } from "sveltekit-superforms/server"
 
-export const load = async ({ locals: { user, getRoles } }) => {
+export const load = async ({ locals: { user, getProfile } }) => {
 	if (!user) error(403, "You need to be logged in to access this page.")
-	const roles = await getRoles()
-	if (!roles?.administrator) error(403, "You need to be an admin to access this page.")
+	const profile = await getProfile()
+	if (profile?.role != "administrator") error(403, "You need to be an admin to access this page.")
 
 	return { form: await superValidate(zod(loginAsSchema)) }
 }
@@ -18,15 +18,15 @@ export const actions = {
 		return await doLogin(supabaseServer, origin, searchParams)
 	},
 
-	loginas: async ({ request, locals: { user, getRoles, supabaseServer } }) => {
+	loginas: async ({ request, locals: { user, getProfile, supabaseServer } }) => {
 		if (!user) error(403, "You need to be logged in to access this page.")
 
-		const promises = await Promise.all([getRoles(), superValidate(request, zod(loginAsSchema))])
+		const promises = await Promise.all([getProfile(), superValidate(request, zod(loginAsSchema))])
 
-		const roles = promises[0]
+		const profile = promises[0]
 		const form = promises[1]
 
-		if (!roles?.administrator) error(403, "You need to be an admin to access this page.")
+		if (profile?.role != "administrator") error(403, "You need to be an admin to access this page.")
 		if (!form.valid) return setError(form, "", "Form is not valid \n" + JSON.stringify(form.errors))
 
 		const { data, error: err } = await supabaseServer.auth.refreshSession(form.data)

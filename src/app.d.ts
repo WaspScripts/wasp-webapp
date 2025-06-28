@@ -1,6 +1,6 @@
 import type { Session, SupabaseClient, User } from "@supabase/supabase-js"
 import type { Database } from "$lib/types/supabase"
-import type { ProfileBase, ProfileRoles, Subscription, FreeAccess } from "$lib/types/collection"
+import type { ProfileBase, Subscription, FreeAccess } from "$lib/types/collection"
 
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
@@ -13,7 +13,6 @@ declare global {
 			session: Session | null
 			user: User | null
 			getProfile: () => Promise<ProfileBase | null> | null
-			getRoles: () => Promise<ProfileRoles | null> | null
 			getSubscriptions: () => Promise<Subscription[]>
 			getFreeAccess: () => Promise<FreeAccess[]>
 		}
@@ -24,7 +23,6 @@ declare global {
 			session: Session | null
 			user: User | null
 			profile: ProfileBase | null
-			roles: ProfileRoles | null
 		}
 		// interface PageState {}
 		// interface Platform {}

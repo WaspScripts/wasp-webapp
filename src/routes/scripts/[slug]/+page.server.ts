@@ -14,10 +14,10 @@ export const load = async ({ cookies }) => {
 }
 
 export const actions = {
-	clear: async ({ params: { slug }, locals: { getRoles } }) => {
-		const roles = await getRoles()
-		if (!roles) error(403, "You need to be logged in to clear reports.")
-		if (!roles.tester && !roles.moderator && !roles.administrator) {
+	clear: async ({ params: { slug }, locals: { getProfile } }) => {
+		const profile = await getProfile()
+		if (!profile) error(403, "You need to be logged in to clear reports.")
+		if (!["tester", "moderator", "administrator"].includes(profile.role)) {
 			error(403, "Only testers, moderators and administrators can clear reports.")
 		}
 		return { success: await removeScriptBroken(slug) }
@@ -34,17 +34,13 @@ export const actions = {
 		if (!user) {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		}
-		console.log("HERE")
-
 		const promises = await Promise.all([getProfile(), getSubscriptions(), getFreeAccess()])
 		const profile = promises[0]
 		const subs = promises[1]
 		const free = promises[2]
-		console.log("HERE1")
 		if (!profile) {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		}
-		console.log("HERE2")
 		if (!profile.customer_id) {
 			const customerSearch = await stripe.customers.search({ query: 'name: "' + profile.id + '"' })
 
@@ -52,7 +48,7 @@ export const actions = {
 				error(
 					500,
 					`You don't seem to have a customer_id assign for some reason. This shouldn't happen and has to be fixed manually.
-					Refresh the page, if that doesn't solve the issue please contact support@waspscripts.com and send the following:
+					Refresh the page, if that doesn't solve the issue please contact support@waspscripts.dev and send the following:
 					id: ${profile.id} discord_id: ${profile.discord} registered_email: ${user.email} username: ${profile.username}`
 				)
 			}
@@ -65,7 +61,7 @@ export const actions = {
 				error(
 					500,
 					`You don't seem to have a customer_id assign for some reason and one couldn't be created. This shouldn't happen and has to be fixed manually.
-					Refresh the page, if that doesn't solve the issue please contact support@waspscripts.com and send the following:
+					Refresh the page, if that doesn't solve the issue please contact support@waspscripts.dev and send the following:
 					id: ${profile.id} discord_id: ${profile.discord} registered_email: ${user.email}  username: ${profile.username}`
 				)
 			}
@@ -77,28 +73,28 @@ export const actions = {
 		if (!productID) {
 			error(
 				500,
-				"Something went wrong! Seems like no product was selected. If this keeps occuring please contact support@waspscripts.com"
+				"Something went wrong! Seems like no product was selected. If this keeps occuring please contact support@waspscripts.dev"
 			)
 		}
 		console.log("HERE3")
 		if (!priceID) {
 			error(
 				500,
-				"Something went wrong! Seems like no price was selected. If this keeps occuring please contact support@waspscripts.com"
+				"Something went wrong! Seems like no price was selected. If this keeps occuring please contact support@waspscripts.dev"
 			)
 		}
 
 		if (subs?.find((subscription) => subscription.product === productID)) {
 			error(
 				500,
-				"Something went wrong! Seems like are already subscribed to this product. If this is not the case and this keeps occuring please contact support@waspscripts.com"
+				"Something went wrong! Seems like are already subscribed to this product. If this is not the case and this keeps occuring please contact support@waspscripts.dev"
 			)
 		}
 
 		if (free?.find((access) => access.product === productID)) {
 			error(
 				500,
-				"Something went wrong! Seems like already have free access to this product. If this is not the case and this keeps occuring please contact support@waspscripts.com"
+				"Something went wrong! Seems like already have free access to this product. If this is not the case and this keeps occuring please contact support@waspscripts.dev"
 			)
 		}
 
@@ -114,7 +110,7 @@ export const actions = {
 		if (priceErr) {
 			error(
 				500,
-				"Something went wrong! Seems like that price doesn't belong to that product. If this keeps occuring please contact support@waspscripts.com Erorr message:" +
+				"Something went wrong! Seems like that price doesn't belong to that product. If this keeps occuring please contact support@waspscripts.dev Erorr message:" +
 					formatError(priceErr)
 			)
 		}

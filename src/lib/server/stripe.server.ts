@@ -206,15 +206,15 @@ export async function createStripeConnectAccount(
 			business_profile: {
 				mcc: "5734",
 				name: scripter.profiles.username,
-				support_url: "https://waspscripts.com/scripters/" + scripter.url,
-				url: "https://waspscripts.com/scripters/" + scripter.url,
-				support_email: "support@waspscripts.com"
+				support_url: "https://waspscripts.dev/scripters/" + scripter.url,
+				url: "https://waspscripts.dev/scripters/" + scripter.url,
+				support_email: "support@waspscripts.dev"
 			},
 			metadata: { id: scripter.id, username: scripter.profiles.username },
 			settings: {
 				payouts: {
 					schedule: { interval: "monthly", delay_days: 15, monthly_anchor: 31 },
-					statement_descriptor: "waspscripts.com"
+					statement_descriptor: "waspscripts.dev"
 				}
 			}
 		})

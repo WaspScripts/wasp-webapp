@@ -5,7 +5,7 @@ import { tutorialsPromise } from "$lib/server/tutorials.server"
 import { getPublishedScripts } from "$lib/server/scripts.server"
 import type { Database } from "$lib/types/supabase"
 
-const website = "https://waspscripts.com"
+const website = "https://waspscripts.dev"
 
 const getScripts = async () => {
 	const scripts = await getPublishedScripts()

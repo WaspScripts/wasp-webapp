@@ -79,7 +79,7 @@
 					<Github />
 				</a>
 				<a
-					href="https://waspscripts.com"
+					href="https://waspscripts.dev"
 					aria-label="Navigate to main site"
 					class="permalink text-secondary-500"
 				>
