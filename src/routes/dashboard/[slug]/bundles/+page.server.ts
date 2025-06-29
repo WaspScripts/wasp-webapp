@@ -168,9 +168,9 @@ export const actions = {
 			return setError(form, "", "You need to add at least 2 scripts to a bundle.")
 
 		const { data: productsData, error: errProducts } = await supabaseServer
-			.schema("scripts")
+			.schema("stripe")
 			.from("products")
-			.select("name, bundle")
+			.select("bundle")
 			.eq("id", product.id)
 			.single()
 
@@ -178,10 +178,11 @@ export const actions = {
 
 		if (!productsData.bundle) return setError(form, "", "That product is missing a bundle ID!")
 
-		if (product.name !== productsData.name) await updateStripeProduct(product.id, product.name)
+		//todo:
+		//if (product.name !== productsData.name) await updateStripeProduct(product.id, product.name)
 
 		const { data: pricesData, error: errPrices } = await supabaseServer
-			.schema("scripts")
+			.schema("stripe")
 			.from("prices")
 			.select("id, amount, interval")
 			.eq("product", product.id)
@@ -369,7 +370,7 @@ export const actions = {
 
 		const { error: err } = await supabaseServer
 			.schema("profiles")
-			.from("subscription")
+			.from("subscriptions")
 			.update({ disabled: true })
 			.eq("subscription", subscription)
 
@@ -404,7 +405,7 @@ export const actions = {
 
 		const { data, error: err } = await supabaseServer
 			.schema("profiles")
-			.from("subscription")
+			.from("subscriptions")
 			.update({ disabled: true })
 			.eq("product", product)
 			.select("subscription")

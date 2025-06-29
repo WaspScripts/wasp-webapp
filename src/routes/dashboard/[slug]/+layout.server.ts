@@ -42,7 +42,7 @@ export const load = async ({
 
 	async function getPrices(products: string[]) {
 		const { data, error: err } = await supabaseServer
-			.schema("scripts")
+			.schema("stripe")
 			.from("prices")
 			.select(`id, product, amount, currency, interval, active`)
 			.order("product", { ascending: true })
@@ -75,8 +75,8 @@ export const load = async ({
 			error: err
 		} = await supabaseServer
 			.schema("profiles")
-			.from("subscription")
-			.select("id, product, price, cancel", { count: "estimated" })
+			.from("subscriptions")
+			.select("user, product, price, cancel", { count: "estimated" })
 			.in("product", products)
 
 		if (err) {
@@ -119,7 +119,7 @@ export const load = async ({
 
 	async function getProducts() {
 		const { data, error: err } = await supabaseServer
-			.schema("scripts")
+			.schema("stripe")
 			.from("products")
 			.select(
 				`id, user_id, name, bundle, bundles!products_bundle_fkey (username), script, scripts!products_script_fkey (protected!protected_id_fkey (username)), active`

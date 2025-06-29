@@ -8,7 +8,7 @@ export const load = async ({ parent, data }) => {
 
 	async function getPrices() {
 		const { data, error: err } = await supabaseClient
-			.schema("scripts")
+			.schema("stripe")
 			.from("prices")
 			.select(`id, product, amount, currency, interval, active`)
 			.order("product", { ascending: true })
@@ -18,7 +18,7 @@ export const load = async ({ parent, data }) => {
 			error(
 				500,
 				"Server error, this is probably not an issue on your end!\n" +
-					"SELECT scripts.prices failed!\n\n" +
+					"SELECT stripe.prices failed!\n\n" +
 					formatError(err)
 			)
 		}
@@ -58,12 +58,11 @@ export const load = async ({ parent, data }) => {
 
 	async function getProducts() {
 		const { data, error: err } = await supabaseClient
-			.schema("scripts")
+			.schema("stripe")
 			.from("products")
-			.select(`id, user_id, name, bundle, script, active`)
+			.select("id, user, bundle, script, active")
 			.order("bundle", { ascending: true })
-			.order("user_id", { ascending: true })
-			.order("name", { ascending: true })
+			.order("user", { ascending: true })
 			.overrideTypes<ProductData[]>()
 
 		if (err) {
@@ -118,7 +117,7 @@ export const load = async ({ parent, data }) => {
 		const { data, error: err } = await supabaseClient
 			.schema("scripts")
 			.from("bundles")
-			.select(`id, name, scripts, quantity, user_id, username, product`)
+			.select(`id, name, scripts, author`)
 			.order("name", { ascending: true })
 
 		if (err) {
@@ -170,7 +169,7 @@ export const load = async ({ parent, data }) => {
 			}
 
 			for (let j = 0; j < bundles.length; j++) {
-				if (bundles[j].product !== product.id) continue
+				if (bundles[j].id !== product.bundle) continue
 				currentBundle = bundles[j]
 				bundles.splice(j, 1)
 				break

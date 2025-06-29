@@ -52,34 +52,6 @@ export const actions = {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		}
 
-		if (!profile.customer_id) {
-			const customerSearch = await stripe.customers.search({ query: 'name: "' + profile.id + '"' })
-
-			if (customerSearch.data.length !== 1) {
-				return setError(
-					form,
-					"",
-					`You don't seem to have a customer_id assign for some reason. This shouldn't happen and has to be fixed manually.
-					Refresh the page, if that doesn't solve the issue please contact support@waspscripts.dev and send the following:
-					id: ${profile.id} discord_id: ${profile.discord} registered_email: ${user.email} username: ${profile.username}`
-				)
-			}
-
-			profile.customer_id = customerSearch.data[0].id
-
-			const updateCustomer = await updateCustomerID(profile.id, profile.customer_id)
-
-			if (!updateCustomer) {
-				return setError(
-					form,
-					"",
-					`You don't seem to have a customer_id assign for some reason and one couldn't be created. This shouldn't happen and has to be fixed manually.
-					Refresh the page, if that doesn't solve the issue please contact support@waspscripts.dev and send the following:
-					id: ${profile.id} discord_id: ${profile.discord} registered_email: ${user.email}  username: ${profile.username}`
-				)
-			}
-		}
-
 		const productID = searchParams.get("product")
 
 		if (!productID) {
@@ -128,9 +100,9 @@ export const actions = {
 
 		const start = performance.now()
 		const { data, error: err } = await supabaseServer
-			.schema("scripts")
+			.schema("stripe")
 			.from("products")
-			.select("user_id, stripe_user")
+			.select("user, stripe")
 			.eq("id", productID)
 			.single()
 		console.log(
@@ -145,11 +117,11 @@ export const actions = {
 			)
 		}
 
-		const stripeUser = data.user_id !== PUBLIC_SUPER_USER_ID ? data.stripe_user : null
+		const stripeUser = data.user !== PUBLIC_SUPER_USER_ID ? data.stripe : null
 
 		const url = await createCheckoutSession(
 			profile.id,
-			profile.customer_id,
+			profile.stripe,
 			stripeUser,
 			selectedPrice.id,
 			origin
@@ -171,21 +143,21 @@ export const actions = {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		}
 
-		if (!profile.customer_id) {
+		if (!profile.stripe) {
 			const customerSearch = await stripe.customers.search({ query: 'name: "' + profile.id + '"' })
 
 			if (customerSearch.data.length !== 1) {
 				error(
 					404,
-					`You don't seem to have a customer_id assign for some reason. This shouldn't happen and has to be fixed manually.
+					`You don't seem to have a stripe assign for some reason. This shouldn't happen and has to be fixed manually.
 					Refresh the page, if that doesn't solve the issue please contact support@waspscripts.dev and send the following:
 					id: ${profile.id} discord_id: ${profile.discord} registered_email: ${user.email} username: ${profile.username}`
 				)
 			}
 
-			profile.customer_id = customerSearch.data[0].id
+			profile.stripe = customerSearch.data[0].id
 
-			const updateCustomer = await updateCustomerID(profile.id, profile.customer_id)
+			const updateCustomer = await updateCustomerID(profile.id, profile.stripe)
 
 			if (!updateCustomer) {
 				return error(
@@ -197,7 +169,7 @@ export const actions = {
 			}
 		}
 
-		const url = await createCustomerPortal(profile.customer_id, origin)
+		const url = await createCustomerPortal(profile.stripe, origin)
 		if (url) redirect(303, url)
 		error(404, "Something went wrong!")
 	},
@@ -223,7 +195,7 @@ export const actions = {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		}
 
-		if (!profile.customer_id) {
+		if (!profile.stripe) {
 			return setError(
 				form,
 				"",
@@ -241,7 +213,7 @@ export const actions = {
 			)
 		}
 
-		const customer = await stripe.customers.retrieve(profile.customer_id, {
+		const customer = await stripe.customers.retrieve(profile.stripe, {
 			expand: ["subscriptions"]
 		})
 

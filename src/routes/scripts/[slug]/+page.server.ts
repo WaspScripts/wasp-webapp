@@ -99,7 +99,7 @@ export const actions = {
 		}
 
 		const { data, error: priceErr } = await supabaseServer
-			.schema("scripts")
+			.schema("stripe")
 			.from("prices")
 			.select("id, products!prices_product_fkey (user_id, stripe_user)")
 			.eq("product", productID)

@@ -320,7 +320,7 @@ export class WaspFAQ {
 async function getPrices(supabase: SupabaseClient<Database>, product: string) {
 	console.log("💸 Fetching prices for ", product)
 	const { data, error: err } = await supabase
-		.schema("scripts")
+		.schema("stripe")
 		.from("prices")
 		.select(`id, product, amount, currency, interval, active`)
 		.eq("product", product)
@@ -363,7 +363,7 @@ export async function getProducts(supabase: SupabaseClient<Database>, script: st
 	const bundles = await getBundles(supabase, script)
 
 	const scriptQuery = supabase
-		.schema("scripts")
+		.schema("stripe")
 		.from("products")
 		.select(`id, name`)
 		.eq("active", true)
@@ -371,7 +371,7 @@ export async function getProducts(supabase: SupabaseClient<Database>, script: st
 		.order("name", { ascending: true })
 
 	const bundleQuery = supabase
-		.schema("scripts")
+		.schema("stripe")
 		.from("products")
 		.select(`id, name`)
 		.eq("active", true)

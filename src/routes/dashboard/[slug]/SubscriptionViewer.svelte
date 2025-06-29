@@ -17,7 +17,7 @@
 	async function getSubscriptions(id: string) {
 		const { data: subData, error: subError } = await page.data.supabaseClient
 			.schema("profiles")
-			.from("subscription")
+			.from("subscriptions")
 			.select("id, subscription, price, date_start, date_end, cancel, disabled, profiles(username)")
 			.eq("product", id)
 
@@ -27,7 +27,7 @@
 		}
 
 		const { data: priceData, error: priceError } = await page.data.supabaseClient
-			.schema("scripts")
+			.schema("stripe")
 			.from("prices")
 			.select("id, amount, interval")
 			.eq("product", id)

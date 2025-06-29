@@ -159,7 +159,7 @@ export async function updateCustomerID(id: string, customer_id: string) {
 	const { error: err } = await supabaseAdmin
 		.schema("profiles")
 		.from("profiles")
-		.update({ customer_id: customer_id })
+		.update({ stripe: customer_id })
 		.eq("id", id)
 
 	if (err) throw error(500, formatError(err))
@@ -371,13 +371,13 @@ export class WaspSubscription {
 
 export class WaspProduct {
 	static async insert(product: Product) {
-		console.log("INSERT scripts.products: ", product.id)
-		const { error: errProducts } = await supabaseAdmin.schema("scripts").from("products").insert({
+		console.log("INSERT stripe.products: ", product.id)
+		const { error: errProducts } = await supabaseAdmin.schema("stripe").from("products").insert({
 			id: product.id,
-			name: product.name,
-			user_id: product.user_id,
 			bundle: product.bundle,
 			script: product.script,
+			stripe: product.stripe,
+			user: product.user,
 			active: true
 		})
 
@@ -391,12 +391,12 @@ export class WaspProduct {
 	}
 
 	static async update(id: string, name: string) {
-		console.log("UPDATE scripts.products: ", id)
+		console.log("UPDATE stripe.products: ", id)
 
 		const { error: err } = await supabaseAdmin
-			.schema("scripts")
+			.schema("stripe")
 			.from("products")
-			.update({ name: name })
+			.update({})
 			.eq("id", id)
 
 		if (err) {
@@ -411,7 +411,7 @@ export class WaspProduct {
 		console.log("DELETE scripts.products: ", id)
 
 		const { error: errProduct } = await supabaseAdmin
-			.schema("scripts")
+			.schema("stripe")
 			.from("products")
 			.delete()
 			.eq("id", id)
@@ -436,7 +436,7 @@ export class WaspPrice {
 		for (let attempt = 0; attempt < 3; attempt++) {
 			console.log("INSERT scripts.prices: ", price.id, " attmpt: ", attempt)
 
-			const { error: err } = await supabaseAdmin.schema("scripts").from("prices").insert(price)
+			const { error: err } = await supabaseAdmin.schema("stripe").from("prices").insert(price)
 
 			if (err) {
 				console.error(err)
@@ -458,7 +458,7 @@ export class WaspPrice {
 		console.log("UPDATE scripts.prices: ", price.id)
 
 		const { error: err } = await supabaseAdmin
-			.schema("scripts")
+			.schema("stripe")
 			.from("prices")
 			.update(price)
 			.eq("id", price.id)
@@ -475,11 +475,7 @@ export class WaspPrice {
 	static async delete(id: string) {
 		console.log("DELETE scripts.prices: ", id)
 
-		const { error: err } = await supabaseAdmin
-			.schema("scripts")
-			.from("prices")
-			.delete()
-			.eq("id", id)
+		const { error: err } = await supabaseAdmin.schema("stripe").from("prices").delete().eq("id", id)
 
 		if (err) {
 			console.error(err)
