@@ -140,6 +140,19 @@ export async function getPrivateProfile(id: string) {
 	return data
 }
 
+export async function insertUserProfile(id: string, stripe: string, discord: string) {
+	console.log("Updating profiles.profiles for user: ", id)
+
+	const { error: err } = await supabaseAdmin
+		.schema("profiles")
+		.from("profiles")
+		.insert({ id, stripe, discord })
+
+	if (err) throw error(500, formatError(err))
+
+	return true
+}
+
 export async function updateCustomerID(id: string, customer_id: string) {
 	console.log("Updating profiles.profiles for user: ", id)
 

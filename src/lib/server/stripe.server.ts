@@ -4,7 +4,7 @@ import type { Bundle, Price, Scripter } from "$lib/types/collection"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import Stripe from "stripe"
 
-export const stripe = new Stripe(STRIPE_KEY, { apiVersion: "2025-02-24.acacia", typescript: true })
+export const stripe = new Stripe(STRIPE_KEY, { apiVersion: "2025-03-31.basil", typescript: true })
 
 export async function createCustomerPortal(customer: string, origin: string) {
 	let portal: Stripe.BillingPortal.Session
@@ -152,25 +152,14 @@ export async function createStripeCustomer(
 	username: string
 ) {
 	let customer: Stripe.Customer
-	let customerSearch: Stripe.Response<Stripe.ApiSearchResult<Stripe.Customer>>
-
-	try {
-		customerSearch = await stripe.customers.search({ query: `name:"${id}"` })
-	} catch (error) {
-		console.error(error)
-		return null
-	}
-
-	if (customerSearch.data.length > 1) return false
-	if (customerSearch.data.length === 1) return customerSearch.data[0].id
 
 	try {
 		customer = await stripe.customers.create({
 			email: email,
-			name: id,
+			name: username,
 			metadata: {
-				id: id,
-				discord_id: discord,
+				wsid: id,
+				discord: discord,
 				username: username
 			}
 		})

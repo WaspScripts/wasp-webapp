@@ -93,7 +93,7 @@ const authGuard: Handle = async ({ event, resolve }) => {
 		const { data, error: err } = await event.locals.supabaseServer
 			.schema("profiles")
 			.from("profiles")
-			.select("id, discord, stripe, username, avatar, role")
+			.select("id, stripe, discord, username, avatar, role")
 			.eq("id", user.id)
 			.single()
 
@@ -105,7 +105,7 @@ const authGuard: Handle = async ({ event, resolve }) => {
 		if (!user) return []
 		const { data, error: err } = await event.locals.supabaseServer
 			.schema("profiles")
-			.from("subscription")
+			.from("subscriptions")
 			.select("subscription, product, price, date_start, date_end, cancel, disabled")
 			.eq("id", user.id)
 

@@ -171,7 +171,8 @@ export interface ProductData {
 	profiles: { username: string }
 }
 
-export type Price = Database["scripts"]["Tables"]["prices"]["Row"]
+export type Product = Database["stripe"]["Tables"]["products"]["Row"]
+export type Price = Database["stripe"]["Tables"]["prices"]["Row"]
 
 export interface ProductEx {
 	id: string
@@ -205,8 +206,6 @@ export interface FreeAccess {
 }
 
 export type Bundle = Database["scripts"]["Tables"]["bundles"]["Row"]
-
-export type Product = Database["scripts"]["Tables"]["products"]["Row"]
 
 export interface BundleProduct {
 	index: number

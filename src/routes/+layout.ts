@@ -31,12 +31,11 @@ export const load = async ({ data, depends, fetch }) => {
 		const { data, error: err } = await supabaseClient
 			.schema("profiles")
 			.from("profiles")
-			.select(`id, discord, stripe username, avatar, role`)
+			.select("id, stripe, discord, username, avatar, role")
 			.eq("id", user.id)
 			.single()
 
 		if (err) return null
-
 		return data
 	}
 
