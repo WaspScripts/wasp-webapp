@@ -79,8 +79,7 @@ export async function getStatsTotal(supabase: SupabaseClient) {
 		.from("totals")
 		.select("*")
 		.limit(1)
-		.single()
-		.overrideTypes<StatsTotal>()
+		.single<StatsTotal>()
 
 	if (err) {
 		error(

@@ -3,7 +3,7 @@ import type { Database } from "./supabase"
 //profile
 
 export type ProfileBase = Database["profiles"]["Tables"]["profiles"]["Row"]
-export type ProfileRole = ProfileBase["role"]
+export type ProfileRole = ProfileBase["role"] | undefined
 
 export interface Profile extends ProfileBase {
 	subscriptions: Database["profiles"]["Tables"]["subscriptions"]["Row"][]
@@ -97,6 +97,8 @@ export interface ScriptPublic {
 
 export interface ScriptProtected {
 	author: Database["scripts"]["Tables"]["protected"]["Row"]["author"]
+	username: Database["scripts"]["Tables"]["protected"]["Row"]["username"]
+	avatar: Database["scripts"]["Tables"]["protected"]["Row"]["username"]
 	revision: Database["scripts"]["Tables"]["protected"]["Row"]["revision"]
 	revision_date: Database["scripts"]["Tables"]["protected"]["Row"]["revision_date"]
 	assets: Database["scripts"]["Tables"]["protected"]["Row"]["assets"]

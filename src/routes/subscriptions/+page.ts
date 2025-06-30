@@ -69,7 +69,7 @@ export const load = async ({ parent, data }) => {
 			error(
 				500,
 				"Server error, this is probably not an issue on your end!\n" +
-					"SELECT scripts.products failed!\n\n" +
+					"SELECT stripe.products failed!\n\n" +
 					formatError(err)
 			)
 		}
@@ -93,7 +93,7 @@ export const load = async ({ parent, data }) => {
 		const { data, error: err } = await supabaseClient
 			.schema("scripts")
 			.from("scripts")
-			.select(`id, title, url, product, protected!left (username), metadata!left (type)`)
+			.select(`id, title, url, protected!left (username), metadata!left (type)`)
 			.limit(1, { foreignTable: "protected" })
 			.limit(1, { foreignTable: "metadata" })
 			.eq("published", true)

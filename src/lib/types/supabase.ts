@@ -113,52 +113,30 @@ export type Database = {
 					}
 				]
 			}
-			private: {
-				Row: {
-					email: string
-					id: string
-				}
-				Insert: {
-					email: string
-					id: string
-				}
-				Update: {
-					email?: string
-					id?: string
-				}
-				Relationships: [
-					{
-						foreignKeyName: "private_id_fkey"
-						columns: ["id"]
-						referencedRelation: "profiles"
-						referencedColumns: ["id"]
-					}
-				]
-			}
 			profiles: {
 				Row: {
-					avatar: string | null
+					avatar: string
 					discord: string
 					id: string
 					role: Database["profiles"]["Enums"]["roles"] | null
-					stripe: string | null
-					username: string | null
+					stripe: string
+					username: string
 				}
 				Insert: {
-					avatar?: string | null
-					discord?: string
+					avatar: string
+					discord: string
 					id: string
 					role?: Database["profiles"]["Enums"]["roles"] | null
-					stripe?: string | null
-					username?: string | null
+					stripe: string
+					username: string
 				}
 				Update: {
-					avatar?: string | null
+					avatar?: string
 					discord?: string
 					id?: string
 					role?: Database["profiles"]["Enums"]["roles"] | null
-					stripe?: string | null
-					username?: string | null
+					stripe?: string
+					username?: string
 				}
 				Relationships: []
 			}
@@ -334,10 +312,7 @@ export type Database = {
 			[_ in never]: never
 		}
 		Functions: {
-			create_user: {
-				Args: Record<PropertyKey, never>
-				Returns: undefined
-			}
+			[_ in never]: never
 		}
 		Enums: {
 			[_ in never]: never
@@ -404,26 +379,32 @@ export type Database = {
 				Row: {
 					assets: string
 					author: string
+					avatar: string
 					created_at: string
 					id: string
 					revision: number
 					revision_date: string
+					username: string
 				}
 				Insert: {
 					assets: string
 					author: string
+					avatar: string
 					created_at?: string
 					id: string
 					revision?: number
 					revision_date?: string
+					username: string
 				}
 				Update: {
 					assets?: string
 					author?: string
+					avatar?: string
 					created_at?: string
 					id?: string
 					revision?: number
 					revision_date?: string
+					username?: string
 				}
 				Relationships: [
 					{
@@ -1028,6 +1009,7 @@ export type Database = {
 					active: boolean
 					bundle: string | null
 					id: string
+					name: string
 					script: string | null
 					stripe: string
 					user: string
@@ -1036,6 +1018,7 @@ export type Database = {
 					active?: boolean
 					bundle?: string | null
 					id: string
+					name: string
 					script?: string | null
 					stripe: string
 					user: string
@@ -1044,6 +1027,7 @@ export type Database = {
 					active?: boolean
 					bundle?: string | null
 					id?: string
+					name?: string
 					script?: string | null
 					stripe?: string
 					user?: string
@@ -1115,10 +1099,7 @@ export type Database = {
 			[_ in never]: never
 		}
 		Functions: {
-			add_customer: {
-				Args: { id: string; discord: string; username: string; email: string }
-				Returns: string
-			}
+			[_ in never]: never
 		}
 		Enums: {
 			currency: "EUR" | "USD" | "CAD" | "AUD"

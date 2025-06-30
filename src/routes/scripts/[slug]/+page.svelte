@@ -13,13 +13,13 @@
 	import Head from "$lib/components/Head.svelte"
 
 	const { data } = $props()
-	const { script, profile, roles, supabaseClient } = $derived(data)
+	const { script, profile, supabaseClient } = $derived(data)
 
 	let products: Awaited<ReturnType<typeof getProducts>> | null = $state(null)
 
 	async function canDownloadScript() {
 		if (script.metadata.type === "free") return true
-		const result = await canDownload(supabaseClient, roles, script.id)
+		const result = await canDownload(supabaseClient, profile?.role, script.id)
 		if (!result) products = await getProducts(supabaseClient, script.id)
 		return result
 	}
@@ -51,13 +51,14 @@
 	<div class="container mx-auto mb-6 max-w-lg flex-grow md:max-w-5xl">
 		<header class="my-8">
 			<form method="POST" class="grid">
+				<!-- TODO
 				{#if script.protected.broken}
 					<h4 class="text-error-500 my-2">
 						This script has been reported broken and it might not work.
 					</h4>
-				{/if}
+				{/if} -->
 				<div class="my-2 flex">
-					{#if roles?.tester}
+					{#if profile?.role == "tester"}
 						<button
 							type="submit"
 							class="btn preset-outlined-success-500 mx-auto"
@@ -78,11 +79,11 @@
 				</div>
 			</form>
 
-			{#if !script.published && canEdit(profile?.id, roles, script.protected.author)}
+			{#if !script.published && canEdit(profile?.id, profile?.role, script.protected.author)}
 				<h4 class="text-shadow text-error-500 my-4 text-center drop-shadow-2xl">Unpublished</h4>
 			{/if}
 		</header>
-		{#if canEdit(profile?.id, roles, script.protected.author)}
+		{#if canEdit(profile?.id, profile?.role, script.protected.author)}
 			<ScriptData id={script.id} />
 		{/if}
 
@@ -106,7 +107,7 @@
 								/>
 								<ZipDownload id={script.id} />
 							</div>
-							{#if canEdit(profile?.id, roles, script.protected.author)}
+							{#if canEdit(profile?.id, profile?.role, script.protected.author)}
 								<div class="my-8 grid place-items-center">
 									<a href="{page.url.pathname}/edit" class="btn preset-filled-secondary-500">Edit</a
 									>
