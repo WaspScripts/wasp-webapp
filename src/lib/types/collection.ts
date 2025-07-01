@@ -53,6 +53,7 @@ export type Stats = {
 //info
 export type FAQEntry = {
 	order: number
+	url: string
 	title: string
 	content: string
 	created_at: string

@@ -2,6 +2,7 @@ import type { FAQEntry } from "$lib/types/collection"
 import { getUsername } from "$lib/server/supabase.server"
 import matter from "gray-matter"
 import removeMd from "remove-markdown"
+import { encodeSEO } from "$lib/utils"
 
 export async function getFAQs() {
 	const faqs: FAQEntry[] = []
@@ -23,10 +24,13 @@ export async function getFAQs() {
 		const username = await getUsername(data.author)
 		if (!username) continue
 
+		const url = encodeSEO(data.title + " by " + username)
+
 		const entry = {
 			...data,
 			username,
 			order: parseInt(order),
+			url,
 			content: removeMd(content)
 		} as FAQEntry
 
@@ -41,7 +45,13 @@ export async function getFAQs() {
 
 export const faqsPromise = getFAQs()
 
-export async function getFAQ(index: number) {
+export async function getFAQ(slug: string) {
 	const faqs = await faqsPromise
-	return faqs.find((faq) => faq.order === index)
+
+	if (/^\d+$/.test(slug)) {
+		const n = parseInt(slug, 10)
+		return faqs.find((faq) => faq.order === n)
+	}
+
+	return faqs.find((faq) => faq.url === slug)
 }

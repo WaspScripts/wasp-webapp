@@ -2,6 +2,7 @@ import type { FAQEntry } from "$lib/types/collection"
 import { getUsername } from "$lib/server/supabase.server"
 import matter from "gray-matter"
 import removeMd from "remove-markdown"
+import { encodeSEO } from "$lib/utils"
 
 export async function getErrors() {
 	const errors: FAQEntry[] = []
@@ -23,10 +24,13 @@ export async function getErrors() {
 		const username = await getUsername(data.author)
 		if (!username) continue
 
+		const url = encodeSEO(data.title + " by " + username)
+
 		const entry = {
 			...data,
 			username,
 			order: parseInt(order),
+			url,
 			content: removeMd(content)
 		} as FAQEntry
 
@@ -41,7 +45,13 @@ export async function getErrors() {
 
 export const errorsPromise = getErrors()
 
-export async function getError(index: number) {
+export async function getError(slug: string) {
 	const errors = await errorsPromise
-	return errors.find((err) => err.order === index)
+
+	if (/^\d+$/.test(slug)) {
+		const n = parseInt(slug, 10)
+		return errors.find((err) => err.order === n)
+	}
+
+	return errors.find((err) => err.url === slug)
 }

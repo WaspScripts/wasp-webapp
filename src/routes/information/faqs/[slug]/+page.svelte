@@ -5,9 +5,10 @@
 	import ChevronsUpDown from "svelte-lucide/ChevronsUpDown.svelte"
 
 	const { data } = $props()
-	const { faqs } = $derived(data)
+	const { faqs, content, meta } = $derived(data)
 
 	let search = $state(decodeURIComponent(page.url.searchParams.get("search") || "").trim())
+	let Content = $derived(content)
 </script>
 
 <a
@@ -30,11 +31,24 @@
 	</form>
 
 	{#each faqs as faq (faq)}
-		<a
-			href="/information/faqs/{faq.url}"
-			class="text-surface-900-100 border-surface-200-800 hover:preset-outlined-primary-500 inline-flex w-full justify-between border px-4 py-2 text-left
-		text-sm font-medium shadow-sm">{faq.title} <ChevronsUpDown class="h-4" /></a
-		>
+		{#if faq.order == meta.order}
+			<a
+				href="/information/faqs"
+				class="text-surface-900-100 border-surface-200-800 hover:preset-outlined-primary-500 inline-flex w-full justify-between border px-4 py-2 text-left
+		text-sm font-medium shadow-sm"
+			>
+				{faq.title} <ChevronsDownUp class="h-4" /></a
+			>
+			<Content />
+		{:else}
+			<a
+				href="/information/faqs/{faq.url}"
+				class="text-surface-900-100 border-surface-200-800 hover:preset-outlined-primary-500 inline-flex w-full justify-between border px-4 py-2 text-left
+		text-sm font-medium shadow-sm"
+			>
+				{faq.title} <ChevronsUpDown class="h-4" /></a
+			>
+		{/if}
 	{/each}
 </div>
 
