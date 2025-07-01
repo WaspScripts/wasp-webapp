@@ -23,17 +23,23 @@ export const GET = async ({ url: { searchParams }, locals: { supabaseServer, get
 
 	const code = searchParams.get("code")
 	if (code) {
-		const { error: err } = await supabaseServer.auth.exchangeCodeForSession(code)
-		if (err) error(401, formatError(err))
-		const profile = await getProfile()
-
-		if (profile) redirect(303, searchParams.get("path") ?? "/")
-
 		const {
-			data: { user }
-		} = await supabaseServer.auth.getUser()
+			data: { user },
+			error: err
+		} = await supabaseServer.auth.exchangeCodeForSession(code)
+		if (err) error(401, formatError(err))
+		if (!user) error(401, "Failed to get user.")
 
-		if (user && user.email && user.app_metadata.provider == "discord") {
+		const { count } = await supabaseServer
+			.schema("profiles")
+			.from("profiles")
+			.select("*", { count: "exact", head: true })
+			.eq("id", user.id)
+			.single()
+
+		if (count) redirect(303, searchParams.get("path") ?? "/")
+
+		if (user.email && user.app_metadata.provider == "discord") {
 			const discord = user.user_metadata["provider_id"]
 			const stripe = await createStripeCustomer(
 				user.id,
