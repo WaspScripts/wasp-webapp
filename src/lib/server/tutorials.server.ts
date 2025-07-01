@@ -35,7 +35,7 @@ export async function getTutorials() {
 		} as Tutorial
 
 		if (tutorial.published) {
-			console.log(tutorial)
+			console.log("Adding tutorial: ", tutorial.title)
 			tutorials.push(tutorial)
 		}
 	}

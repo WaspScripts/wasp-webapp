@@ -263,59 +263,6 @@ export async function getSignedURL(
 	return data.signedUrl
 }
 
-export class WaspFAQ {
-	static #CACHE_MAX_AGE = 5 * 60 * 1000
-	static #persistedStore = persisted("wasp_faqs", {
-		faqs: null as CachedFAQ | null,
-		errors: null as CachedFAQ | null
-	})
-
-	static async #fetchFAQ(supabase: SupabaseClient<Database>, table: "questions" | "errors") {
-		const start = performance.now()
-		const { data, error: err } = await supabase
-			.schema("info")
-			.from(table)
-			.select("title, content")
-			.order("id")
-
-		console.log(`└──❓ FAQs ${table} loaded in ${(performance.now() - start).toFixed(2)} ms!`)
-
-		if (err) {
-			error(
-				500,
-				"Server error, this is probably not an issue on your end!\n" +
-					"SELECT info.faqs failed!\n\n" +
-					formatError(err)
-			)
-		}
-
-		return data
-	}
-
-	static async getFAQ(supabase: SupabaseClient<Database>, table: "questions" | "errors") {
-		const now = Date.now()
-
-		const store = get(this.#persistedStore)
-
-		const cached = table === "questions" ? store.faqs : table === "errors" ? store.errors : null
-
-		if (cached && now - cached.timestamp < this.#CACHE_MAX_AGE) {
-			return cached.data
-		}
-
-		const data = await this.#fetchFAQ(supabase, table)
-
-		if (table === "questions") {
-			store.faqs = { data, timestamp: now }
-		} else if (table === "errors") {
-			store.errors = { data, timestamp: now }
-		}
-
-		this.#persistedStore.set(store)
-		return data
-	}
-}
-
 async function getPrices(supabase: SupabaseClient<Database>, product: string) {
 	console.log("💸 Fetching prices for ", product)
 	const { data, error: err } = await supabase

@@ -24,7 +24,7 @@
 		"Scripts",
 		"Stats",
 		"Subscriptions",
-		"FAQ",
+		"Information",
 		"Tutorials",
 		"Dashboard"
 	] as const

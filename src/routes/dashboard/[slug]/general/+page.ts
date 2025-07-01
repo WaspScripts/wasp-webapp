@@ -1,15 +1,16 @@
-import type { ScripterStats } from "$lib/types/collection"
 import { UUID_V4_REGEX, formatError } from "$lib/utils"
 import { error } from "@sveltejs/kit"
 
 export const load = async ({ parent, params: { slug } }) => {
-	const { user, roles, supabaseClient, data } = await parent()
+	const { user, profile, supabaseClient, data } = await parent()
 	if (!user) error(403, "You need to be logged in.")
 	if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-	if (user.id !== slug && !roles?.administrator)
+	if (user.id !== slug && profile?.role != "administrator")
 		error(403, "You cannot access another scripter dashboard.")
 
 	async function getStats() {
+		/*
+		TODO:
 		const { data, error: err } = await supabaseClient
 			.schema("scripts")
 			.rpc("get_site_stats", { user_id: slug })
@@ -22,9 +23,9 @@ export const load = async ({ parent, params: { slug } }) => {
 					"SELECT get_site_stats postgres function failed!\n\n" +
 					formatError(err)
 			)
-		}
+		} */
 
-		return data
+		return null
 	}
 
 	return {

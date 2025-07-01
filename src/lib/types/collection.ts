@@ -42,8 +42,6 @@ export interface ScripterProfile {
 //stats
 export type StatsTotal = Database["stats"]["Views"]["totals"]["Row"]
 
-export type ScripterStats = Database["scripts"]["Functions"]["get_site_stats"]["Returns"][number]
-
 export type Stats = {
 	username: string
 	experience: number
@@ -54,8 +52,15 @@ export type Stats = {
 
 //info
 export type FAQEntry = {
-	content: string
+	order: number
 	title: string
+	content: string
+	created_at: string
+	updated_at: string
+	author: string
+	username: string
+	coauthors: string[] | null
+	published: boolean
 }
 
 export interface Tutorial {

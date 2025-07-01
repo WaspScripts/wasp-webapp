@@ -1,11 +1,7 @@
 <script lang="ts">
-	import DropDown from "./DropDown.svelte"
 	import Discord from "$lib/components/Discord.svelte"
 	import Head from "$lib/components/Head.svelte"
-
-	const { data } = $props()
-	const questions = $state(data.questions)
-	const errors = $state(data.errors)
+	const { children } = $props()
 </script>
 
 <Head
@@ -18,8 +14,7 @@
 		<h2>Welcome to the Frequently Asked Questions and Common Errors section.</h2>
 	</header>
 
-	<DropDown title="❓ Frequently Asked Questions" entries={questions} />
-	<DropDown title="⚠️ Common Errors" entries={errors} />
+	{@render children()}
 
 	<header class="py-12 text-center">
 		<p class="py-6">
