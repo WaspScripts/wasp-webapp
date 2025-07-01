@@ -3,7 +3,7 @@
 	import { Avatar } from "@skeletonlabs/skeleton-svelte"
 
 	const { data } = $props()
-	const { content, meta, supabaseClient } = $derived(data)
+	const { meta, content, supabaseClient } = $derived(data)
 
 	async function getUsername(id: string) {
 		const { data, error: err } = await supabaseClient

@@ -4,8 +4,8 @@
 	import ChevronsDownUp from "svelte-lucide/ChevronsDownUp.svelte"
 	import ChevronsUpDown from "svelte-lucide/ChevronsUpDown.svelte"
 
-	const { data } = $props()
-	const { faqs } = $derived(data)
+	const { data, children } = $props()
+	const { errors, meta } = $derived(data)
 
 	let search = $state(decodeURIComponent(page.url.searchParams.get("search") || "").trim())
 </script>
@@ -15,14 +15,20 @@
 	class="preset-outlined-surface-500 hover:preset-outlined-primary-500 inline-flex w-full justify-between px-4 py-2 text-sm font-medium"
 >
 	❓ Frequently Asked Questions
+	<ChevronsUpDown class="h-5" />
+</a>
+<a
+	href="/information/errors"
+	class="preset-outlined-surface-500 hover:preset-outlined-primary-500 inline-flex w-full justify-between px-4 py-2 text-sm font-medium"
+>
+	⚠️ Common Errors
 	<ChevronsDownUp class="h-5" />
 </a>
-
 <div>
 	<form onchange={(e) => e.currentTarget.requestSubmit()}>
 		<input
 			type="text"
-			placeholder="🔍Search for frequently asked questions"
+			placeholder="🔍Search for common errors"
 			class="input mx-auto max-w-3xl"
 			bind:value={search}
 			oninput={() => replaceQuery(page.url, { search: search })}
@@ -30,28 +36,23 @@
 	</form>
 
 	<a
-		href="https://github.com/WaspScripts/wasp-info/new/main/faq"
+		href="https://github.com/WaspScripts/wasp-info/new/main/errors"
 		class="btn preset-filled-surface-200-800 w-full"
 	>
-		Add a FAQ on GitHub!
+		Add a common error on GitHub!
 	</a>
 
-	{#each faqs as faq (faq)}
-		<a
-			href="/information/faqs/{faq.url}"
-			class="text-surface-900-100 border-surface-200-800 hover:preset-outlined-primary-500 inline-flex w-full justify-between border px-4 py-2 text-left
+	{#each errors as err (err)}
+		{#if err.order == meta.order}
+			{@render children()}
+		{:else}
+			<a
+				href="/information/errors/{err.url}"
+				class="text-surface-900-100 border-surface-200-800 hover:preset-outlined-primary-500 inline-flex w-full justify-between border px-4 py-2 text-left
 		text-sm font-medium shadow-sm"
-		>
-			{faq.title}
-			<ChevronsUpDown class="h-4" />
-		</a>
+			>
+				{err.title} <ChevronsUpDown class="h-4" /></a
+			>
+		{/if}
 	{/each}
 </div>
-
-<a
-	href="/information/errors"
-	class="preset-outlined-surface-500 hover:preset-outlined-primary-500 inline-flex w-full justify-between px-4 py-2 text-sm font-medium"
->
-	⚠️ Common Errors
-	<ChevronsUpDown class="h-5" />
-</a>

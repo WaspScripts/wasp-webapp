@@ -35,11 +35,21 @@
 		/>
 	</form>
 
+	<a
+		href="https://github.com/WaspScripts/wasp-info/new/main/errors"
+		class="btn preset-filled-surface-200-800 w-full"
+	>
+		Add a common error on GitHub!
+	</a>
+
 	{#each errors as err (err)}
 		<a
 			href="/information/errors/{err.url}"
 			class="text-surface-900-100 border-surface-200-800 hover:preset-outlined-primary-500 inline-flex w-full justify-between border px-4 py-2 text-left
-		text-sm font-medium shadow-sm">{err.title} <ChevronsUpDown class="h-4" /></a
+		text-sm font-medium shadow-sm"
 		>
+			{err.title}
+			<ChevronsUpDown class="h-4" />
+		</a>
 	{/each}
 </div>

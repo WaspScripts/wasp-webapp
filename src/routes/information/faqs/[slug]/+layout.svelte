@@ -4,8 +4,8 @@
 	import ChevronsDownUp from "svelte-lucide/ChevronsDownUp.svelte"
 	import ChevronsUpDown from "svelte-lucide/ChevronsUpDown.svelte"
 
-	const { data } = $props()
-	const { faqs } = $derived(data)
+	const { data, children } = $props()
+	const { faqs, meta } = $derived(data)
 
 	let search = $state(decodeURIComponent(page.url.searchParams.get("search") || "").trim())
 </script>
@@ -37,14 +37,17 @@
 	</a>
 
 	{#each faqs as faq (faq)}
-		<a
-			href="/information/faqs/{faq.url}"
-			class="text-surface-900-100 border-surface-200-800 hover:preset-outlined-primary-500 inline-flex w-full justify-between border px-4 py-2 text-left
+		{#if faq.order == meta.order}
+			{@render children()}
+		{:else}
+			<a
+				href="/information/faqs/{faq.url}"
+				class="text-surface-900-100 border-surface-200-800 hover:preset-outlined-primary-500 inline-flex w-full justify-between border px-4 py-2 text-left
 		text-sm font-medium shadow-sm"
-		>
-			{faq.title}
-			<ChevronsUpDown class="h-4" />
-		</a>
+			>
+				{faq.title} <ChevronsUpDown class="h-4" /></a
+			>
+		{/if}
 	{/each}
 </div>
 
