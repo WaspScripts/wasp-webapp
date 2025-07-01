@@ -106,7 +106,7 @@
 		</div>
 		<div class="my-8 grid place-items-center">
 			<a
-				href="https://github.com/Torwent/wasp-info/new/main/tutorials"
+				href="https://github.com/WaspScripts/wasp-info/new/main/tutorials"
 				class="btn ring-secondary-500 preset-filled-secondary-200-800 ring-2"
 			>
 				Add a tutorial through GitHub!

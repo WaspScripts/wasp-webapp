@@ -1,11 +1,6 @@
 import { error, redirect } from "@sveltejs/kit"
 import { formatError } from "$lib/utils"
-import {
-	getPrivateProfile,
-	insertUserProfile,
-	updateCustomerID
-} from "$lib/server/supabase.server.js"
-import { createStripeCustomer } from "$lib/server/stripe.server.js"
+import { createStripeCustomer } from "$lib/server/stripe.server"
 
 export const GET = async ({ url: { searchParams }, locals: { supabaseServer, getProfile } }) => {
 	console.log("💻 Logging in")
@@ -47,7 +42,17 @@ export const GET = async ({ url: { searchParams }, locals: { supabaseServer, get
 				user.user_metadata["custom_claims"]["global_name"]
 			)
 			if (!stripe) error(403, "Failed to create stripe user for " + user.id)
-			await insertUserProfile(user.id, stripe, discord)
+
+			const { error: err } = await supabaseServer.schema("profiles").from("profiles").insert({
+				id: user.id,
+				stripe,
+				discord,
+				username: "",
+				avatar: "",
+				role: null
+			})
+
+			if (err) error(500, "Failed to INSERT profile: " + formatError(err))
 		}
 	}
 

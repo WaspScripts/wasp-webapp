@@ -25,6 +25,7 @@ export const load = async ({ url, depends, parent }) => {
 
 	async function getStats(supabase: SupabaseClient) {
 		const query = supabase
+			.schema("stats")
 			.from("stats")
 			.select("username, experience, gold, levels, runtime", { count: "exact" })
 
