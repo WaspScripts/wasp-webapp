@@ -26,8 +26,7 @@
 
 <a
 	href="/information/errors/"
-	class="text-surface-900-100 border-surface-200-800 hover:preset-outlined-primary-500 inline-flex w-full justify-between border px-4 py-2 text-left
-	text-sm font-medium shadow-sm"
+	class="text-surface-900-100 border-surface-200-800 hover:preset-outlined-primary-500 mx-4 inline-flex justify-between border px-4 py-2 text-left text-sm font-medium shadow-sm"
 >
 	{meta.title}
 	<ChevronsDownUp class="h-4" />

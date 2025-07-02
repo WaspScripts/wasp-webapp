@@ -1,8 +1,9 @@
-<script>
+<script lang="ts">
 	import { page } from "$app/state"
 	import { replaceQuery } from "$lib/client/utils"
 	import ChevronsDownUp from "svelte-lucide/ChevronsDownUp.svelte"
 	import ChevronsUpDown from "svelte-lucide/ChevronsUpDown.svelte"
+	import GitHubButton from "../../GitHubButton.svelte"
 
 	const { data, children } = $props()
 	const { faqs, meta } = $derived(data)
@@ -18,8 +19,8 @@
 	<ChevronsDownUp class="h-5" />
 </a>
 
-<div>
-	<form onchange={(e) => e.currentTarget.requestSubmit()}>
+<div class="preset-filled-surface-100-900 flex flex-col py-4">
+	<form onchange={(e) => e.currentTarget.requestSubmit()} class="mx-4">
 		<input
 			type="text"
 			placeholder="🔍Search for frequently asked questions"
@@ -29,12 +30,7 @@
 		/>
 	</form>
 
-	<a
-		href="https://github.com/WaspScripts/wasp-info/new/main/faq"
-		class="btn preset-filled-surface-200-800 w-full"
-	>
-		Add a FAQ on GitHub!
-	</a>
+	<GitHubButton link="new/main/faq" text="Add a FAQ on GitHub!"></GitHubButton>
 
 	{#each faqs as faq (faq)}
 		{#if faq.order == meta.order}
@@ -42,8 +38,7 @@
 		{:else}
 			<a
 				href="/information/faqs/{faq.url}"
-				class="text-surface-900-100 border-surface-200-800 hover:preset-outlined-primary-500 inline-flex w-full justify-between border px-4 py-2 text-left
-		text-sm font-medium shadow-sm"
+				class="text-surface-900-100 border-surface-200-800 hover:preset-outlined-primary-500 mx-4 inline-flex justify-between border px-4 py-2 text-left text-sm font-medium shadow-sm"
 			>
 				{faq.title} <ChevronsUpDown class="h-4" /></a
 			>

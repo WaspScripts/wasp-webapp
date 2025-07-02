@@ -157,8 +157,8 @@ export class WaspScripters {
 
 	static async getRandomScripters(supabase: SupabaseClient) {
 		const now = Date.now()
-
 		const store = get(this.#persistedStore)
+
 		if (store.scripters && now - store.scripters.timestamp < this.#CACHE_MAX_AGE) {
 			return store.scripters.data
 		}
@@ -178,7 +178,7 @@ export async function fetchScriptByID(supabase: SupabaseClient<Database>, id: st
 		.from("scripts")
 		.select(
 			`id, title, description, content, url, published,
-			protected!protected_id_fkey (author, revision, revision_date, assets),
+			protected!protected_id_fkey (author, revision, assets, updated_at),
 			metadata!metadata_id_fkey (status, type, categories),
 			stats_limits!stats_limits_id_fkey (xp_min, xp_max, gp_min, gp_max)`
 		)
@@ -207,7 +207,7 @@ export async function scriptExists(
 		.from("scripts")
 		.select(
 			`id, url, title, description, content, published,
-			protected!protected_id_fkey (author, revision, revision_date, assets),
+			protected!protected_id_fkey (author, revision, assets, updated_at),
 			stats_limits!stats_limits_id_fkey (min_xp, max_xp, min_gp, max_gp)
 			`
 		)

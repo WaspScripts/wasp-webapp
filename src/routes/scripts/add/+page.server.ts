@@ -15,11 +15,11 @@ Script ID: {$id}
 
 Latest revision: {$revision}
 
-Updated at: {$last_revision_full_date}
+Updated at: {$updated_at}
 
 Date updated at: {$revision_date}
 
-Time of update: {$last_revision_time}
+Time of update: {$revision_time}
 
 {$description}
 

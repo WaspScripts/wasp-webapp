@@ -106,8 +106,7 @@ export interface ScriptProtected {
 	username: Database["scripts"]["Tables"]["protected"]["Row"]["username"]
 	avatar: Database["scripts"]["Tables"]["protected"]["Row"]["username"]
 	revision: Database["scripts"]["Tables"]["protected"]["Row"]["revision"]
-	revision_date: Database["scripts"]["Tables"]["protected"]["Row"]["revision_date"]
-	assets: Database["scripts"]["Tables"]["protected"]["Row"]["assets"]
+	updated_at: Database["scripts"]["Tables"]["protected"]["Row"]["updated_at"]
 }
 
 export type TScriptStatus = Database["scripts"]["Tables"]["metadata"]["Row"]["status"]

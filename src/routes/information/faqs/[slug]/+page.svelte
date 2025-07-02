@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Avatar } from "@skeletonlabs/skeleton-svelte"
 	import { ChevronsDownUp } from "svelte-lucide"
+	import GitHubButton from "../../GitHubButton.svelte"
 
 	const { data } = $props()
 	const { content, meta, supabaseClient } = $derived(data)
@@ -25,9 +26,8 @@
 </script>
 
 <a
-	href="/information/faqs/"
-	class="text-surface-900-100 border-surface-200-800 hover:preset-outlined-primary-500 inline-flex w-full justify-between border px-4 py-2 text-left
-	text-sm font-medium shadow-sm"
+	href="/information/faqs"
+	class="text-surface-900-100 border-surface-200-800 hover:preset-outlined-primary-500 mx-4 inline-flex justify-between border px-4 py-2 text-left text-sm font-medium shadow-sm"
 >
 	{meta.title}
 	<ChevronsDownUp class="h-4" />
@@ -74,13 +74,7 @@
 				</h5>
 			{/if}
 		</div>
-		<div>
-			<a
-				href="https://github.com/WaspScripts/wasp-info/edit/main/faq/{meta.order}.md"
-				class="btn preset-filled-surface-200-800"
-			>
-				Edit on GitHub!
-			</a>
-		</div>
+
+		<GitHubButton link="edit/main/faq/{meta.order}.md" text="Edit on GitHub!"></GitHubButton>
 	</footer>
 </div>

@@ -27,11 +27,11 @@ export const POST = async ({ request }) => {
 			if (subscriptionCreated.status !== "active") break
 
 			const { error: errInsert } = await WaspSubscription.insert({
-				subscription: subscriptionCreated.id,
-				id: subscriptionCreated.metadata.user_id,
+				id: subscriptionCreated.id,
+				user: subscriptionCreated.metadata.wsid,
 				product: subscriptionCreated.items.data[0].price.product.toString(),
 				price: subscriptionCreated.items.data[0].price.id,
-				date_end: new Date(subscriptionCreated.current_period_end * 1000).toISOString(),
+				date_end: new Date(subscriptionCreated.cancel_at! * 1000).toISOString(),
 				date_start: new Date(subscriptionCreated.start_date * 1000).toISOString(),
 				cancel: subscriptionCreated.cancel_at_period_end,
 				disabled: false
@@ -47,18 +47,18 @@ export const POST = async ({ request }) => {
 			if (subscriptionUpdated.status !== "active" && subscriptionUpdated.status !== "canceled")
 				break
 
-			if (!subscriptionUpdated.metadata.user_id)
+			if (!subscriptionUpdated.metadata.wsid)
 				return json({
 					success: "true",
 					message: "Upgrade.Chat user."
 				})
 
 			const { error: errUpsert } = await WaspSubscription.upsert({
-				subscription: subscriptionUpdated.id,
-				id: subscriptionUpdated.metadata.user_id,
+				id: subscriptionUpdated.id,
+				user: subscriptionUpdated.metadata.wsid,
 				product: subscriptionUpdated.items.data[0].price.product.toString(),
 				price: subscriptionUpdated.items.data[0].price.id,
-				date_end: new Date(subscriptionUpdated.current_period_end * 1000).toISOString(),
+				date_end: new Date(subscriptionUpdated.cancel_at! * 1000).toISOString(),
 				date_start: new Date(subscriptionUpdated.start_date * 1000).toISOString(),
 				cancel: subscriptionUpdated.cancel_at_period_end,
 				disabled: false

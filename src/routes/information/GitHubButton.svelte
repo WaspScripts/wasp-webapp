@@ -1,8 +1,16 @@
+<script lang="ts">
+	let {
+		link,
+		text
+	}: {
+		link: string
+		text: string
+	} = $props()
+</script>
+
 <a
-	href="https://github.com/torwent/wasp-webapp"
-	class="btn hover:preset-tonal my-auto flex"
-	aria-label="GitHub Link"
-	target="_blank"
+	href={"https://github.com/WaspScripts/wasp-info/" + link}
+	class="btn preset-filled-surface-200-800 preset-tonal mx-auto my-4 p-2"
 >
 	<svg width="20" height="20" data-icon="github">
 		<symbol id="ai:local:github" viewBox="0 0 24 24">
@@ -14,4 +22,5 @@
 		</symbol>
 		<use href="#ai:local:github"></use>
 	</svg>
+	{text}
 </a>

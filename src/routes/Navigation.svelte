@@ -12,6 +12,7 @@
 	import RoleBadges from "$lib/components/RoleBadges.svelte"
 	import Discord from "./Discord.svelte"
 	import GitHub from "./GitHub.svelte"
+	import YouTube from "./YouTube.svelte"
 
 	let showMenu = $state(false)
 	let showProfile = $state(false)
@@ -142,6 +143,7 @@
 				<ThemeSwitcher />
 				<GitHub />
 				<Discord />
+				<YouTube />
 			</div>
 		</div>
 	</div>
@@ -181,6 +183,7 @@
 					<Lightswitch />
 					<GitHub />
 					<Discord />
+					<YouTube />
 				</div>
 			</div>
 		</li>
