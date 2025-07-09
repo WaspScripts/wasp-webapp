@@ -164,7 +164,7 @@ export const scripterSchema = z.object({
 		.string()
 		.startsWith("https://github.com/", "This should be a github user profile.")
 		.nullable(),
-	paypal_id: z
+	paypal: z
 		.string()
 		.length(
 			13,

@@ -76,7 +76,7 @@ export const load = async ({
 		} = await supabaseServer
 			.schema("profiles")
 			.from("subscriptions")
-			.select("user, product, price, cancel", { count: "estimated" })
+			.select("user_id, product, price, cancel", { count: "estimated" })
 			.in("product", products)
 
 		if (err) {
@@ -121,9 +121,7 @@ export const load = async ({
 		const { data, error: err } = await supabaseServer
 			.schema("stripe")
 			.from("products")
-			.select(
-				`id, user_id, name, bundle, bundles!products_bundle_fkey (username), script, scripts!products_script_fkey (protected!protected_id_fkey (username)), active`
-			)
+			.select(`id, user_id, name, bundle, script, username, active`)
 			.order("id", { ascending: true })
 			.eq("user_id", slug)
 			.overrideTypes<ProductEx[]>()
@@ -144,7 +142,7 @@ export const load = async ({
 					id: product.id,
 					user_id: product.user_id,
 					name: product.name,
-					username: product.bundles?.username ?? product.scripts?.protected.username ?? "",
+					username: product.username,
 					bundle: product.bundle,
 					script: product.script,
 					active: product.active

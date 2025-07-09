@@ -11,7 +11,7 @@ import { setError, superValidate } from "sveltekit-superforms/server"
 export const load = async ({
 	url: { searchParams },
 	params: { slug },
-	locals: { supabaseServer, user, getRoles }
+	locals: { supabaseServer, user, getProfile }
 }) => {
 	const pageStr = searchParams.get("page") || "-1"
 	const page = Number(pageStr) < 0 || Number.isNaN(Number(pageStr)) ? 1 : Number(pageStr)
@@ -24,15 +24,18 @@ export const load = async ({
 	const start = (page - 1) * amount
 	const finish = start + amount - 1
 
-	const promises = await Promise.all([getScripter(supabaseServer, slug), getRoles()])
+	const promises = await Promise.all([getScripter(supabaseServer, slug), getProfile()])
 
 	const scripter = promises[0]
-	const roles = promises[1]
+	const profile = promises[1]
 
 	let scripts: Script[]
 	if (search !== "") scripts = await searchScriptsIndex(search)
 	else {
-		if (scripter.id === user?.id || roles?.moderator || roles?.administrator)
+		if (
+			scripter.id === user?.id ||
+			(profile && profile.role && ["moderator", "administrator"].includes(profile.role))
+		)
 			scripts = await getScripts()
 		else scripts = await getPublishedScripts()
 	}
@@ -53,19 +56,10 @@ export const load = async ({
 }
 
 export const actions = {
-	default: async ({
-		request,
-		locals: { supabaseServer, user, getProfile, getRoles },
-		url: { pathname }
-	}) => {
-		const promises = await Promise.all([
-			getProfile(),
-			getRoles(),
-			superValidate(request, zod(scripterSchema))
-		])
+	default: async ({ request, locals: { supabaseServer, user, getProfile }, url: { pathname } }) => {
+		const promises = await Promise.all([getProfile(), superValidate(request, zod(scripterSchema))])
 		const profile = promises[0]
-		const roles = promises[1]
-		const form = promises[2]
+		const form = promises[1]
 
 		if (!form.valid) return setError(form, "", "Form is not valid.")
 		if (!user || !profile) {
@@ -74,7 +68,7 @@ export const actions = {
 			return setError(form, "", msg)
 		}
 
-		if (!canEdit(profile.id, roles, form.data.id)) {
+		if (!canEdit(profile.id, profile.role, form.data.id)) {
 			const msg = "You can't edit another scripter profile."
 			console.error(msg)
 			return setError(form, "", msg)
@@ -87,7 +81,7 @@ export const actions = {
 				content: form.data.content,
 				description: form.data.description,
 				github: form.data.github,
-				paypal_id: form.data.paypal_id,
+				paypal: form.data.paypal,
 				realname: form.data.realname
 			})
 			.eq("id", form.data.id)

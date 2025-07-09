@@ -8,14 +8,20 @@
 	let { script, customCover, link }: { script: Script; customCover?: string; link?: string } =
 		$props()
 
-	let imgLink = $state(customCover ?? script?.protected.assets + "cover.jpg")
+	let imgLink = $state(
+		customCover ??
+			"https://db.waspscripts.com/storage/v1/object/public/imgs/scripts/" + script.id + "/cover.jpg"
+	)
 
 	$effect(() => {
-		imgLink = customCover ?? script?.protected.assets + "cover.jpg"
+		imgLink =
+			customCover ??
+			"https://db.waspscripts.com/storage/v1/object/public/imgs/scripts/" + script.id + "/cover.jpg"
 	})
 
 	$effect(() => {
-		imgLink = script?.protected.assets + "cover.jpg"
+		imgLink =
+			"https://db.waspscripts.com/storage/v1/object/public/imgs/scripts/" + script.id + "/cover.jpg"
 	})
 
 	onMount(async () => {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import TableHeader from "$lib/components/TableHeader.svelte"
 	const { data } = $props()
-	const { supabaseClient, roles, stats, subscriptions } = $derived(data)
+	const { supabaseClient, profile, stats, subscriptions } = $derived(data)
 
 	async function fetchcripters() {
 		const start = performance.now()
@@ -68,7 +68,7 @@
 		</table>
 	</div>
 
-	{#if roles?.administrator}
+	{#if profile?.role == "administrator"}
 		<div class="my-16 text-center">
 			<h1>Admin Powers</h1>
 

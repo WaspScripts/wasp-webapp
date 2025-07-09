@@ -9,13 +9,11 @@
 	import { addScriptClientSchema } from "$lib/client/schemas"
 	import { FileUpload, Switch } from "@skeletonlabs/skeleton-svelte"
 	import AdvancedButton from "../AdvancedButton.svelte"
-	import ZipDownload from "../ZipDownload.svelte"
 	import NewScriptCard from "$lib/components/NewScriptCard.svelte"
 	import type { ScriptLimits, ScriptMetaData, ScriptPublic } from "$lib/types/collection"
 
 	const { data } = $props()
 	let profile = $derived(data.profile!)
-	let roles = $derived(data.roles!)
 
 	const { form, errors, enhance, validate } = superForm(data.form!, {
 		dataType: "form",
@@ -103,7 +101,6 @@
 					<div class="text-center">
 						<div class="grid justify-center justify-items-center gap-8 py-12">
 							<AdvancedButton title={$form.title} rev={1} />
-							<ZipDownload noDownload={true} />
 						</div>
 
 						<h4 class="pt-4">
@@ -198,8 +195,8 @@
 							name="status"
 							checked={$form.status}
 							onCheckedChange={(e) => ($form.status = e.checked)}
-							disabled={!roles.administrator}
-							classes={roles.administrator ? "" : "disabled"}
+							disabled={profile.role != "administrator"}
+							classes={profile.role == "administrator" ? "" : "disabled"}
 						/>
 						<span class="label-text mx-2 text-center">
 							{#if $form.status}

@@ -11,7 +11,7 @@
 	import Head from "$lib/components/Head.svelte"
 
 	const { data } = $props()
-	const { scripts, featured, roles } = $derived(data)
+	const { scripts, featured, profile } = $derived(data)
 
 	let { amount } = $state(data)
 	const { count } = $derived(data)
@@ -86,7 +86,7 @@
 				class="relative w-full shrink-0 snap-center rounded-lg text-center"
 			>
 				<CarouselEntry
-					assets={feature.protected.assets}
+					id={feature.id}
 					title={feature.title}
 					username={feature.protected.username}
 				/>
@@ -171,7 +171,7 @@
 	</aside>
 
 	<main class="h-full w-full">
-		{#if roles?.scripter}
+		{#if profile && profile.role && ["scripter", "moderator", "administrator"].includes(profile?.role)}
 			<a href="/scripts/add" class="mx-auto my-4 block w-fit">
 				<button class="btn preset-filled-secondary-500">Add Script</button>
 			</a>

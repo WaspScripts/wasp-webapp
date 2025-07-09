@@ -12,14 +12,14 @@ export const load = async ({ parent }) => {
 }
 
 export const actions = {
-	default: async ({ request, locals: { supabaseServer, user, getRoles }, params }) => {
+	default: async ({ request, locals: { supabaseServer, user, getProfile }, params }) => {
 		if (!user) return fail(403, { message: "You need to login to add a new legal document." })
 
-		const promises = await Promise.all([getRoles(), superValidate(request, zod(legalSchema))])
-		const roles = promises[0]
+		const promises = await Promise.all([getProfile(), superValidate(request, zod(legalSchema))])
+		const profile = promises[0]
 		const form = promises[1]
 
-		if (!roles?.administrator)
+		if (profile?.role != "administrator")
 			return setError(form, "", "Only administrators can add new versions of a the legal documents")
 
 		if (!form.valid) return setError(form, "", "Form is not valid!")

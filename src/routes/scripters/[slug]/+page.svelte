@@ -12,7 +12,7 @@
 	import { scripterSchema } from "$lib/client/schemas"
 
 	const { data } = $props()
-	const { profile, roles, count, scripts, scripter } = $derived(data)
+	const { profile, count, scripts, scripter } = $derived(data)
 
 	let { amount } = $state(data)
 
@@ -57,7 +57,7 @@
 				</h3>
 			</header>
 		</div>
-		{#if $form.github || ($form.paypal_id && $form.paypal_id != "")}
+		{#if $form.github || ($form.paypal && $form.paypal != "")}
 			<div class="my-auto flex">
 				{#if $form.github}
 					<a
@@ -67,9 +67,9 @@
 						<Github />
 					</a>
 				{/if}
-				{#if $form.paypal_id && $form.paypal_id != ""}
+				{#if $form.paypal && $form.paypal != ""}
 					<div class="mx-auto w-full">
-						<PayPal id={$form.paypal_id} username={scripter.profiles.username} />
+						<PayPal id={$form.paypal} username={scripter.profiles.username} />
 					</div>
 				{/if}
 			</div>
@@ -79,9 +79,10 @@
 	<Tabs value={tab} onValueChange={(e) => (tab = e.value)} listJustify="justify-center">
 		{#snippet list()}
 			<Tabs.Control value="info">Information</Tabs.Control>
-			{#if $form.id === profile?.id || roles?.moderator || roles?.administrator}
+			{#if profile && ($form.id === profile.id || profile.role == "moderator" || profile.role == "administrator")}
 				<Tabs.Control value="edit">Edit</Tabs.Control>
 			{/if}
+
 			<Tabs.Control value="scripts">Scripts</Tabs.Control>
 		{/snippet}
 		{#snippet content()}
@@ -101,7 +102,7 @@
 					<a href="./" class="btn preset-filled-secondary-500">Back</a>
 				</div>
 			</Tabs.Panel>
-			{#if $form.id === profile?.id || roles?.moderator || roles?.administrator}
+			{#if profile && ($form.id === profile.id || profile.role == "moderator" || profile.role == "administrator")}
 				<Tabs.Panel value="edit">
 					<form method="POST" class="mx-auto my-24 w-2/4 min-w-xs text-center" use:enhance>
 						<h1 class="my-2">All fields are optional</h1>
@@ -128,9 +129,9 @@
 						</label>
 						<label class="label my-4">
 							<span class="label-text">Paypal ID:</span>
-							<input class="input" bind:value={$form.paypal_id} />
-							{#if $errors.paypal_id}
-								{#each $errors.paypal_id as err (err)}
+							<input class="input" bind:value={$form.paypal} />
+							{#if $errors.paypal}
+								{#each $errors.paypal as err (err)}
 									<small class="text-error-500">{err}</small>
 								{/each}
 							{/if}

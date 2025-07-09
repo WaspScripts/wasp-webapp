@@ -10,12 +10,10 @@
 	import { updateScriptClientSchema } from "$lib/client/schemas"
 	import { FileUpload, Switch } from "@skeletonlabs/skeleton-svelte"
 	import AdvancedButton from "../../AdvancedButton.svelte"
-	import ZipDownload from "../../ZipDownload.svelte"
 
 	const { data } = $props()
 	let script = $derived(data.script)
 	let profile = $derived(data.profile!)
-	let roles = $derived(data.roles!)
 
 	const { form, errors, enhance, validate } = superForm(data.form!, {
 		dataType: "form",
@@ -48,7 +46,10 @@
 			>
 				<img
 					class="rounded-md {!script ? 'animate-pulse' : ''}"
-					src={bannerURL ?? script.protected.assets + "banner.jpg"}
+					src={bannerURL ??
+						"https://db.waspscripts.com/storage/v1/object/public/imgs/scripts/" +
+							script.id +
+							"/banner.jpg"}
 					alt="Script banner"
 					loading="lazy"
 				/>
@@ -59,7 +60,6 @@
 					<div class="text-center">
 						<div class="grid justify-center justify-items-center gap-8 py-12">
 							<AdvancedButton title={$form.title} rev={1} />
-							<ZipDownload noDownload={true} />
 						</div>
 
 						<h4 class="pt-4">
@@ -154,8 +154,8 @@
 							name="status"
 							checked={$form.status}
 							onCheckedChange={(e) => ($form.status = e.checked)}
-							disabled={!roles.administrator}
-							classes={roles.administrator ? "" : "disabled"}
+							disabled={profile.role != "administrator"}
+							classes={profile.role == "administrator" ? "" : "disabled"}
 						/>
 						<span class="label-text mx-2 text-center">
 							{#if $form.status}

@@ -9,7 +9,7 @@
 	import Logo from "./Logo.svelte"
 	import Lightswitch from "./Lightswitch.svelte"
 	import ThemeSwitcher from "./ThemeSwitcher.svelte"
-	import RoleBadges from "$lib/components/RoleBadges.svelte"
+	import RoleBadge from "$lib/components/RoleBadges.svelte"
 	import Discord from "./Discord.svelte"
 	import GitHub from "./GitHub.svelte"
 	import YouTube from "./YouTube.svelte"
@@ -17,18 +17,22 @@
 	let showMenu = $state(false)
 	let showProfile = $state(false)
 
-	const { profile, roles } = $derived(page.data)
+	const { profile } = $derived(page.data)
 
-	const routes = [
-		"Home",
-		"Setup",
-		"Scripts",
-		"Stats",
-		"Subscriptions",
-		"Information",
-		"Tutorials",
-		"Dashboard"
-	] as const
+	const routes = $derived(
+		profile?.role == "scripter" || profile?.role == "moderator" || profile?.role == "administrator"
+			? [
+					"Home",
+					"Setup",
+					"Scripts",
+					"Stats",
+					"Subscriptions",
+					"Information",
+					"Tutorials",
+					"Dashboard"
+				]
+			: ["Home", "Setup", "Scripts", "Stats", "Subscriptions", "Information", "Tutorials"]
+	)
 
 	function setCurrentPage(currentPath: string) {
 		const path = currentPath.split("/")[1]
@@ -97,15 +101,7 @@
 							class:text-primary-600-400={route === currentPage}
 							aria-label="Navigate to {route.toLowerCase()} page"
 						>
-							{#if idx === 0}
-								{route}
-							{:else if route === "Dashboard"}
-								{#if roles?.scripter}
-									{route}
-								{/if}
-							{:else}
-								{route}
-							{/if}
+							{route}
 						</a>
 					</li>
 				{/if}
@@ -163,15 +159,7 @@
 					aria-label="Navigate to {route.toLowerCase()} page"
 					onclick={() => (showMenu = !showMenu)}
 				>
-					{#if idx === 0}
-						{route}
-					{:else if route === "Dashboard"}
-						{#if roles?.scripter}
-							{route}
-						{/if}
-					{:else}
-						{route}
-					{/if}
+					{route}
 				</a>
 			</li>
 		{/each}
@@ -214,9 +202,9 @@
 			</header>
 
 			<section class="flex flex-col p-4">
-				<h3 class="mx-auto my-4 text-center">Roles</h3>
+				<h3 class="mx-auto my-4 text-center">Role</h3>
 				<div class="flex pt-2 pb-8">
-					<RoleBadges />
+					<RoleBadge />
 				</div>
 			</section>
 			<footer class="card-footer flex flex-col">

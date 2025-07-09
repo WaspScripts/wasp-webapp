@@ -39,7 +39,7 @@ export const load = async ({ locals: { supabaseServer }, params: { slug }, depen
 export const actions = {
 	createStripe: async ({
 		request,
-		locals: { supabaseServer, user, getRoles },
+		locals: { supabaseServer, user, getProfile },
 		url: { origin },
 		params: { slug }
 	}) => {
@@ -48,11 +48,14 @@ export const actions = {
 
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
 
-		const promises = await Promise.all([getRoles(), superValidate(request, zod(countryCodeSchema))])
-		const roles = promises[0]
+		const promises = await Promise.all([
+			getProfile(),
+			superValidate(request, zod(countryCodeSchema))
+		])
+		const profile = promises[0]
 		const form = promises[1]
 
-		if (user.id !== slug && !roles?.administrator)
+		if (user.id !== slug && profile?.role != "administrator")
 			return setError(form, "", "You cannot access another scripter dashboard.")
 
 		const scripter = await getScripter(supabaseServer, slug)
@@ -71,7 +74,7 @@ export const actions = {
 	},
 
 	updateStripe: async ({
-		locals: { supabaseServer, user, getRoles },
+		locals: { supabaseServer, user, getProfile },
 		url: { origin },
 		params: { slug }
 	}) => {
@@ -80,8 +83,8 @@ export const actions = {
 
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
 
-		const roles = await getRoles()
-		if (user.id !== slug && !roles?.administrator)
+		const profile = await getProfile()
+		if (user.id !== slug && profile?.role != "administrator")
 			error(403, "You cannot access another scripter dashboard.")
 
 		const scripter = await getScripter(supabaseServer, slug)
@@ -94,7 +97,7 @@ export const actions = {
 
 	displayName: async ({
 		request,
-		locals: { supabaseServer, user, getRoles },
+		locals: { supabaseServer, user, getProfile },
 		url: { origin },
 		params: { slug }
 	}) => {
@@ -103,11 +106,11 @@ export const actions = {
 
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
 
-		const promises = await Promise.all([getRoles(), superValidate(request, zod(dbaSchema))])
-		const roles = promises[0]
+		const promises = await Promise.all([getProfile(), superValidate(request, zod(dbaSchema))])
+		const profile = promises[0]
 		const form = promises[1]
 
-		if (user.id !== slug && !roles?.administrator)
+		if (user.id !== slug && profile?.role != "administrator")
 			error(403, "You cannot access another scripter dashboard.")
 
 		const scripter = await getScripter(supabaseServer, slug)

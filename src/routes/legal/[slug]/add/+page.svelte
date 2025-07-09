@@ -31,7 +31,7 @@
 		</div>
 	{/if}
 
-	{#if data.profile && data.roles?.administrator}
+	{#if data.profile?.role == "administrator"}
 		<div class="flex">
 			<button class="btn preset-filled mx-auto my-auto" onclick={() => (show = !show)}>
 				{#if show}Hide{:else}Show{/if} Post Preview

@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { goto } from "$app/navigation"
 
-	const { assets = "", title = "Loading...", username = null } = $props()
+	const { id = "", title = "Loading...", username = null } = $props()
 </script>
 
 <img
 	class="w-full rounded-lg object-fill brightness-90 md:h-44 lg:h-64"
-	src="{assets}/banner.jpg"
+	src="{'https://db.waspscripts.com/storage/v1/object/public/imgs/scripts/' + id}/banner.jpg"
 	alt={title}
 	loading="lazy"
 />

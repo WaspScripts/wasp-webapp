@@ -109,7 +109,7 @@ export async function getScripter(supabase: SupabaseClient, slug: string) {
 		.schema("profiles")
 		.from("scripters")
 		.select(
-			`id, stripe, realname, description, content, url, github, paypal_id, content, profiles (username, avatar)`
+			`id, stripe, realname, description, content, url, github, paypal, content, profiles (username, avatar)`
 		)
 		.eq(UUID_V4_REGEX.test(slug) ? "id" : "url", slug)
 		.single<Scripter>()
@@ -178,7 +178,7 @@ export async function fetchScriptByID(supabase: SupabaseClient<Database>, id: st
 		.from("scripts")
 		.select(
 			`id, title, description, content, url, published,
-			protected!protected_id_fkey (author, revision, assets, updated_at),
+			protected!protected_id_fkey (author, revision, updated_at),
 			metadata!metadata_id_fkey (status, type, categories),
 			stats_limits!stats_limits_id_fkey (xp_min, xp_max, gp_min, gp_max)`
 		)
@@ -207,7 +207,7 @@ export async function scriptExists(
 		.from("scripts")
 		.select(
 			`id, url, title, description, content, published,
-			protected!protected_id_fkey (author, revision, assets, updated_at),
+			protected!protected_id_fkey (author, revision, updated_at),
 			stats_limits!stats_limits_id_fkey (min_xp, max_xp, min_gp, max_gp)
 			`
 		)

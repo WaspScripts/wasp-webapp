@@ -40,21 +40,21 @@ export const actions = {
 	default: async ({
 		request,
 		params: { slug },
-		locals: { supabaseServer, user, session, getRoles }
+		locals: { supabaseServer, user, session, getProfile }
 	}) => {
 		if (!user || !session) {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		}
 
 		const promises = await Promise.all([
-			getRoles(),
+			getProfile(),
 			superValidate(request, zod(updateScriptServerSchema), { allowFiles: true })
 		])
 
-		const roles = promises[0]
+		const profile = promises[0]
 		const form = promises[1]
 
-		if (!roles) {
+		if (!profile) {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		}
 
@@ -70,15 +70,15 @@ export const actions = {
 			return setError(form, "", "Script not found!")
 		}
 
-		if (script.metadata.status === "official" && !roles.administrator) {
+		if (script.metadata.status === "official" && profile.role != "administrator") {
 			return setError(form, "", "You cannot edit an official script!")
 		}
 
-		if (form.data.status === true && !roles.administrator) {
+		if (form.data.status === true && profile.role != "administrator") {
 			return setError(form, "", "You cannot a script official!")
 		}
 
-		if (!canEdit(user.id, roles, script.protected.author)) {
+		if (!canEdit(user.id, profile.role, script.protected.author)) {
 			return setError(form, "", "You can't edit a script that doesn't belong to you!")
 		}
 

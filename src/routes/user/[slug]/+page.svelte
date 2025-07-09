@@ -1,5 +1,5 @@
 <script lang="ts">
-	import RoleBadges from "$lib/components/RoleBadges.svelte"
+	import RoleBadge from "$lib/components/RoleBadges.svelte"
 	import { profileSchema } from "$lib/client/schemas"
 	import { zodClient } from "sveltekit-superforms/adapters"
 	import Head from "$lib/components/Head.svelte"
@@ -33,7 +33,7 @@
 		<h2 class="mx-auto my-8 leading-normal font-semibold">ID: {profile.id}</h2>
 	</header>
 
-	<RoleBadges />
+	<RoleBadge />
 
 	<h5 class="py-8">
 		If you want you can change your email/password already anyway. This can be used to login without

@@ -4,6 +4,10 @@ import type { Database } from "./supabase"
 
 export type ProfileBase = Database["profiles"]["Tables"]["profiles"]["Row"]
 export type ProfileRole = ProfileBase["role"] | undefined
+type ProfilePrivate = Database["profiles"]["Tables"]["private"]["Row"]
+export interface FullProfile extends ProfileBase {
+	private: Omit<ProfilePrivate, "id">
+}
 
 export interface Profile extends ProfileBase {
 	subscriptions: Database["profiles"]["Tables"]["subscriptions"]["Row"][]
@@ -31,7 +35,7 @@ export interface Scripter extends ScripterBase {
 	id: string
 	stripe: string | undefined
 	github: string | undefined
-	paypal_id: string | undefined
+	paypal: string | undefined
 	content: string | undefined
 }
 
@@ -86,7 +90,6 @@ export interface ScriptBase {
 	published: boolean
 	url: string
 	protected: {
-		assets: string
 		username: string
 		avatar: string
 	}
@@ -148,7 +151,6 @@ export interface ScriptFeatured {
 		description: string
 		tooltip_emojis: string
 		protected: {
-			assets: string
 			username: string
 			avatar: string
 		}

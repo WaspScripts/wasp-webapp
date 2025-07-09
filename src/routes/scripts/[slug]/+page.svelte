@@ -4,7 +4,6 @@
 	import { canDownload, canEdit, getProducts } from "$lib/client/supabase"
 	import ScriptData from "./ScriptData.svelte"
 	import AdvancedButton from "../AdvancedButton.svelte"
-	import ZipDownload from "../ZipDownload.svelte"
 	import { page } from "$app/state"
 	import TableHeader from "$lib/components/TableHeader.svelte"
 	import { getCurrentPrice, getPriceIntervalEx, setPriceInterval } from "$lib/utils"
@@ -30,7 +29,9 @@
 	description="The best open source OSRS botting scripts."
 	keywords="Premium, Free, Automation, ComputerVision"
 	author={script.protected.username}
-	img={script.protected.assets + "banner.jpg"}
+	img={"https://db.waspscripts.com/storage/v1/object/public/imgs/scripts/" +
+		script.id +
+		"/banner.jpg"}
 />
 
 <main class="mx-auto flex w-[90%] flex-col">
@@ -42,7 +43,9 @@
 	>
 		<img
 			class="rounded-md"
-			src={script.protected.assets + "banner.jpg"}
+			src={"https://db.waspscripts.com/storage/v1/object/public/imgs/scripts/" +
+				script.id +
+				"/banner.jpg"}
 			alt="Script banner"
 			loading="lazy"
 		/>
@@ -93,7 +96,6 @@
 					<div class="grid animate-pulse justify-center justify-items-center gap-8 py-12">
 						<div class="my-8 flex flex-col gap-8 lg:flex-row">
 							<AdvancedButton id={script.id} title={script.title} rev={script.protected.revision} />
-							<ZipDownload id={script.id} />
 						</div>
 					</div>
 				{:then has_access}
@@ -105,7 +107,6 @@
 									title={script.title}
 									rev={script.protected.revision}
 								/>
-								<ZipDownload id={script.id} />
 							</div>
 							{#if canEdit(profile?.id, profile?.role, script.protected.author)}
 								<div class="my-8 grid place-items-center">
