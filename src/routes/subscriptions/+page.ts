@@ -26,44 +26,13 @@ export const load = async ({ parent, data }) => {
 		return data
 	}
 
-	interface User {
-		id: string
-		username: string
-	}
-
-	const cachedUsers: User[] = []
-
-	async function getProfile(id: string) {
-		const user = cachedUsers.find((user) => user.id === id)
-		if (user) return user.username
-		const { data, error: err } = await supabaseClient
-			.schema("profiles")
-			.from("profiles")
-			.select(`username`)
-			.eq("id", id)
-			.single()
-
-		if (err) {
-			error(
-				500,
-				"Server error, this is probably not an issue on your end!\n" +
-					"SELECT profiles.profiles failed!\n\n" +
-					formatError(err)
-			)
-		}
-
-		cachedUsers.push({ id: id, username: data.username! })
-		return data.username
-	}
-
 	async function getProducts() {
 		const { data, error: err } = await supabaseClient
 			.schema("stripe")
 			.from("products")
-			.select("id, user, bundle, script, active")
+			.select("id, user_id, bundle, script, name, active, username")
 			.order("bundle", { ascending: true })
-			.order("user", { ascending: true })
-			.overrideTypes<ProductData[]>()
+			.order("user_id", { ascending: true })
 
 		if (err) {
 			error(
@@ -74,19 +43,7 @@ export const load = async ({ parent, data }) => {
 			)
 		}
 
-		return await Promise.all(
-			data.map(async (product) => {
-				return {
-					id: product.id,
-					user_id: product.user_id,
-					name: product.name,
-					username: getProfile(product.user_id),
-					bundle: product.bundle,
-					script: product.script,
-					active: product.active
-				}
-			})
-		)
+		return data
 	}
 
 	async function getScripts() {
