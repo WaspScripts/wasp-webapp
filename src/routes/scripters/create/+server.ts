@@ -15,9 +15,7 @@ export const POST = async ({ request }) => {
 
 	console.log("📌 POST => ", req)
 
-	const {
-		record: { id, url }
-	}: { record: { id: string; url: string } } = req
+	const { id, url }: { id: string; url: string } = req
 
 	console.log("Creating connected account for " + id)
 
@@ -35,11 +33,11 @@ export const POST = async ({ request }) => {
 	const params: Stripe.AccountCreateParams = {
 		business_profile: {
 			name: profile.username,
-			url: "https://waspscripts.dev/scripters/" + url
+			url: "https://waspscripts.dev/scripters/" + profile.username.replaceAll(" ", "-")
 		},
 		metadata: { id: profile.id, discord: profile.discord, email: profile.private.email },
 		email: profile.private.email,
-		type: "custom"
+		type: "express"
 	}
 
 	const account = await stripe.accounts.create(params)
