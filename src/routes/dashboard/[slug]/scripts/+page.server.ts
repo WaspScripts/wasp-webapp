@@ -39,7 +39,7 @@ export const load = async ({ params: { slug }, parent }) => {
 
 		const productPrices = prices.filter((price) => price.product == product.id)
 		if (productPrices.length < 3) {
-			const intervals = ["week", "month", "year"]
+			const intervals = ["week", "month", "year"] as const
 			intervals.forEach((interval) => {
 				const i = productPrices.findIndex((price) => price.interval === interval)
 				if (i === -1) {
@@ -48,7 +48,7 @@ export const load = async ({ params: { slug }, parent }) => {
 						amount: 0,
 						currency: "EUR",
 						id: "price_noID",
-						interval: interval as "week" | "month" | "year", //todo:...
+						interval: interval,
 						product: product.id
 					})
 				}
@@ -149,8 +149,7 @@ export const actions = {
 
 		if (errProducts) return setError(form, "", errProducts.message)
 
-		//todo:
-		//if (product.name !== productsData.name) await updateStripeProduct(product.id, product.name)
+		if (product.name !== productsData.name) await updateStripeProduct(product.id, product.name)
 
 		const { data: pricesData, error: errPrices } = await supabaseServer
 			.schema("stripe")
@@ -173,9 +172,9 @@ export const actions = {
 					updateStripePrice({
 						active: true,
 						amount: newPrice.amount,
-						currency: newPrice.currency as "EUR" | "USD" | "CAD" | "AUD", //todo:
+						currency: newPrice.currency as "EUR" | "USD" | "CAD" | "AUD",
 						id: newPrice.id,
-						interval: newPrice.interval as "week" | "month" | "year", //todo:
+						interval: newPrice.interval as "week" | "month" | "year",
 						product: product.id
 					})
 				)
@@ -392,7 +391,7 @@ export const actions = {
 			.from("subscriptions")
 			.update({ disabled: true })
 			.eq("product", product)
-			.select("subscription")
+			.select("id")
 
 		if (err) {
 			error(
@@ -409,13 +408,12 @@ export const actions = {
 			let success = true
 
 			try {
-				await stripe.subscriptions.update(sub.subscription, { cancel_at_period_end: true })
+				await stripe.subscriptions.update(sub.id, { cancel_at_period_end: true })
 			} catch {
 				success = false
 			}
 
-			if (!success)
-				error(503, "Failed to update subscription: " + sub.subscription + " on stripe side.")
+			if (!success) error(503, "Failed to update subscription: " + sub.id + " on stripe side.")
 		})
 
 		return { success: true }

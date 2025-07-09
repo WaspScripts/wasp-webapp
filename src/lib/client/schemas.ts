@@ -250,7 +250,7 @@ const bundledScriptArray = z
 const bundleSchema = z.object({
 	id: z.string().startsWith("prod_"),
 	name: z.string(),
-	user_id: z.string(),
+	author: z.string(),
 	prices: z
 		.array(priceSchema)
 		.min(1, "You need to pass at least 1 price!")

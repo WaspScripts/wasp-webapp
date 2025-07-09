@@ -260,7 +260,7 @@ export type Database = {
 					paypal?: string | null
 					realname?: string | null
 					stripe: string
-					url: string
+					url?: string
 				}
 				Update: {
 					content?: string | null
@@ -1132,6 +1132,7 @@ export type Database = {
 			products: {
 				Row: {
 					active: boolean
+					avatar: string
 					bundle: string | null
 					id: string
 					name: string
@@ -1142,16 +1143,18 @@ export type Database = {
 				}
 				Insert: {
 					active?: boolean
+					avatar?: string
 					bundle?: string | null
 					id: string
 					name: string
 					script?: string | null
-					stripe: string
+					stripe?: string
 					user_id: string
-					username: string
+					username?: string
 				}
 				Update: {
 					active?: boolean
+					avatar?: string
 					bundle?: string | null
 					id?: string
 					name?: string

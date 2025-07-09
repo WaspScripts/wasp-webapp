@@ -1,6 +1,7 @@
 import { STRIPE_WEBHOOOK_SECRET_PRODUCTS } from "$env/static/private"
 import { stripe } from "$lib/server/stripe.server"
-import { WaspProduct } from "$lib/server/supabase.server"
+import { supabaseAdmin } from "$lib/server/supabase.server"
+import { formatError } from "$lib/utils"
 import { error, json } from "@sveltejs/kit"
 import type Stripe from "stripe"
 
@@ -28,7 +29,18 @@ export const POST = async ({ request }) => {
 	switch (type) {
 		case "product.deleted": {
 			const productDeleted = data.object as Stripe.Product
-			await WaspProduct.delete(productDeleted.id)
+			console.log("DELETE stripe.products: ", productDeleted.id)
+
+			const { error: err } = await supabaseAdmin
+				.schema("stripe")
+				.from("products")
+				.delete()
+				.eq("id", productDeleted.id)
+
+			if (err) {
+				error(500, "object: " + JSON.stringify(productDeleted) + "\r\n" + formatError(err))
+			}
+
 			break
 		}
 
@@ -38,7 +50,18 @@ export const POST = async ({ request }) => {
 
 			const productUpdated = data.object as Stripe.Product
 
-			await WaspProduct.update(productUpdated.id, productUpdated.name)
+			console.log("UPDATE stripe.products: ", productUpdated.id)
+
+			const { error: err } = await supabaseAdmin
+				.schema("stripe")
+				.from("products")
+				.update({ name: productUpdated.name })
+				.eq("id", productUpdated.id)
+
+			if (err) {
+				error(500, "object: " + JSON.stringify(productUpdated) + "\r\n" + formatError(err))
+			}
+
 			break
 		}
 
@@ -47,15 +70,23 @@ export const POST = async ({ request }) => {
 			const productCreated = data.object as Stripe.Product
 			const { name } = productCreated
 			const metadata = productCreated.metadata as unknown as ProductMetadata
-			await WaspProduct.insert({
-				id: productCreated.id,
-				name: name,
-				user_id: metadata.user_id,
-				bundle: metadata.bundle ?? null,
-				script: metadata.script ?? null,
-				active: true,
-				stripe_user: null
-			})
+
+			console.log("INSERT stripe.products: ", productCreated.id)
+			const { error: err } = await supabaseAdmin
+				.schema("stripe")
+				.from("products")
+				.insert({
+					id: productCreated.id,
+					bundle: metadata.bundle ?? null,
+					script: metadata.script ?? null,
+					user_id: metadata.user_id,
+					name: name
+				})
+
+			if (err) {
+				error(500, "object: " + JSON.stringify(productCreated) + "\r\n" + formatError(err))
+			}
+
 			break
 		}
 

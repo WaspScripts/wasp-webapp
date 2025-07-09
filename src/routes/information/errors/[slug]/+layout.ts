@@ -5,7 +5,6 @@ export const load = async ({ data, params: { slug } }) => {
 
 	try {
 		const err = await import(`../../../../wasp-info/errors/${data.meta.order}.md`)
-		console.log
 		return {
 			content: err.default,
 			meta: data.meta

@@ -35,9 +35,9 @@ export const load = async ({ locals: { supabaseServer }, params: { slug }, paren
 		const { data: bundleData, error: err } = await supabaseServer
 			.schema("scripts")
 			.from("bundles")
-			.select(`id, name, scripts, quantity, user_id, username, product`)
+			.select(`id, name, scripts, author, username`)
 			.order("name", { ascending: true })
-			.eq("user_id", slug)
+			.eq("author", slug)
 
 		if (err) {
 			error(
@@ -50,20 +50,20 @@ export const load = async ({ locals: { supabaseServer }, params: { slug }, paren
 
 		return await Promise.all(
 			bundleData.map(async (bundle) => {
-				const product = bundleProducts.find((p) => p.id == bundle.product)!
+				const product = bundleProducts.find((p) => p.bundle == bundle.id)!
 				subs.push(data.data.filter((s) => s.product === product.id))
 				free.push(data.freeData.filter((f) => f.product === product.id))
 
 				const productPrices = prices.filter((price) => price.product == product.id)
 				if (productPrices.length < 3) {
-					const intervals = ["week", "month", "year"]
+					const intervals = ["week", "month", "year"] as const
 					intervals.forEach((interval) => {
 						const i = productPrices.findIndex((price) => price.interval === interval)
 						if (i === -1) {
 							productPrices.push({
 								active: true,
 								amount: 0,
-								currency: "eur",
+								currency: "EUR",
 								id: "price_noID",
 								interval: interval,
 								product: product.id
@@ -82,7 +82,7 @@ export const load = async ({ locals: { supabaseServer }, params: { slug }, paren
 				return {
 					id: product.id,
 					name: bundle.name,
-					user_id: bundle.user_id,
+					author: bundle.author,
 					prices: productPrices,
 					bundledScripts: scripts.map((script) => ({
 						...script,
@@ -170,16 +170,14 @@ export const actions = {
 		const { data: productsData, error: errProducts } = await supabaseServer
 			.schema("stripe")
 			.from("products")
-			.select("bundle")
+			.select("bundle, name")
 			.eq("id", product.id)
 			.single()
 
 		if (errProducts) return setError(form, "", formatError(errProducts))
-
 		if (!productsData.bundle) return setError(form, "", "That product is missing a bundle ID!")
 
-		//todo:
-		//if (product.name !== productsData.name) await updateStripeProduct(product.id, product.name)
+		if (product.name !== productsData.name) await updateStripeProduct(product.id, product.name)
 
 		const { data: pricesData, error: errPrices } = await supabaseServer
 			.schema("stripe")
@@ -202,9 +200,9 @@ export const actions = {
 					updateStripePrice({
 						active: true,
 						amount: newPrice.amount,
-						currency: newPrice.currency,
+						currency: newPrice.currency as "EUR" | "USD" | "CAD" | "AUD",
 						id: newPrice.id,
-						interval: newPrice.interval,
+						interval: newPrice.interval as "week" | "month" | "year",
 						product: product.id
 					})
 				)
@@ -408,7 +406,7 @@ export const actions = {
 			.from("subscriptions")
 			.update({ disabled: true })
 			.eq("product", product)
-			.select("subscription")
+			.select("id")
 
 		if (err) {
 			error(
@@ -425,13 +423,12 @@ export const actions = {
 			let success = true
 
 			try {
-				await stripe.subscriptions.update(sub.subscription, { cancel_at_period_end: true })
+				await stripe.subscriptions.update(sub.id, { cancel_at_period_end: true })
 			} catch {
 				success = false
 			}
 
-			if (!success)
-				error(503, "Failed to update subscription: " + sub.subscription + " on stripe side.")
+			if (!success) error(503, "Failed to update subscription: " + sub.id + " on stripe side.")
 		})
 
 		return { success: true }

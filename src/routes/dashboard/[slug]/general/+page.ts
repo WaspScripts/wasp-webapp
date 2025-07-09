@@ -10,9 +10,10 @@ export const load = async ({ parent, params: { slug } }) => {
 
 	async function getStats() {
 		/*
-		TODO:
+	TODO:
 		const { data, error: err } = await supabaseClient
-			.schema("scripts")
+			.schema("stats")
+			.from("stats").select("*")
 			.rpc("get_site_stats", { user_id: slug })
 			.single<ScripterStats>()
 
@@ -23,7 +24,8 @@ export const load = async ({ parent, params: { slug } }) => {
 					"SELECT get_site_stats postgres function failed!\n\n" +
 					formatError(err)
 			)
-		} */
+		}
+			 */
 
 		return null
 	}

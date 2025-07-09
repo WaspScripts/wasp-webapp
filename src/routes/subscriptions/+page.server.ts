@@ -1,7 +1,7 @@
 import { PUBLIC_SUPER_USER_ID } from "$env/static/public"
 import { stripe, createCheckoutSession, createCustomerPortal } from "$lib/server/stripe.server"
 import { subscriptionsSchema, checkoutSchema } from "$lib/client/schemas"
-import { doLogin, updateCustomerID } from "$lib/server/supabase.server"
+import { doLogin } from "$lib/server/supabase.server"
 import { error, redirect } from "@sveltejs/kit"
 import { setError, superValidate } from "sveltekit-superforms/server"
 import { zod } from "sveltekit-superforms/adapters"
@@ -102,7 +102,7 @@ export const actions = {
 		const { data, error: err } = await supabaseServer
 			.schema("stripe")
 			.from("products")
-			.select("user, stripe")
+			.select("user_id, stripe")
 			.eq("id", productID)
 			.single()
 		console.log(
@@ -117,7 +117,7 @@ export const actions = {
 			)
 		}
 
-		const stripeUser = data.user !== PUBLIC_SUPER_USER_ID ? data.stripe : null
+		const stripeUser = data.user_id !== PUBLIC_SUPER_USER_ID ? data.stripe : null
 
 		const url = await createCheckoutSession(
 			profile.id,
@@ -141,32 +141,6 @@ export const actions = {
 
 		if (!profile) {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
-		}
-
-		if (!profile.stripe) {
-			const customerSearch = await stripe.customers.search({ query: 'name: "' + profile.id + '"' })
-
-			if (customerSearch.data.length !== 1) {
-				error(
-					404,
-					`You don't seem to have a stripe assign for some reason. This shouldn't happen and has to be fixed manually.
-					Refresh the page, if that doesn't solve the issue please contact support@waspscripts.dev and send the following:
-					id: ${profile.id} discord_id: ${profile.discord} registered_email: ${user.email} username: ${profile.username}`
-				)
-			}
-
-			profile.stripe = customerSearch.data[0].id
-
-			const updateCustomer = await updateCustomerID(profile.id, profile.stripe)
-
-			if (!updateCustomer) {
-				return error(
-					404,
-					`You don't seem to have a customer_id assign for some reason and one couldn't be created. This shouldn't happen and has to be fixed manually.
-					Refresh the page, if that doesn't solve the issue please contact support@waspscripts.dev and send the following:
-					id: ${profile.id} discord_id: ${profile.discord} registered_email: ${user.email}  username: ${profile.username}`
-				)
-			}
 		}
 
 		const url = await createCustomerPortal(profile.stripe, origin)

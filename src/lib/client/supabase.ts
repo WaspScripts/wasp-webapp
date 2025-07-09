@@ -1,5 +1,4 @@
 import type {
-	FAQEntry,
 	ProfileRole,
 	Script,
 	Scripter,
@@ -25,11 +24,6 @@ interface CachedScript {
 
 interface CachedScripters {
 	data: SimpleScripter[]
-	timestamp: number
-}
-
-interface CachedFAQ {
-	data: FAQEntry[]
 	timestamp: number
 }
 

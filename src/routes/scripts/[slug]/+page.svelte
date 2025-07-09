@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { BadgeAlert, BadgeCheck, ExternalLink } from "svelte-lucide"
+	import { ExternalLink } from "svelte-lucide"
 	import ScriptHeader from "../ScriptHeader.svelte"
 	import { canDownload, canEdit, getProducts } from "$lib/client/supabase"
 	import ScriptData from "./ScriptData.svelte"
@@ -52,40 +52,6 @@
 	</ScriptHeader>
 
 	<div class="container mx-auto mb-6 max-w-lg flex-grow md:max-w-5xl">
-		<header class="my-8">
-			<form method="POST" class="grid">
-				<!-- TODO
-				{#if script.protected.broken}
-					<h4 class="text-error-500 my-2">
-						This script has been reported broken and it might not work.
-					</h4>
-				{/if} -->
-				<div class="my-2 flex">
-					{#if profile?.role == "tester"}
-						<button
-							type="submit"
-							class="btn preset-outlined-success-500 mx-auto"
-							formaction="?/clear&id={script.id}"
-						>
-							<BadgeCheck class="mr-2" />
-							Clear reports
-						</button>
-					{/if}
-					<button
-						type="submit"
-						class="btn preset-outlined-error-500 mx-auto"
-						formaction="?/report&id={script.id}"
-					>
-						Report broken
-						<BadgeAlert class="ml-2" />
-					</button>
-				</div>
-			</form>
-
-			{#if !script.published && canEdit(profile?.id, profile?.role, script.protected.author)}
-				<h4 class="text-shadow text-error-500 my-4 text-center drop-shadow-2xl">Unpublished</h4>
-			{/if}
-		</header>
 		{#if canEdit(profile?.id, profile?.role, script.protected.author)}
 			<ScriptData id={script.id} />
 		{/if}

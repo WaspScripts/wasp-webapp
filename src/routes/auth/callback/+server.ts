@@ -2,7 +2,7 @@ import { error, redirect } from "@sveltejs/kit"
 import { formatError } from "$lib/utils"
 import { createStripeCustomer } from "$lib/server/stripe.server"
 
-export const GET = async ({ url: { searchParams }, locals: { supabaseServer, getProfile } }) => {
+export const GET = async ({ url: { searchParams }, locals: { supabaseServer } }) => {
 	console.log("💻 Logging in")
 	const err = searchParams.get("error")
 

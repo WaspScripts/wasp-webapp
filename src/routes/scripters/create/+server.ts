@@ -1,6 +1,6 @@
 import { SUPABASE_SCRIPTERS_WEBHOOK_SECRET } from "$env/static/private"
 import { stripe } from "$lib/server/stripe.server"
-import { getProfile, supabaseAdmin } from "$lib/server/supabase.server"
+import { supabaseAdmin } from "$lib/server/supabase.server"
 import type { FullProfile } from "$lib/types/collection"
 import { formatError } from "$lib/utils"
 import { error, json } from "@sveltejs/kit"
@@ -23,16 +23,16 @@ export const POST = async ({ request }) => {
 
 	console.log("Creating connected account for " + id)
 
-	const { data: profile, error } = await supabaseAdmin
-			.schema("profiles")
-			.from("profiles")
-			.select("id, discord, stripe, username, avatar, private!private_id_fkey (email)")
-			.eq("id", id)
-			.limit(1)
-			.limit(1, { foreignTable: "private" })
-			.single<FullProfile>()
+	const { data: profile, error: errProfile } = await supabaseAdmin
+		.schema("profiles")
+		.from("profiles")
+		.select("id, discord, stripe, username, avatar, private!private_id_fkey (email)")
+		.eq("id", id)
+		.limit(1)
+		.limit(1, { foreignTable: "private" })
+		.single<FullProfile>()
 
-	if (error || !profile) error(500, "Counldn't find a profile for id: " + id)
+	if (errProfile || !profile) error(500, "Counldn't find a profile for id: " + id)
 
 	const params: Stripe.AccountCreateParams = {
 		business_profile: {
@@ -48,13 +48,12 @@ export const POST = async ({ request }) => {
 
 	console.log("Inserting profiles.scripter for user: ", id)
 
-	const { error: err } = await supabaseAdmin
+	const { error: errScripter } = await supabaseAdmin
 		.schema("profiles")
 		.from("scripters")
-		.insert({ profile.id, stripe: account.id })
+		.insert({ id: profile.id, stripe: account.id })
 
-	if (err) error(500, formatError(err))
-
+	if (errScripter) error(500, formatError(errScripter))
 
 	return json({ success: "true" })
 }

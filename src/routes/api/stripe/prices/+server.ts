@@ -1,6 +1,7 @@
 import { STRIPE_WEBHOOK_SECRET_PRICES } from "$env/static/private"
 import { stripe } from "$lib/server/stripe.server"
-import { WaspPrice } from "$lib/server/supabase.server.js"
+import { supabaseAdmin } from "$lib/server/supabase.server.js"
+import { formatError } from "$lib/utils"
 import { error, json } from "@sveltejs/kit"
 import type Stripe from "stripe"
 
@@ -22,33 +23,63 @@ export const POST = async ({ request }) => {
 	switch (type) {
 		case "price.deleted": {
 			const priceDeleted = data.object as Stripe.Price
-			await WaspPrice.delete(priceDeleted.id)
+			console.log("DELETE stripe.prices: ", priceDeleted.id)
+
+			const { error: err } = await supabaseAdmin
+				.schema("stripe")
+				.from("prices")
+				.delete()
+				.eq("id", priceDeleted.id)
+
+			if (err) {
+				error(500, "object: " + JSON.stringify(priceDeleted) + "\r\n" + formatError(err))
+			}
+
 			break
 		}
 
 		case "price.updated": {
 			const priceUpdated = data.object as Stripe.Price
-			await WaspPrice.update({
-				id: priceUpdated.id,
-				product: priceUpdated.product.toString(),
-				amount: priceUpdated.unit_amount ?? 100,
-				interval: priceUpdated.recurring?.interval ?? "month",
-				currency: priceUpdated.currency,
-				active: priceUpdated.active
-			})
+
+			console.log("UPDATE stripe.prices: ", priceUpdated.id)
+			const { error: err } = await supabaseAdmin
+				.schema("stripe")
+				.from("prices")
+				.update({
+					amount: priceUpdated.unit_amount ?? 100,
+					interval: priceUpdated.recurring?.interval as "week" | "month" | "year" | undefined,
+					currency: priceUpdated.currency as "EUR" | "USD" | "CAD" | "AUD" | undefined,
+					active: priceUpdated.active
+				})
+				.eq("id", priceUpdated.id)
+
+			if (err) {
+				error(500, "object: " + JSON.stringify(priceUpdated) + "\r\n" + formatError(err))
+			}
+
 			break
 		}
 
 		case "price.created": {
 			const priceCreated = data.object as Stripe.Price
-			await WaspPrice.insert({
-				id: priceCreated.id,
-				product: priceCreated.product.toString(),
-				amount: priceCreated.unit_amount ?? 100,
-				interval: priceCreated.recurring?.interval ?? "month",
-				currency: priceCreated.currency,
-				active: priceCreated.active
-			})
+			console.log("INSERT stripe.prices: ", priceCreated.id)
+
+			const { error: err } = await supabaseAdmin
+				.schema("stripe")
+				.from("prices")
+				.insert({
+					id: priceCreated.id,
+					product: priceCreated.product.toString(),
+					amount: priceCreated.unit_amount ?? 100,
+					interval: priceCreated.recurring?.interval as "week" | "month" | "year" | undefined,
+					currency: priceCreated.currency as "EUR" | "USD" | "CAD" | "AUD" | undefined,
+					active: priceCreated.active
+				})
+
+			if (err) {
+				error(500, "object: " + JSON.stringify(priceCreated) + "\r\n" + formatError(err))
+			}
+
 			break
 		}
 
