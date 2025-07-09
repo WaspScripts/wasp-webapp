@@ -33,7 +33,7 @@ export const POST = async ({ request }) => {
 	const params: Stripe.AccountCreateParams = {
 		business_profile: {
 			name: profile.username,
-			url: "https://waspscripts.dev/scripters/" + profile.username.replaceAll(" ", "-")
+			url: "https://waspscripts.dev/"
 		},
 		metadata: { id: profile.id, discord: profile.discord, email: profile.private.email },
 		email: profile.private.email,
