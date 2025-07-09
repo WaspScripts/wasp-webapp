@@ -10,13 +10,8 @@ export const POST = async ({ request }) => {
 	const hookPassword = request.headers.get("password")
 	const req = await request.json()
 
-	if (hookPassword !== SUPABASE_SCRIPTERS_WEBHOOK_SECRET) {
-		console.error("got: " + hookPassword + " pass: " + SUPABASE_SCRIPTERS_WEBHOOK_SECRET)
+	if (hookPassword !== SUPABASE_SCRIPTERS_WEBHOOK_SECRET)
 		error(403, "Webhook secret doesn't match.")
-	}
-
-	if (req.type !== "INSERT" || req.schema !== "profiles" || req.table !== "scripters")
-		error(403, "Webhook sent doesn't match this endpoint.")
 
 	console.log("📌 POST => ", req)
 
