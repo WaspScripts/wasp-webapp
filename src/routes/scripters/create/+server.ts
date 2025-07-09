@@ -47,7 +47,7 @@ export const POST = async ({ request }) => {
 	const { error: errScripter } = await supabaseAdmin
 		.schema("profiles")
 		.from("scripters")
-		.insert({ id: profile.id, stripe: account.id })
+		.insert({ id: profile.id, stripe: account.id, url: profile.username.replaceAll(" ", "-") })
 
 	if (errScripter) error(500, formatError(errScripter))
 
