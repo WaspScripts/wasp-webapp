@@ -9,25 +9,27 @@ export const load = async ({ parent, params: { slug } }) => {
 		error(403, "You cannot access another scripter dashboard.")
 
 	async function getStats() {
-		/*
-	TODO:
 		const { data, error: err } = await supabaseClient
-			.schema("stats")
-			.from("stats").select("*")
-			.rpc("get_site_stats", { user_id: slug })
-			.single<ScripterStats>()
+			.schema("scripts")
+			.from("author_scripts")
+			.select("*")
+			.eq("author", slug)
+			.maybeSingle()
 
 		if (err) {
 			error(
 				500,
 				"Server error, this is probably not an issue on your end!\n" +
-					"SELECT get_site_stats postgres function failed!\n\n" +
+					"SELECT scripts.author_scripts postgres function failed!\n\n" +
 					formatError(err)
 			)
 		}
-			 */
 
-		return null
+		return {
+			premium: data?.premium ?? 0,
+			scripts: data?.scripts ?? [],
+			total: data?.total ?? 0
+		}
 	}
 
 	return {

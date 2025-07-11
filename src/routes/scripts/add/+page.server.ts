@@ -118,14 +118,12 @@ export const actions = {
 		}
 
 		const metadata = {
-			id: data.id,
 			status: (form.data.status ? "official" : "community") as TScriptStatus,
 			type: (form.data.type ? "premium" : "free") as TScriptTypes,
 			categories: form.data.categories
 		}
 
 		const limits = {
-			id: data.id,
 			xp_min: form.data.xp_min,
 			xp_max: form.data.xp_max,
 			gp_min: form.data.gp_min,
@@ -133,8 +131,8 @@ export const actions = {
 		}
 
 		const inserts = [
-			supabaseServer.schema("scripts").from("metadata").insert(metadata),
-			supabaseServer.schema("scripts").from("stats_limits").insert(limits)
+			supabaseServer.schema("scripts").from("metadata").update(metadata).eq("id", data.id),
+			supabaseServer.schema("scripts").from("stats_limits").update(limits).eq("id", data.id)
 		]
 
 		const awaitedInserts = await Promise.all(inserts)
@@ -143,13 +141,13 @@ export const actions = {
 		const { error: errLimits } = awaitedInserts[1]
 
 		if (errData) {
-			return setError(form, "", "INSERT scripts.metadata failed!\n\n" + JSON.stringify(errData))
+			return setError(form, "", "UPDATE scripts.metadata failed!\n\n" + JSON.stringify(errData))
 		}
 		if (errLimits) {
 			return setError(
 				form,
 				"",
-				"INSERT scripts.stats_limits failed!\n\n" + JSON.stringify(errLimits)
+				"UPDATE scripts.stats_limits failed!\n\n" + JSON.stringify(errLimits)
 			)
 		}
 

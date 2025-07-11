@@ -38,28 +38,13 @@
 	>
 		<table class="table border-separate space-y-6 text-xs">
 			<TableHeader
-				headers={[
-					"Scripts",
-					"Premium scripts",
-					"Monthly downloads",
-					"Premium monthly downloads",
-					"Subscribers",
-					"Cancelling",
-					"Free access"
-				]}
+				headers={["Scripts", "Premium scripts", "Subscribers", "Cancelling", "Free access"]}
 			/>
 
 			<tbody class="preset-filled-surface-200-800 [&>tr]:hover:preset-tonal">
 				<tr class="table-row">
-					<td class="text-center">{stats.total_user_scripts} / {stats.total_scripts}</td>
-					<td class="text-center"
-						>{stats.total_user_premium_scripts} / {stats.total_premium_scripts}</td
-					>
-					<td class="text-center">{stats.month_user_downloads} / {stats.month_downloads}</td>
-					<td class="text-center">
-						{stats.month_premium_user_downloads} / {stats.month_premium_downloads}
-					</td>
-
+					<td class="text-center">{stats.scripts.length} / {stats.total}</td>
+					<td class="text-center">{stats.premium} / {stats.total}</td>
 					<td class="text-center">{subscriptions.subscribers}</td>
 					<td class="text-center">{subscriptions.cancelling}</td>
 					<td class="text-center">{subscriptions.free_access}</td>

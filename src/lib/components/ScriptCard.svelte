@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from "$app/navigation"
+	import { PUBLIC_SUPABASE_URL } from "$env/static/public"
 	import type { Script } from "$lib/types/collection"
 	import { cropString, encodeSEO, scriptCategories, scriptStatus, scriptTypes } from "$lib/utils"
 	import { Tooltip } from "@skeletonlabs/skeleton-svelte"
@@ -10,18 +11,18 @@
 
 	let imgLink = $state(
 		customCover ??
-			"https://db.waspscripts.com/storage/v1/object/public/imgs/scripts/" + script.id + "/cover.jpg"
+			PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/cover.jpg"
 	)
 
 	$effect(() => {
 		imgLink =
 			customCover ??
-			"https://db.waspscripts.com/storage/v1/object/public/imgs/scripts/" + script.id + "/cover.jpg"
+			PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/cover.jpg"
 	})
 
 	$effect(() => {
 		imgLink =
-			"https://db.waspscripts.com/storage/v1/object/public/imgs/scripts/" + script.id + "/cover.jpg"
+			PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/cover.jpg"
 	})
 
 	onMount(async () => {

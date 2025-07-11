@@ -10,6 +10,7 @@
 	import ScriptArticle from "../ScriptArticle.svelte"
 	import { replaceScriptContent } from "$lib/client/utils"
 	import Head from "$lib/components/Head.svelte"
+	import { PUBLIC_SUPABASE_URL } from "$env/static/public"
 
 	const { data } = $props()
 	const { script, profile, supabaseClient } = $derived(data)
@@ -29,9 +30,7 @@
 	description="The best open source OSRS botting scripts."
 	keywords="Premium, Free, Automation, ComputerVision"
 	author={script.protected.username}
-	img={"https://db.waspscripts.com/storage/v1/object/public/imgs/scripts/" +
-		script.id +
-		"/banner.jpg"}
+	img={PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/banner.jpg"}
 />
 
 <main class="mx-auto flex w-[90%] flex-col">
@@ -43,7 +42,8 @@
 	>
 		<img
 			class="rounded-md"
-			src={"https://db.waspscripts.com/storage/v1/object/public/imgs/scripts/" +
+			src={PUBLIC_SUPABASE_URL +
+				"/storage/v1/object/public/imgs/scripts/" +
 				script.id +
 				"/banner.jpg"}
 			alt="Script banner"

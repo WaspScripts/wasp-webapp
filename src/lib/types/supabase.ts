@@ -385,6 +385,10 @@ export type Database = {
 			}
 		}
 		Functions: {
+			can_access: {
+				Args: { accesser_id: string; script_id: string } | { script_id: string }
+				Returns: boolean
+			}
 			can_view_subscription: {
 				Args: { accesser: string; owner: string; product: string }
 				Returns: boolean
@@ -508,7 +512,7 @@ export type Database = {
 					username: string
 				}
 				Insert: {
-					author: string
+					author?: string
 					avatar: string
 					created_at?: string
 					id: string
@@ -616,6 +620,14 @@ export type Database = {
 				Args: { script_id: string }
 				Returns: number
 			}
+			is_author: {
+				Args: { user_id: string; script_id: string }
+				Returns: boolean
+			}
+			is_premium: {
+				Args: { script_id: string }
+				Returns: boolean
+			}
 		}
 		Enums: {
 			category:
@@ -651,6 +663,30 @@ export type Database = {
 	}
 	stats: {
 		Tables: {
+			simba: {
+				Row: {
+					experience: number
+					gold: number
+					id: string
+					levels: number | null
+					runtime: number
+				}
+				Insert: {
+					experience?: number
+					gold?: number
+					id: string
+					levels?: number | null
+					runtime?: number
+				}
+				Update: {
+					experience?: number
+					gold?: number
+					id?: string
+					levels?: number | null
+					runtime?: number
+				}
+				Relationships: []
+			}
 			stats: {
 				Row: {
 					experience: number
@@ -675,6 +711,45 @@ export type Database = {
 					levels?: number
 					runtime?: number
 					username?: string | null
+				}
+				Relationships: []
+			}
+			website: {
+				Row: {
+					downloads: string[]
+					id: string
+					total: number | null
+				}
+				Insert: {
+					downloads: string[]
+					id: string
+					total?: number | null
+				}
+				Update: {
+					downloads?: string[]
+					id?: string
+					total?: number | null
+				}
+				Relationships: []
+			}
+			website_monthly: {
+				Row: {
+					date: string
+					downloads: string[]
+					id: string
+					total: number | null
+				}
+				Insert: {
+					date?: string
+					downloads: string[]
+					id: string
+					total?: number | null
+				}
+				Update: {
+					date?: string
+					downloads?: string[]
+					id?: string
+					total?: number | null
 				}
 				Relationships: []
 			}

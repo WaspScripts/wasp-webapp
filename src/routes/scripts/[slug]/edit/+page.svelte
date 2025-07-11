@@ -10,6 +10,7 @@
 	import { updateScriptClientSchema } from "$lib/client/schemas"
 	import { FileUpload, Switch } from "@skeletonlabs/skeleton-svelte"
 	import AdvancedButton from "../../AdvancedButton.svelte"
+	import { PUBLIC_SUPABASE_URL } from "$env/static/public"
 
 	const { data } = $props()
 	let script = $derived(data.script)
@@ -47,7 +48,8 @@
 				<img
 					class="rounded-md {!script ? 'animate-pulse' : ''}"
 					src={bannerURL ??
-						"https://db.waspscripts.com/storage/v1/object/public/imgs/scripts/" +
+						PUBLIC_SUPABASE_URL +
+							"/storage/v1/object/public/imgs/scripts/" +
 							script.id +
 							"/banner.jpg"}
 					alt="Script banner"

@@ -16,8 +16,8 @@
 		}
 
 		const { data, error: err } = await supabaseClient
-			.schema("scripts")
-			.from("stats_simba")
+			.schema("stats")
+			.from("simba")
 			.select("experience, gold, runtime")
 			.eq("id", id)
 			.single()

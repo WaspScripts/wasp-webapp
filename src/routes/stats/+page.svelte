@@ -25,8 +25,8 @@
 				"postgres_changes",
 				{
 					event: "UPDATE",
-					schema: "public",
-					table: "stats_simba"
+					schema: "stats",
+					table: "simba"
 				},
 				() => invalidate("supabase:stats")
 			)
@@ -42,11 +42,11 @@
 	<header class="my-4 flex-col text-center text-sm lg:text-lg">
 		<h5 class="md:whitespace-nowrap">
 			Total experience: <wbr />
-			{formatNumber(totals.experience)}
+			{formatNumber(totals.experience!)}
 		</h5>
-		<h5 class="md:whitespace-nowrap">Total gold: <wbr /> {formatNumber(totals.gold)}</h5>
-		<h5 class="md:whitespace-nowrap">Total levels: <wbr /> {formatNumber(totals.levels)}</h5>
-		<h5 class="md:whitespace-nowrap">Total runtime: <wbr /> {formatTime(totals.runtime)}</h5>
+		<h5 class="md:whitespace-nowrap">Total gold: <wbr /> {formatNumber(totals.gold!)}</h5>
+		<h5 class="md:whitespace-nowrap">Total levels: <wbr /> {formatNumber(totals.levels!)}</h5>
+		<h5 class="md:whitespace-nowrap">Total runtime: <wbr /> {formatTime(totals.runtime!)}</h5>
 	</header>
 
 	<div class="mx-auto mb-2 flex flex-col lg:w-[80%]">

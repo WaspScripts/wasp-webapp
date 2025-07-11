@@ -8,11 +8,9 @@
 
 	async function getScriptStats() {
 		const { data, error: err } = await page.data.supabaseClient
-			.schema("scripts")
-			.from("stats_simba")
-			.select(
-				"experience, gold, runtime, levels, unique_users, unique_users_total, online_users, online_users_total"
-			)
+			.schema("stats")
+			.from("simba")
+			.select("experience, gold, runtime, levels")
 			.eq("id", id)
 			.single()
 
@@ -22,11 +20,7 @@
 				experience: 0,
 				gold: 0,
 				runtime: 0,
-				levels: 0,
-				unique_users: [],
-				unique_users_total: 0,
-				online_users: [],
-				online_users_total: 0
+				levels: 0
 			}
 		}
 
@@ -35,30 +29,45 @@
 
 	async function getScriptData() {
 		const { data, error: err } = await page.data.supabaseClient
-			.schema("scripts")
-			.from("stats_site")
-			.select(
-				"unique_downloads, unique_downloads_total, month_downloads, month_downloads_total, previous_months"
-			)
+			.schema("stats")
+			.from("website")
+			.select("downloads, total")
 			.eq("id", id)
 			.single()
 
 		if (err) {
 			console.error(err)
 			return {
-				unique_downloads: [],
-				unique_downloads_total: 0,
-				month_downloads: [],
-				month_downloads_total: 0,
-				previous_months: []
+				downloads: [],
+				total: 0
 			}
 		}
 
-		return data
+		return { downloads: data.downloads, total: data.total ?? 0 }
+	}
+
+	async function getScriptMonthlyData() {
+		const { data, error: err } = await page.data.supabaseClient
+			.schema("stats")
+			.from("website_monthly")
+			.select("downloads, total")
+			.eq("id", id)
+			.order("date", { ascending: false })
+
+		if (err) {
+			console.error(err)
+			return {
+				downloads: [],
+				total: 0
+			}
+		}
+
+		return { downloads: data[0].downloads, total: data[0].total ?? 0 }
 	}
 
 	const scriptStats = getScriptStats()
 	const scriptData = getScriptData()
+	const scriptMonthlyData = getScriptMonthlyData()
 </script>
 
 <header class="text-center">
@@ -84,7 +93,8 @@
 			{#await scriptStats}
 				Loading...
 			{:then data}
-				{formatNumber(data.online_users_total)}
+				<!-- {formatNumber(data.online_users_total)} -->
+				TODO...
 			{/await}
 		</h4>
 
@@ -92,12 +102,13 @@
 			{#await scriptStats}
 				Loading...
 			{:then data}
-				{#each data.online_users as user (user)}
+				TODO...
+				<!-- {#each data.online_users as user (user)}
 					{#if user && Object.values(user).length > 0}
 						{Object.values(user)[0]}
 						<br />
 					{/if}
-				{/each}
+				{/each} -->
 			{/await}
 		</div>
 	{:else if selectedBtn === authorButtons[2]}
@@ -106,7 +117,7 @@
 			{#await scriptData}
 				Loading...
 			{:then data}
-				{formatNumber(data.unique_downloads_total)}
+				{formatNumber(data.total)}
 			{/await}
 		</h4>
 
@@ -114,7 +125,7 @@
 			{#await scriptData}
 				Loading...
 			{:then data}
-				{#each data.unique_downloads as user (user)}
+				{#each data.downloads as user (user)}
 					{user}
 					<br />
 				{/each}
@@ -123,18 +134,18 @@
 	{:else if selectedBtn === authorButtons[3]}
 		<h4>
 			Total downloads/month:
-			{#await scriptData}
+			{#await scriptMonthlyData}
 				Loading...
 			{:then data}
-				{formatNumber(data.month_downloads_total)}
+				{formatNumber(data.total)}
 			{/await}
 		</h4>
 
 		<div class="text-small preset-outlined-surface-500 max-h-[10rem] overflow-auto">
-			{#await scriptData}
+			{#await scriptMonthlyData}
 				Loading...
 			{:then data}
-				{#each data.month_downloads as user (user)}
+				{#each data.downloads as user (user)}
 					{user}
 					<br />
 				{/each}

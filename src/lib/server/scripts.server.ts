@@ -31,7 +31,7 @@ export async function getScripts(): Promise<Script[]> {
 		.from("scripts")
 		.select(
 			`id, title, description, content, url, published,
-			protected!protected_id_fkey (author, revision, updated_at),
+			protected!protected_id_fkey (author, revision, username, avatar, updated_at),
 			metadata!metadata_id_fkey (status, type, categories),
 			stats_limits!stats_limits_id_fkey (xp_min, xp_max, gp_min, gp_max)`
 		)
