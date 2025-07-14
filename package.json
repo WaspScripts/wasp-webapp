@@ -54,6 +54,7 @@
 		"file-saver": "^2.0.5",
 		"flexsearch": "^0.7.43",
 		"gray-matter": "^4.0.3",
+		"isomorphic-dompurify": "^2.26.0",
 		"markdown-it": "^14.1.0",
 		"markdown-it-emoji": "^3.0.0",
 		"mdsvex": "^0.12.6",

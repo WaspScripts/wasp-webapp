@@ -1,6 +1,7 @@
 import { mdvsvexCompile } from "$lib/server/markdown.server"
 import { formatError } from "$lib/utils"
 import { error } from "@sveltejs/kit"
+import DOMPurify from "isomorphic-dompurify"
 
 type validSlug = "privacy_policy" | "scripter_tos" | "user_tos"
 
@@ -33,7 +34,7 @@ export const load = async ({ params: { slug }, locals: { supabaseServer } }) => 
 				return {
 					version: legal.version,
 					created_at: legal.created_at,
-					content: await mdvsvexCompile(legal.content),
+					content: DOMPurify.sanitize((await mdvsvexCompile(legal.content)).code),
 					originalContent: legal.content
 				}
 			})

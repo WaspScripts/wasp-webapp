@@ -22,7 +22,7 @@
 	<div class="mx-auto grid max-w-4xl">
 		<a href={page.url.pathname + "/add"} class="btn preset-filled-secondary-500 mx-auto">Add</a>
 		<div class="mx-auto my-6 flex">
-			<AdvancedButton bind:index bind:total={policies.length} />
+			<AdvancedButton bind:index total={policies.length} />
 		</div>
 		<div class="mx-auto my-6 flex">
 			Updated on: {currentPolicy
@@ -43,6 +43,6 @@
 		{/if}
 	</div>
 	<article class="prose dark:prose-invert mx-auto max-w-md py-6 md:max-w-4xl">
-		{@html currentPolicy.content?.code}
+		{@html currentPolicy.content}
 	</article>
 </main>

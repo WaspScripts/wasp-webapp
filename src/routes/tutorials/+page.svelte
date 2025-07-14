@@ -39,27 +39,16 @@
 		<h3 class="text-center">Useful resources</h3>
 
 		<div class="my-4 flex flex-col gap-2 lg:flex-row">
-			<a href="https://torwent.github.io/SRL-T/" class="mx-auto">
-				<button class="btn ring-primary-500 preset-filled-primary-200-800 ring-2">
-					SRL-T Documentation
-				</button>
-			</a>
-			<a href="https://torwent.github.io/WaspLib/" class="mx-auto">
-				<button class="btn ring-primary-500 preset-filled-primary-200-800 ring-2">
-					WaspLib Documentation
-				</button>
+			<a href="https://waspscripts.github.io/WaspLib/" class="mx-auto btn ring-primary-500 preset-filled-primary-200-800 ring-2">
+				WaspLib Documentation
 			</a>
 
-			<a href="https://api.waspscripts.dev/docs" class="mx-auto">
-				<button class="btn ring-primary-500 preset-filled-primary-200-800 ring-2">
-					Stats API Documentation
-				</button>
+			<a href="https://api.waspscripts.dev/docs" class="mx-auto btn ring-primary-500 preset-filled-primary-200-800 ring-2">
+				Stats API Documentation
 			</a>
 
-			<a href="https://map.waspscripts.dev" class="mx-auto">
-				<button class="btn ring-primary-500 preset-filled-primary-200-800 ring-2">
-					Interactive Map
-				</button>
+			<a href="https://map.waspscripts.dev" class="mx-auto btn ring-primary-500 preset-filled-primary-200-800 ring-2">
+				Interactive Map
 			</a>
 		</div>
 	</div>

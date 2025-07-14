@@ -1,31 +1,8 @@
-import { mdsvex, escapeSvelte } from "mdsvex"
 import adapter from "@sveltejs/adapter-node"
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte"
-import { getSingletonHighlighter } from "shiki"
-
-const shikiHighlighter = await getSingletonHighlighter({
-	themes: ["github-dark", "github-light"],
-	langs: ["javascript", "typescript", "bash", "cmd", "yml", "yaml", "pascal", "java", "json"]
-})
-
-const mdsvexOptions = {
-	extensions: [".md"],
-	highlight: {
-		highlighter: async (code, lang = "text") => {
-			if (lang === "freepascal") lang = "pascal"
-			const html = escapeSvelte(
-				shikiHighlighter.codeToHtml(code, {
-					lang,
-					themes: { light: "github-light", dark: "github-dark" }
-				})
-			)
-			return `{@html \`${html}\` }`
-		}
-	}
-}
 
 const config = {
-	preprocess: [vitePreprocess(), mdsvex(mdsvexOptions)],
+	preprocess: [vitePreprocess()],
 	kit: {
 		adapter: adapter(),
 		csp: {
@@ -57,7 +34,7 @@ const config = {
 			}
 		}
 	},
-	extensions: [".svelte", ".svx", ".md"]
+	extensions: [".svelte"]
 }
 
 export default config

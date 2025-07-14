@@ -60,7 +60,7 @@ export const POST = async ({ request }) => {
 			const date_start = new Date(subscriptionUpdated.start_date * 1000).toISOString()
 			const cancel = subscriptionUpdated.cancel_at_period_end
 
-			const { data: activeData, error: errSub } = await supabaseAdmin
+			const { error: err } = await supabaseAdmin
 				.schema("profiles")
 				.from("subscriptions")
 				.update({
@@ -69,57 +69,9 @@ export const POST = async ({ request }) => {
 					cancel: cancel
 				})
 				.eq("id", subscriptionUpdated.id)
-				.select()
-				.single()
 
-			if (!activeData) {
-				console.log("UPDATE profile.subscriptions_old: ", subscriptionUpdated.id)
-				const { data: oldData, error: errSubOld } = await supabaseAdmin
-					.schema("profiles")
-					.from("subscriptions_old")
-					.update({
-						date_end: date_end,
-						date_start: date_start,
-						cancel: cancel
-					})
-					.eq("id", subscriptionUpdated.id)
-					.select()
-					.single()
-
-				if (!oldData) {
-					console.log("UPSERT profile.subscriptions: ", subscriptionUpdated.id)
-					const { error: errInsert } = await supabaseAdmin
-						.schema("profiles")
-						.from("subscriptions")
-						.insert({
-							id: subscriptionUpdated.id,
-							user: subscriptionUpdated.metadata.wsid,
-							product: subscriptionUpdated.items.data[0].price.product.toString(),
-							price: subscriptionUpdated.items.data[0].price.id,
-							date_end: date_end,
-							date_start: date_start,
-							cancel: cancel,
-							disabled: false
-						})
-
-					if (errInsert) {
-						console.error("errSub: " + errSub)
-						console.error("errSubOld: " + errSubOld)
-						console.error("errInsert: " + errInsert)
-
-						error(
-							500,
-							"object:\r\n" +
-								JSON.stringify(subscriptionUpdated) +
-								"\r\n\r\nerrSub:\r\n" +
-								JSON.stringify(errSub) +
-								"\r\n\r\nerrSubOld:\r\n" +
-								JSON.stringify(errSubOld) +
-								"\r\n\r\nerrInsert:\r\n" +
-								JSON.stringify(errInsert)
-						)
-					}
-				}
+			if (err) {
+				error(500, "object: " + JSON.stringify(subscriptionUpdated) + "\r\n" + formatError(err))
 			}
 
 			break
@@ -129,26 +81,30 @@ export const POST = async ({ request }) => {
 			const subscriptionDeleted = data.object as Stripe.Subscription
 			console.log("DELETE profile.subscriptions: ", subscriptionDeleted.id)
 
+			const date_end = new Date(subscriptionDeleted.canceled_at! * 1000).toISOString()
+			const date_start = new Date(subscriptionDeleted.start_date * 1000).toISOString()
+			const cancel = subscriptionDeleted.cancel_at_period_end
+
 			const { error: err } = await supabaseAdmin
 				.schema("profiles")
 				.from("subscriptions")
-				.delete()
+				.update({ date_end: date_end, date_start: date_start, cancel: cancel })
 				.eq("id", subscriptionDeleted.id)
 
 			if (err) {
 				error(500, "object: " + JSON.stringify(subscriptionDeleted) + "\r\n" + formatError(err))
 			}
 
-			const last_invoice = subscriptionDeleted.latest_invoice
-			if (last_invoice) {
+			const invoice = subscriptionDeleted.latest_invoice
+			if (invoice) {
 				try {
-					stripe.invoices.voidInvoice(last_invoice.toString())
+					stripe.invoices.voidInvoice(invoice.toString())
 				} catch (err) {
 					console.error(err)
 					error(
 						404,
 						"Failed to void invoce: " +
-							last_invoice +
+							invoice +
 							" for sub: " +
 							subscriptionDeleted.id +
 							"  Error: " +

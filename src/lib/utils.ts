@@ -75,13 +75,12 @@ export function formatNumber(n: number): string {
 }
 
 export function encodeSEO(url: string) {
-	url = encodeURI(url.toLocaleLowerCase())
-		.replaceAll("%20", "-")
-		.replace(/&/g, "-and-")
-		.replace(/[^a-z-]/g, "")
-		.replace(/-+/g, "-")
-		.replace(/^-*/, "")
-		.replace(/-*$/, "")
+	url = url
+		.replaceAll(" ", "-")
+		.replaceAll("&", "-and-")
+		.replaceAll(/-+/g, "-")
+		.replaceAll(/^-*/g, "")
+		.replaceAll(/-*$/g, "")
 	return url
 }
 
