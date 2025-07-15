@@ -41,16 +41,67 @@ Can get {$min_xp}-{$max_xp} xp/h and {$min_gp}-{$max_gp} gp/h.
 You need quest ABC completed to use this.
 `
 
+async function getLatestSimba() {
+	const url =
+		"https://raw.githubusercontent.com/Villavu/Simba-Build-Archive/refs/heads/main/README.md"
+
+	const res = await fetch(url)
+	if (!res.ok) {
+		throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`)
+	}
+
+	const markdown = await res.text()
+
+	const regex = /(\d{4}\/\d{2}-\d{2}) \| (simba2000) \| \[([a-f0-9]+)\]/g
+
+	const matches: { date: string; hash: string }[] = []
+	for (const line of markdown.split("\n")) {
+		const match = regex.exec(line)
+		if (match) {
+			matches.push({ date: match[1], hash: match[3] })
+		}
+		regex.lastIndex = 0
+	}
+
+	if (matches.length === 0) return ""
+
+	matches.sort((a, b) => (a.date < b.date ? 1 : -1))
+
+	return matches[0].hash
+}
+
+async function getLatestWaspLib() {
+	const url = "https://github.com/WaspScripts/WaspLib/releases.atom"
+
+	const res = await fetch(url)
+	if (!res.ok) {
+		throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`)
+	}
+
+	const xml = await res.text()
+	const match = xml.match(/<entry>.*?<title>([^<]+)<\/title>/s)
+
+	return match?.[1] ?? ""
+}
+
 export const load = async ({ locals: { supabaseServer, user, session } }) => {
 	if (!user || !session) {
 		return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 	}
 
 	return {
-		form: await superValidate({ content: scriptDefaultContent }, zod(addScriptServerSchema), {
-			allowFiles: true,
-			errors: false
-		})
+		form: await superValidate(
+			{
+				content: scriptDefaultContent,
+				simba: await getLatestSimba(),
+				wasplib: await getLatestWaspLib()
+			},
+			zod(addScriptServerSchema),
+			{
+				allowFiles: true,
+				errors: false
+			}
+		)
 	}
 }
 

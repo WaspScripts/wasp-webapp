@@ -12,15 +12,16 @@
 />
 
 <main class="container mx-auto my-24 max-w-2xl flex-grow">
-	<header>
-		<h1 class="py-12 text-center text-xl font-bold sm:text-2xl md:text-3xl">
-			<div class="py-4">WaspScripts</div>
-			<div>
-				100%
-				<span class="animate-character inline-block bg-clip-text text-transparent">color</span>
-				100% open source.
-			</div>
+	<header class="text-center my-24">
+		<h1 class="text-xl font-bold sm:text-2xl md:text-3xl">
+			WaspScripts
+
 		</h1>
+		<h2 class="text-lg font-bold sm:text-xl md:text-2xl uppercase">
+			100%
+			<span class="animate-character bg-clip-text text-transparent">color</span>
+			100% open source
+		</h2>
 	</header>
 
 	<header class="text-lg sm:text-xl md:text-2xl">

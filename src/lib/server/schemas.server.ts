@@ -37,6 +37,29 @@ export const addScriptServerSchema = baseScriptSchema
 		(schema) => schema.gp_min <= schema.gp_max,
 		"Minimum gold cannot exceed the maximum gold."
 	)
+	.refine(async (schema) => {
+		try {
+			const res = await fetch("https://github.com/Villavu/Simba/commit/" + schema.simba, {
+				method: "HEAD"
+			})
+			return res.ok
+		} catch {
+			return false
+		}
+	}, "Invalid Simba version.")
+	.refine(async (schema) => {
+		try {
+			const res = await fetch(
+				"https://github.com/WaspScripts/WaspLib/releases/tag/" + schema.wasplib,
+				{
+					method: "HEAD"
+				}
+			)
+			return res.ok
+		} catch {
+			return false
+		}
+	}, "Invalid WaspLib version.")
 
 export const updateScriptServerSchema = baseScriptSchema
 	.extend({
@@ -62,3 +85,26 @@ export const updateScriptServerSchema = baseScriptSchema
 		(schema) => schema.gp_min <= schema.gp_max,
 		"Minimum gold cannot exceed the maximum gold."
 	)
+	.refine(async (schema) => {
+		try {
+			const res = await fetch("https://github.com/Villavu/Simba/commit/" + schema.simba, {
+				method: "HEAD"
+			})
+			return res.ok
+		} catch {
+			return false
+		}
+	}, "Invalid Simba version.")
+	.refine(async (schema) => {
+		try {
+			const res = await fetch(
+				"https://github.com/WaspScripts/WaspLib/releases/tag/" + schema.wasplib,
+				{
+					method: "HEAD"
+				}
+			)
+			return res.ok
+		} catch {
+			return false
+		}
+	}, "Invalid WaspLib version.")

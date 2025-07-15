@@ -278,9 +278,46 @@
 					{/if}
 				</div>
 
-				<header class="my-8 text-center">
-					<h5>Files</h5>
-				</header>
+				<div class="my-8 rounded-md p-8">
+					<h5 class="my-8 text-center">Versions</h5>
+					<div class="flex w-full flex-col gap-4 lg:flex-row">
+						<div class="w-full">
+							<label class="label">
+								<span class="label-text">Simba:</span>
+								<input
+									type="text"
+									id="simba"
+									name="simba"
+									class="input"
+									class:ring-error-500={$errors.simba != null}
+									bind:value={$form.simba}
+								/>
+							</label>
+							{#if $errors.simba}
+								<small class="text-error-500">{$errors.simba}</small>
+							{/if}
+						</div>
+
+						<div class="w-full">
+							<label class="label">
+								<span class="label-text">WaspLib:</span>
+								<input
+									type="text"
+									id="wasplib"
+									name="wasplib"
+									class="input"
+									class:ring-error-500={$errors.wasplib}
+									bind:value={$form.wasplib}
+								/>
+							</label>
+							{#if $errors.wasplib}
+								<small class="text-error-500">{$errors.wasplib}</small>
+							{/if}
+						</div>
+					</div>
+				</div>
+
+				<h5 class="my-8 text-center">Files</h5>
 				<div class="flex flex-col justify-between gap-4 2xl:flex-row">
 					<FileUpload
 						name="cover"
@@ -445,9 +482,7 @@
 				</div>
 
 				<div class="preset-filled-surface-100-900 my-8 rounded-md p-8">
-					<header class="my-8 text-center">
-						<h5>Stats limits (every 5 minutes)</h5>
-					</header>
+					<h5 class="my-8 text-center">Stats limits (every 5 minutes)</h5>
 					<div class="flex flex-col justify-between gap-4 md:flex-row">
 						<div class="flex w-full flex-col gap-4 lg:flex-row">
 							<div class="w-full">

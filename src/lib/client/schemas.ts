@@ -35,6 +35,16 @@ export const baseScriptSchema = z.object({
 	type: z.boolean().default(false),
 	categories: z.array(ScriptCategoryEnum).min(1, "You should have at least 1 category."),
 	published: z.boolean().default(true),
+	simba: z
+		.string()
+		.length(10, "Simba versions must be exactly 10 characters long")
+		.regex(/^[a-fA-F0-9]+$/, "Must be a valid hexadecimal string"),
+	wasplib: z
+		.string()
+		.regex(
+			/^\d{4}\.\d{2}\.\d{2}-[a-fA-F0-9]{6}$/,
+			"Must match format YYYY.MM.DD-HEX with valid hex"
+		),
 	xp_min: z
 		.number()
 		.int("Only whole numbers are allowed.")
@@ -88,6 +98,29 @@ export const addScriptClientSchema = baseScriptSchema
 		(schema) => schema.gp_min <= schema.gp_max,
 		"Minimum gold cannot exceed the maximum gold."
 	)
+	.refine(async (schema) => {
+		try {
+			const res = await fetch("https://github.com/Villavu/Simba/commit/" + schema.simba, {
+				method: "HEAD"
+			})
+			return res.ok
+		} catch {
+			return false
+		}
+	}, "Invalid Simba version.")
+	.refine(async (schema) => {
+		try {
+			const res = await fetch(
+				"https://github.com/WaspScripts/WaspLib/releases/tag/" + schema.wasplib,
+				{
+					method: "HEAD"
+				}
+			)
+			return res.ok
+		} catch {
+			return false
+		}
+	}, "Invalid WaspLib version.")
 
 export type AddScriptSchema = z.infer<typeof addScriptClientSchema>
 
@@ -115,6 +148,29 @@ export const updateScriptClientSchema = baseScriptSchema
 		(schema) => schema.gp_min <= schema.gp_max,
 		"Minimum gold cannot exceed the maximum gold."
 	)
+	.refine(async (schema) => {
+		try {
+			const res = await fetch("https://github.com/Villavu/Simba/commit/" + schema.simba, {
+				method: "HEAD"
+			})
+			return res.ok
+		} catch {
+			return false
+		}
+	}, "Invalid Simba version.")
+	.refine(async (schema) => {
+		try {
+			const res = await fetch(
+				"https://github.com/WaspScripts/WaspLib/releases/tag/" + schema.wasplib,
+				{
+					method: "HEAD"
+				}
+			)
+			return res.ok
+		} catch {
+			return false
+		}
+	}, "Invalid WaspLib version.")
 
 export type UpdateScriptSchema = z.infer<typeof updateScriptClientSchema>
 

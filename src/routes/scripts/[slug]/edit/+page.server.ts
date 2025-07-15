@@ -1,9 +1,9 @@
 import { superValidate, setError } from "sveltekit-superforms/server"
-import { redirect } from "@sveltejs/kit"
+import { error, redirect } from "@sveltejs/kit"
 import { updateScriptServerSchema } from "$lib/server/schemas.server"
 import { canEdit } from "$lib/client/supabase"
 import { doLogin, updateImgFile, updateScriptFile, uploadFile } from "$lib/server/supabase.server"
-import { UUID_V4_REGEX } from "$lib/utils"
+import { formatError, UUID_V4_REGEX } from "$lib/utils"
 import { zod } from "sveltekit-superforms/adapters"
 import { getScriptByID, getScriptByURL, updateScript } from "$lib/server/scripts.server"
 import { pad } from "$lib/client/utils"
@@ -15,6 +15,18 @@ export const load = async ({ locals: { supabaseServer, user, session }, parent }
 
 	const { script } = await parent()
 
+	const { data, error: err } = await supabaseServer
+		.schema("scripts")
+		.from("versions")
+		.select("simba, wasplib")
+		.eq("id", script.id)
+		.eq("revision", script.protected.revision)
+		.single()
+
+	if (err) {
+		error(404, formatError(err))
+	}
+
 	const form = await superValidate(
 		{
 			published: script.published,
@@ -24,6 +36,8 @@ export const load = async ({ locals: { supabaseServer, user, session }, parent }
 			description: script.description,
 			content: script.content,
 			categories: script.metadata.categories,
+			simba: data.simba,
+			wasplib: data.wasplib,
 			xp_min: script.stats_limits.xp_min,
 			xp_max: script.stats_limits.xp_max,
 			gp_min: script.stats_limits.gp_min,

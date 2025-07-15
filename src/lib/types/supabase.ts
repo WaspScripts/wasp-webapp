@@ -161,37 +161,6 @@ export type Database = {
 					}
 				]
 			}
-			free_access_old: {
-				Row: {
-					date_end: string
-					date_start: string
-					id: string
-					product: string
-					user_id: string
-				}
-				Insert: {
-					date_end?: string
-					date_start?: string
-					id?: string
-					product: string
-					user_id: string
-				}
-				Update: {
-					date_end?: string
-					date_start?: string
-					id?: string
-					product?: string
-					user_id?: string
-				}
-				Relationships: [
-					{
-						foreignKeyName: "free_access_old_user_id_fkey"
-						columns: ["user_id"]
-						referencedRelation: "profiles"
-						referencedColumns: ["id"]
-					}
-				]
-			}
 			private: {
 				Row: {
 					email: string
@@ -321,46 +290,6 @@ export type Database = {
 					}
 				]
 			}
-			subscriptions_old: {
-				Row: {
-					cancel: boolean
-					date_end: string
-					date_start: string
-					disabled: boolean
-					id: string
-					price: string
-					product: string
-					user_id: string
-				}
-				Insert: {
-					cancel?: boolean
-					date_end?: string
-					date_start?: string
-					disabled?: boolean
-					id: string
-					price: string
-					product: string
-					user_id?: string
-				}
-				Update: {
-					cancel?: boolean
-					date_end?: string
-					date_start?: string
-					disabled?: boolean
-					id?: string
-					price?: string
-					product?: string
-					user_id?: string
-				}
-				Relationships: [
-					{
-						foreignKeyName: "subscriptions_old_user_id_fkey"
-						columns: ["user_id"]
-						referencedRelation: "profiles"
-						referencedColumns: ["id"]
-					}
-				]
-			}
 		}
 		Views: {
 			random_scripters: {
@@ -432,13 +361,31 @@ export type Database = {
 	}
 	public: {
 		Tables: {
-			[_ in never]: never
+			json_data: {
+				Row: {
+					content: Json | null
+				}
+				Insert: {
+					content?: Json | null
+				}
+				Update: {
+					content?: Json | null
+				}
+				Relationships: []
+			}
 		}
 		Views: {
 			[_ in never]: never
 		}
 		Functions: {
-			[_ in never]: never
+			get_simba_hash: {
+				Args: Record<PropertyKey, never>
+				Returns: string
+			}
+			get_wasplib_hash: {
+				Args: Record<PropertyKey, never>
+				Returns: string
+			}
 		}
 		Enums: {
 			[_ in never]: never
@@ -596,6 +543,34 @@ export type Database = {
 					}
 				]
 			}
+			versions: {
+				Row: {
+					id: string
+					revision: number
+					simba: string
+					wasplib: string
+				}
+				Insert: {
+					id?: string
+					revision: number
+					simba?: string
+					wasplib?: string
+				}
+				Update: {
+					id?: string
+					revision?: number
+					simba?: string
+					wasplib?: string
+				}
+				Relationships: [
+					{
+						foreignKeyName: "versions_id_fkey"
+						columns: ["id"]
+						referencedRelation: "scripts"
+						referencedColumns: ["id"]
+					}
+				]
+			}
 		}
 		Views: {
 			author_scripts: {
@@ -721,7 +696,7 @@ export type Database = {
 					total: number | null
 				}
 				Insert: {
-					downloads: string[]
+					downloads?: string[]
 					id: string
 					total?: number | null
 				}
@@ -741,7 +716,7 @@ export type Database = {
 				}
 				Insert: {
 					date?: string
-					downloads: string[]
+					downloads?: string[]
 					id: string
 					total?: number | null
 				}
