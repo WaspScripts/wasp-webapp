@@ -14,11 +14,19 @@
 		count: number
 	} = $props()
 
+	const incomeObject = {
+		active: 0,
+		cancelling: 0,
+		total: 0
+	}
+
+	const income = $state([incomeObject, incomeObject, incomeObject])
+
 	async function getSubscriptions(id: string) {
 		const { data: subData, error: subError } = await page.data.supabaseClient
 			.schema("profiles")
 			.from("subscriptions")
-			.select("id, subscription, price, date_start, date_end, cancel, disabled, profiles(username)")
+			.select("id, user_id, price, date_start, date_end, cancel, disabled, profiles(username)")
 			.eq("product", id)
 
 		if (subError) {
@@ -37,15 +45,27 @@
 			return []
 		}
 
+		const intervals = ["week", "month", "year"]
+
 		return subData.map((sub) => {
 			const i = priceData.findIndex((price) => price.id === sub.price)
+			const value = priceData[i].amount / 100
+
+			intervals.forEach((interval, idx) => {
+				if (priceData[i].interval === interval) {
+					if (sub.cancel) income[idx].cancelling += value
+					else income[idx].active += value
+					income[idx].total += value
+				}
+			})
+
 			return {
 				id: sub.id,
-				subscription: sub.subscription,
-				username: sub.profiles?.username ?? "Null",
+				user: sub.id,
+				username: sub.profiles.username,
 				date_start: sub.date_start,
 				date_end: sub.date_end,
-				price: priceData[i].amount,
+				price: value,
 				interval:
 					priceData[i].interval.charAt(0).toUpperCase() + priceData[i].interval.slice(1) + "ly",
 				state: sub.cancel ? (sub.disabled ? 2 : 1) : 0
@@ -82,8 +102,28 @@
 	{/snippet}
 	{#snippet content()}
 		<header class="flex flex-col justify-between">
-			<h1 class="lg:h4 my-4 flex flex-col gap-4 text-lg lg:flex-row">{name} subscriptions</h1>
-			<h2>Total: {count}</h2>
+			<h1 class="lg:h4 my-4 text-center text-lg">
+				{name} subscriptions
+			</h1>
+			<h2 class="my-4 text-center">Total subscriptions: {count}</h2>
+			<div class="my-4 flex justify-evenly gap-2 text-sm">
+				{#each ["Weekly", "Monthly", "Yearly"] as interval, idx}
+					<div class="flex flex-col gap-2">
+						<span>
+							{interval} active:
+							<span class="text-success-500">{income[idx].active.toFixed(2)}€ </span>
+						</span>
+						<span>
+							{interval} cancelling:
+							<span class="text-error-500">{income[idx].cancelling.toFixed(2)}€</span>
+						</span>
+						<span>
+							{interval} total:
+							<span class="text-primary-500">{income[idx].total.toFixed(2)}€</span>
+						</span>
+					</div>
+				{/each}
+			</div>
 		</header>
 		<form method="POST" class="table-wrap max-h-[28rem]">
 			<table class="table">
@@ -94,14 +134,14 @@
 							<td class="h-full w-full p-0 text-xs"> Loading... </td>
 						</tr>
 					{:then subscriptions}
-						{#each subscriptions as row (row.subscription)}
+						{#each subscriptions as row (row.id)}
 							<tr>
-								<td>{row.id}</td>
+								<td>{row.user}</td>
 								<td class="text-center">{row.username}</td>
 
 								<td class="text-center">{new Date(row.date_start).toLocaleString(userLocale)}</td>
 								<td class="text-center">{new Date(row.date_end).toLocaleString(userLocale)}</td>
-								<td class="text-center">{Number(row.price / 100).toLocaleString(userLocale)} €</td>
+								<td class="text-center">{Number(row.price).toLocaleString(userLocale)} €</td>
 
 								<td class="text-center">{row.interval}</td>
 
@@ -119,7 +159,7 @@
 									<button
 										type="submit"
 										class="btn preset-outlined-error-500"
-										formaction="?/cancelSub&subscription={row.subscription}"
+										formaction="?/cancelSub&subscription={row.id}"
 										class:disabled={row.state === 2}
 										disabled={row.state === 2}
 									>
