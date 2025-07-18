@@ -9,7 +9,6 @@ export const actions = {
 	},
 	setTheme: async ({ cookies, url: { searchParams } }) => {
 		const theme = searchParams.get("/setTheme") || "wasp"
-		console.log(theme)
 		cookies.set("theme", theme, { path: "/", maxAge: 60 * 60 * 24 * 7 * 360 })
 	}
 }
