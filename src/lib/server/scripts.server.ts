@@ -31,9 +31,9 @@ export async function getScripts(): Promise<Script[]> {
 		.from("scripts")
 		.select(
 			`id, title, description, content, url, published,
-			protected!protected_id_fkey (author, revision, username, avatar, updated_at),
-			metadata!metadata_id_fkey (status, type, categories),
-			stats_limits!stats_limits_id_fkey (xp_min, xp_max, gp_min, gp_max)`
+			protected!left (author, revision, username, avatar, updated_at),
+			metadata!left (status, type, categories),
+			stats_limits!left (xp_min, xp_max, gp_min, gp_max)`
 		)
 		.order("title", { ascending: true })
 		.overrideTypes<Script[]>()

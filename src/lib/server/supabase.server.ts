@@ -45,7 +45,13 @@ export async function uploadFile(
 	path: string,
 	file: File
 ) {
-	const { error: err } = await supabase.storage.from(bucket).upload(path, file, { upsert: true })
+	const contentType = path.endsWith(".jpg") || path.endsWith(".jpeg") ? "image/jpeg" : undefined
+
+	console.log(contentType)
+
+	const { error: err } = await supabase.storage
+		.from(bucket)
+		.upload(path, file, { upsert: true, contentType })
 
 	if (err) {
 		console.error(err)
@@ -66,8 +72,11 @@ export async function updateImgFile(
 	path: string,
 	file: File
 ) {
-	const { error: err } = await supabase.storage.from(bucket).update(path, file, { upsert: true })
+	const { error: err } = await supabase.storage
+		.from(bucket)
+		.update(path, file, { upsert: true, contentType: "image/jpeg" })
 	if (err) {
+		console.error(err)
 		return (
 			"storage " +
 			bucket +

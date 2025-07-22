@@ -64,7 +64,7 @@
 			<span class="text-primary-600 dark:text-secondary-500 text-xs drop-shadow">
 				by
 				<a
-					href="/scripters/{encodeSEO(script.protected.username.normalize('NFKC'))}"
+					href="/scripters/{encodeSEO(script.protected.username.replaceAll(' ', '-'))}"
 					class="hover:preset-tonal-secondary"
 				>
 					{script.protected.username}
