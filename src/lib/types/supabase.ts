@@ -399,6 +399,7 @@ export type Database = {
 			bundles: {
 				Row: {
 					author: string
+					avatar: string
 					id: string
 					name: string
 					scripts: string[]
@@ -406,13 +407,15 @@ export type Database = {
 				}
 				Insert: {
 					author: string
+					avatar?: string
 					id?: string
 					name: string
 					scripts: string[]
-					username: string
+					username?: string
 				}
 				Update: {
 					author?: string
+					avatar?: string
 					id?: string
 					name?: string
 					scripts?: string[]

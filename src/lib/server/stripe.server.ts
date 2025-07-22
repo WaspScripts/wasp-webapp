@@ -1,6 +1,7 @@
 import { STRIPE_KEY } from "$env/static/private"
 import type { BundleSchema, NewScriptSchema, PriceSchema } from "$lib/client/schemas"
 import type { Bundle, Price, Scripter } from "$lib/types/collection"
+import type { Database } from "$lib/types/supabase"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import Stripe from "stripe"
 
@@ -329,7 +330,10 @@ export async function updateStripePrice(price: Price) {
 	await Promise.all(promises)
 }
 
-export async function createStripeBundleProduct(supabase: SupabaseClient, bundle: BundleSchema) {
+export async function createStripeBundleProduct(
+	supabase: SupabaseClient<Database>,
+	bundle: BundleSchema
+) {
 	const scripts = bundle.bundledScripts.reduce((acc: string[], script) => {
 		if (script.active) acc.push(script.id)
 		return acc
@@ -339,20 +343,23 @@ export async function createStripeBundleProduct(supabase: SupabaseClient, bundle
 
 	if (bundle.prices.length === 0) return
 
-	const { data, error } = await supabase
+	const { data, error: err } = await supabase
 		.schema("scripts")
 		.from("bundles")
-		.insert({ name: bundle.name, user_id: bundle.user_id, scripts: scripts })
+		.insert({ name: bundle.name, author: bundle.user_id, scripts: scripts })
 		.select()
-		.overrideTypes<Bundle[]>()
+		.single()
 
-	if (error) return error
+	if (err) {
+		console.error(err)
+		return err
+	}
 
 	const product = await stripe.products
 		.create({
-			name: data[0].name,
+			name: data.name,
 			tax_code: "txcd_10202000",
-			metadata: { user_id: data[0].user_id, bundle: data[0].id }
+			metadata: { user_id: data.author, bundle: data.id }
 		})
 		.catch((err: unknown) => console.error(err))
 
