@@ -42,7 +42,7 @@ export const baseScriptSchema = z.object({
 	wasplib: z
 		.string()
 		.regex(
-			/^\d{4}\.\d{2}\.\d{2}-[a-fA-F0-9]{6}$/,
+			/^\d{4}\.\d{2}\.\d{2}-[a-fA-F0-9]{7}$/,
 			"Must match format YYYY.MM.DD-HEX with valid hex"
 		),
 	xp_min: z
@@ -98,29 +98,6 @@ export const addScriptClientSchema = baseScriptSchema
 		(schema) => schema.gp_min <= schema.gp_max,
 		"Minimum gold cannot exceed the maximum gold."
 	)
-	.refine(async (schema) => {
-		try {
-			const res = await fetch("https://github.com/Villavu/Simba/commit/" + schema.simba, {
-				method: "HEAD"
-			})
-			return res.ok
-		} catch {
-			return false
-		}
-	}, "Invalid Simba version.")
-	.refine(async (schema) => {
-		try {
-			const res = await fetch(
-				"https://github.com/WaspScripts/WaspLib/releases/tag/" + schema.wasplib,
-				{
-					method: "HEAD"
-				}
-			)
-			return res.ok
-		} catch {
-			return false
-		}
-	}, "Invalid WaspLib version.")
 
 export type AddScriptSchema = z.infer<typeof addScriptClientSchema>
 
@@ -148,29 +125,6 @@ export const updateScriptClientSchema = baseScriptSchema
 		(schema) => schema.gp_min <= schema.gp_max,
 		"Minimum gold cannot exceed the maximum gold."
 	)
-	.refine(async (schema) => {
-		try {
-			const res = await fetch("https://github.com/Villavu/Simba/commit/" + schema.simba, {
-				method: "HEAD"
-			})
-			return res.ok
-		} catch {
-			return false
-		}
-	}, "Invalid Simba version.")
-	.refine(async (schema) => {
-		try {
-			const res = await fetch(
-				"https://github.com/WaspScripts/WaspLib/releases/tag/" + schema.wasplib,
-				{
-					method: "HEAD"
-				}
-			)
-			return res.ok
-		} catch {
-			return false
-		}
-	}, "Invalid WaspLib version.")
 
 export type UpdateScriptSchema = z.infer<typeof updateScriptClientSchema>
 

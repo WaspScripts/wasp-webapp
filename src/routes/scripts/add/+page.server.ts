@@ -2,7 +2,7 @@ import { superValidate, setError, withFiles } from "sveltekit-superforms/server"
 import { fail, redirect } from "@sveltejs/kit"
 import { addScriptServerSchema } from "$lib/server/schemas.server"
 import { scriptExists } from "$lib/client/supabase"
-import { doLogin, updateScriptFile, uploadFile } from "$lib/server/supabase.server"
+import { doLogin, uploadFile } from "$lib/server/supabase.server"
 import { encodeSEO } from "$lib/utils"
 import { zod } from "sveltekit-superforms/adapters"
 import type { TScriptStatus, TScriptTypes } from "$lib/types/collection"
@@ -181,9 +181,12 @@ export const actions = {
 			gp_max: form.data.gp_max
 		}
 
+		const versions = { revision: 1, simba: form.data.simba, wasplib: form.data.wasplib }
+
 		const inserts = [
 			supabaseServer.schema("scripts").from("metadata").update(metadata).eq("id", data.id),
-			supabaseServer.schema("scripts").from("stats_limits").update(limits).eq("id", data.id)
+			supabaseServer.schema("scripts").from("stats_limits").update(limits).eq("id", data.id),
+			supabaseServer.schema("scripts").from("versions").update(versions).eq("id", data.id)
 		]
 
 		const awaitedInserts = await Promise.all(inserts)
@@ -201,8 +204,6 @@ export const actions = {
 				"UPDATE scripts.stats_limits failed!\n\n" + JSON.stringify(errLimits)
 			)
 		}
-
-		form.data.script = await updateScriptFile(form.data.script, data.id as string, 1)
 
 		//rename all scripts to script so we can always fetch them later regardless of name changes.
 		const path = data.id + "/" + pad(1, 9) + "/script.simba"

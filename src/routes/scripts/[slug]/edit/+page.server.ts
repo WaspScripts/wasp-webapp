@@ -2,7 +2,7 @@ import { superValidate, setError } from "sveltekit-superforms/server"
 import { error, redirect } from "@sveltejs/kit"
 import { updateScriptServerSchema } from "$lib/server/schemas.server"
 import { canEdit } from "$lib/client/supabase"
-import { doLogin, updateImgFile, updateScriptFile, uploadFile } from "$lib/server/supabase.server"
+import { doLogin, updateImgFile, uploadFile } from "$lib/server/supabase.server"
 import { formatError, UUID_V4_REGEX } from "$lib/utils"
 import { zod } from "sveltekit-superforms/adapters"
 import { getScriptByID, getScriptByURL, updateScript } from "$lib/server/scripts.server"
@@ -161,7 +161,6 @@ export const actions = {
 		if (form.data.script) {
 			revision = revision + 1
 			console.log("Updating script revision to ", revision)
-			form.data.script = await updateScriptFile(form.data.script, script.id, revision)
 			const path = script.id + "/" + pad(revision, 9) + "/script.simba"
 			files.push(uploadFile(supabaseServer, "scripts", path, form.data.script))
 		}

@@ -34,26 +34,8 @@ export async function doLogin(
 	redirect(303, data.url)
 }
 
-function updateID(str: string, id: string) {
-	const regex = /{\$DEFINE SCRIPT_ID := '(.*?)'}/
-	const replace = "{$DEFINE SCRIPT_ID := '" + id + "'}"
-	str = str.match(regex) ? str.replace(regex, replace) : replace.concat("\n").concat(str)
-
-	return str
-}
-
-function updateRevision(str: string, rev: number) {
-	const regex = /{\$DEFINE SCRIPT_REVISION := '(.*?)'}/
-	const replace = "{$DEFINE SCRIPT_REVISION := '" + rev.toString() + "'}"
-	str = str.match(regex) ? str.replace(regex, replace) : replace.concat("\n").concat(str)
-
-	return str
-}
-
-export async function updateScriptFile(file: File, id: string, revision: number) {
+export async function updateScriptFile(file: File) {
 	let fileString = await file.text()
-	fileString = updateID(updateRevision(fileString, revision), id)
-
 	return new File([fileString], file.name, { type: "text/plain" })
 }
 
@@ -64,7 +46,9 @@ export async function uploadFile(
 	file: File
 ) {
 	const { error: err } = await supabase.storage.from(bucket).upload(path, file, { upsert: true })
+
 	if (err) {
+		console.error(err)
 		return (
 			"storage " +
 			bucket +
