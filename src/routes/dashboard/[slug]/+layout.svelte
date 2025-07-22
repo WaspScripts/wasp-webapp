@@ -2,7 +2,7 @@
 	import { goto } from "$app/navigation"
 	import { page } from "$app/state"
 	import Head from "$lib/components/Head.svelte"
-	import { Tabs } from "@skeletonlabs/skeleton-svelte"
+	import { Avatar, Tabs } from "@skeletonlabs/skeleton-svelte"
 	import { FileCode, Landmark, Package, Settings } from "svelte-lucide"
 	const { data, children } = $props()
 
@@ -17,16 +17,17 @@
 />
 
 <main class="">
-	{#if profile.id != data.scripter.id}
-		<h3 class="text-primary-500 my-4 text-center font-bold">
-			Current user: {profile.username}
-			<small>{profile.id}</small>
-		</h3>
-	{/if}
-
-	<h3 class="my-4 text-center">
-		Viewing user: {data.scripter.profiles.username}
-		<small>{data.scripter.id}</small>
+	<h3 class="my-4 flex justify-center gap-2">
+		<span class="my-auto"> Viewing user: </span>
+		<Avatar
+			src={data.scripter.profiles.avatar}
+			name={data.scripter.profiles.username}
+			classes="border-surface-300-700 m-2 flex border-2"
+		/>
+		<span class="my-auto">
+			{data.scripter.profiles.username}
+		</span>
+		<small class="my-auto">{data.scripter.id}</small>
 	</h3>
 
 	<div class="my-8 grid place-items-center">

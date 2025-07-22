@@ -1,5 +1,7 @@
 <script lang="ts">
 	import TableHeader from "$lib/components/TableHeader.svelte"
+	import { Avatar } from "@skeletonlabs/skeleton-svelte"
+
 	const { data } = $props()
 	const { supabaseClient, profile, stats, subscriptions } = $derived(data)
 
@@ -8,7 +10,7 @@
 		const { data, error: err } = await supabaseClient
 			.schema("profiles")
 			.from("scripters")
-			.select(`id, profiles!inner (username)`)
+			.select(`id, profiles!left (username, avatar)`)
 			.limit(1, { foreignTable: "profiles" })
 
 		console.log(`└──💻 fetch all scripters loaded in ${(performance.now() - start).toFixed(2)} ms!`)
@@ -65,9 +67,16 @@
 					{#each scripters as scripter (scripter.id)}
 						<a
 							href="/dashboard/{scripter.id}/general"
-							class="btn preset-outlined-tertiary-300-700 hover:border-secondary-500 m-2 mx-auto w-full font-bold"
+							class="btn preset-outlined-tertiary-300-700 hover:border-secondary-500 m-2 mx-auto flex w-full justify-around font-bold"
 						>
-							{scripter.profiles.username}
+							<Avatar
+								src={scripter.profiles.avatar}
+								name={scripter.profiles.username}
+								classes="border-surface-300-700 m-2 flex border-2"
+							/>
+							<span>
+								{scripter.profiles.username}
+							</span>
 						</a>
 					{/each}
 				{/await}

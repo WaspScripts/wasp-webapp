@@ -317,7 +317,7 @@ export async function updateStripePrice(price: Price) {
 			stripe.prices
 				.create({
 					unit_amount: Math.round(price.amount * 100),
-					currency: "EUR",
+					currency: "eur",
 					active: true,
 					product: price.product,
 					recurring: { interval: price.interval as Interval }

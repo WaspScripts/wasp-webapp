@@ -48,7 +48,7 @@ export const POST = async ({ request }) => {
 				.update({
 					amount: priceUpdated.unit_amount ?? 100,
 					interval: priceUpdated.recurring?.interval as "week" | "month" | "year" | undefined,
-					currency: priceUpdated.currency as "EUR" | "USD" | "CAD" | "AUD" | undefined,
+					currency: priceUpdated.currency as "eur" | "usd" | "cad" | "aud" | undefined,
 					active: priceUpdated.active
 				})
 				.eq("id", priceUpdated.id)
@@ -72,7 +72,7 @@ export const POST = async ({ request }) => {
 					product: priceCreated.product.toString(),
 					amount: priceCreated.unit_amount ?? 100,
 					interval: priceCreated.recurring?.interval as "week" | "month" | "year" | undefined,
-					currency: priceCreated.currency as "EUR" | "USD" | "CAD" | "AUD" | undefined,
+					currency: priceCreated.currency as "eur" | "usd" | "cad" | "aud" | undefined,
 					active: priceCreated.active
 				})
 

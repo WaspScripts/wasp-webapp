@@ -63,7 +63,7 @@ export const load = async ({ locals: { supabaseServer }, params: { slug }, paren
 							productPrices.push({
 								active: true,
 								amount: 0,
-								currency: "EUR",
+								currency: "eur",
 								id: "price_noID",
 								interval: interval,
 								product: product.id
@@ -200,7 +200,7 @@ export const actions = {
 					updateStripePrice({
 						active: true,
 						amount: newPrice.amount,
-						currency: newPrice.currency as "EUR" | "USD" | "CAD" | "AUD",
+						currency: newPrice.currency as "eur" | "usd" | "cad" | "aud",
 						id: newPrice.id,
 						interval: newPrice.interval as "week" | "month" | "year",
 						product: product.id
