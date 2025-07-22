@@ -97,7 +97,7 @@ export async function getUsername(id: string) {
 		.single()
 
 	if (err) {
-		console.error("getUsername(id): " + formatError(err))
+		console.error("getUsername(" + id + "): " + formatError(err))
 		return null
 	}
 	return data.username

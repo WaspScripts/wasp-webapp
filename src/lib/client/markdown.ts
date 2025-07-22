@@ -1,6 +1,6 @@
 import markdownit from "markdown-it"
 import Shiki from "@shikijs/markdown-it"
-import { full as emoji } from "markdown-it-emoji"
+import { full } from "markdown-it-emoji"
 import { imgLazyload } from "@mdit/plugin-img-lazyload"
 
 const shikiHighlighter = await Shiki({
@@ -13,5 +13,5 @@ export const mardownRenderer = new markdownit("commonmark", {
 	typographer: true
 })
 	.use(shikiHighlighter)
-	.use(emoji)
+	.use(full)
 	.use(imgLazyload)
