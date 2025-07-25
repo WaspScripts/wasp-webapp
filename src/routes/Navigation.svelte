@@ -243,3 +243,6 @@
 		{/if}
 	</form>
 </nav>
+<a href="https://waspscripts.com" class="bg-secondary-400-600 py-2 text-center">
+	This is website if for <b>Simba 2.0</b>. Click here to visit the legacy version of the website.
+</a>
