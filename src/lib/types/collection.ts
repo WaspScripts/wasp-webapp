@@ -198,7 +198,7 @@ export interface ProductEx {
 }
 
 export interface Subscription {
-	id: string
+	subscription: string
 	product: string
 	price: string
 	date_start: string
