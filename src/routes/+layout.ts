@@ -18,13 +18,14 @@ export const load = async ({ data, depends, fetch }) => {
 				}
 			})
 
-	const {
-		data: { session }
-	} = await supabaseClient.auth.getSession()
+	const promises = await Promise.all([
+		supabaseClient.auth.getUser(),
+		supabaseClient.auth.getSession()
+	])
 
 	const {
 		data: { user }
-	} = await supabaseClient.auth.getUser()
+	} = promises[0]
 
 	const getProfile = async () => {
 		if (!user) return null
@@ -43,8 +44,7 @@ export const load = async ({ data, depends, fetch }) => {
 		darkMode: data.darkMode,
 		theme: data.theme,
 		supabaseClient,
-		session,
-		user,
+		session: promises[1].data.session,
 		profile: await getProfile()
 	}
 }

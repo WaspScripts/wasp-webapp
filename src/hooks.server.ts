@@ -40,9 +40,14 @@ const supabase: Handle = async ({ event, resolve }) => {
 	event.locals.safeGetSession = async () => {
 		let start = performance.now()
 
+		const promises = await Promise.all([
+			event.locals.supabaseServer.auth.getSession(),
+			event.locals.supabaseServer.auth.getUser()
+		])
+
 		const {
 			data: { session }
-		} = await event.locals.supabaseServer.auth.getSession()
+		} = promises[0]
 
 		if (!session) return { session: null, user: null, getProfile: null }
 		console.log(`└📜 session took ${(performance.now() - start).toFixed(2)} ms to check!`)
@@ -52,7 +57,7 @@ const supabase: Handle = async ({ event, resolve }) => {
 		const {
 			data: { user },
 			error: err
-		} = await event.locals.supabaseServer.auth.getUser()
+		} = promises[1]
 
 		if (err) return { session: null, user: null, getProfile: null }
 
@@ -106,8 +111,8 @@ const authGuard: Handle = async ({ event, resolve }) => {
 		const { data, error: err } = await event.locals.supabaseServer
 			.schema("profiles")
 			.from("subscriptions")
-			.select("subscription, product, price, date_start, date_end, cancel, disabled")
-			.eq("id", user.id)
+			.select("id, product, price, date_start, date_end, cancel, disabled")
+			.eq("user_id", user.id)
 
 		if (err) return []
 		return data
