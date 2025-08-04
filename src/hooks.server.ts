@@ -106,8 +106,8 @@ const authGuard: Handle = async ({ event, resolve }) => {
 		const { data, error: err } = await event.locals.supabaseServer
 			.schema("profiles")
 			.from("subscriptions")
-			.select("subscription, product, price, date_start, date_end, cancel, disabled")
-			.eq("id", user.id)
+			.select("id, product, price, date_start, date_end, cancel, disabled")
+			.eq("user_id", user.id)
 
 		if (err) return []
 		return data
