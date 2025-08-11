@@ -7,6 +7,8 @@
 	import { getPriceAmount, getPriceIntervalEx } from "$lib/utils"
 	import ExternalLink from "svelte-lucide/ExternalLink.svelte"
 	import ScriptLinks from "./ScriptLinks.svelte"
+	import { RotateCw } from "svelte-lucide"
+	import RefundModal from "./RefundModal.svelte"
 
 	let {
 		data,
@@ -52,6 +54,43 @@
 	function getPrice(id: string, prices: Price[]) {
 		return prices.find((price) => price.id === id)
 	}
+
+	function getStartDate(date_end: string, interval: string | undefined) {
+		const endDate = new Date(date_end)
+		const startDate = new Date(endDate)
+
+		switch (interval) {
+			case "week":
+				startDate.setDate(startDate.getDate() - 7)
+				break
+			case "month":
+				startDate.setMonth(startDate.getMonth() - 1)
+				break
+			case "year":
+				startDate.setFullYear(startDate.getFullYear() - 1)
+				break
+			default:
+				return null
+		}
+		return { startDate, endDate }
+	}
+
+	function inEarlyWindow(date_end: string, interval: string | undefined) {
+		const date = getStartDate(date_end, interval)
+		if (!date) return false
+
+		const DAY = 24 * 60 * 60 * 1000
+
+		const { startDate, endDate } = date
+
+		const intervalMs = endDate.getTime() - startDate.getTime() // actual length
+		const tenPercentMs = intervalMs * 0.05
+		const fourteenDaysMs = 10 * DAY
+		const windowMs = Math.min(tenPercentMs, fourteenDaysMs)
+
+		const elapsedSinceStartMs = Date.now() - startDate.getTime()
+		return elapsedSinceStartMs <= windowMs
+	}
 </script>
 
 <div class="mx-auto w-screen max-w-fit">
@@ -68,17 +107,26 @@
 	<form
 		id="subsform"
 		method="POST"
-		class="table-wrap preset-outlined-surface-500 mx-auto max-w-[95%] rounded-md"
+		class="mx-auto table-wrap max-w-[95%] rounded-md preset-outlined-surface-500"
 		use:enhance
 		bind:this={formElement}
 		action="?/subscriptions"
 	>
 		<table class="table border-separate space-y-6 text-xs md:text-sm">
 			<TableHeader
-				headers={["Product", "Type", "Price", "Interval", "Start date", "End date", "Renew"]}
+				headers={[
+					"Product",
+					"Type",
+					"Price",
+					"Interval",
+					"Start date",
+					"End date",
+					"Renew",
+					"Refund"
+				]}
 			/>
 			<tbody class="preset-filled-surface-200-800 [&>tr]:hover:preset-tonal">
-				{#each subscriptions as { subscription, product, price, date_start, date_end, disabled }, i (subscription)}
+				{#each subscriptions as { id, product, price, date_start, date_end, disabled }, i (id)}
 					{@const priceEx = getPrice(price, prices)}
 					<tr class="table-row">
 						{#if bundleArray[i]}
@@ -116,7 +164,7 @@
 
 							<td class="text-center">
 								<a href="/scripts/{script.url}" class="permalink">
-									<button class="btn hover:text-primary-500 hover:cursor-pointer">
+									<button class="btn hover:cursor-pointer hover:text-primary-500">
 										<ExternalLink size="16" />
 										<span>Script</span>
 									</button>
@@ -139,7 +187,7 @@
 
 						<td class="text-center">
 							<Switch
-								name="{subscription}-slider"
+								name="{id}-slider"
 								controlInactive="bg-error-500"
 								controlActive="bg-success-700"
 								controlDisabled="disabled"
@@ -149,10 +197,31 @@
 								onCheckedChange={() => {
 									if (disabled) return
 									$form.subscriptions[i].cancel = !$form.subscriptions[i].cancel
-									formElement.setAttribute("action", "?/subscriptions&product=" + subscription)
+									formElement.setAttribute("action", "?/toggleSubscription&id=" + id)
 									formElement.requestSubmit()
 								}}
 							/>
+						</td>
+						<td class="text-center">
+							{#if inEarlyWindow(date_end, priceEx?.interval)}
+								{#if bundleArray[i]}
+									<RefundModal
+										name={bundleArray[i].name}
+										username={bundleArray[i].username}
+										{id}
+										price={priceEx}
+									/>
+								{:else}
+									{@const script = getScript(product) as ScriptProduct}
+
+									<RefundModal name={script.name} username={script.username} {id} price={priceEx} />
+								{/if}
+							{:else}
+								<button disabled class="btn preset-tonal">
+									<RotateCw size="16" />
+									<span>Refund</span>
+								</button>
+							{/if}
 						</td>
 					</tr>
 				{/each}

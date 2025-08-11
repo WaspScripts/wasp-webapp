@@ -10,7 +10,7 @@ export const load = async ({ locals: { getSubscriptions, getFreeAccess } }) => {
 	const subscriptions = await getSubscriptions()
 
 	const states = subscriptions.map((sub) => ({
-		subscription: sub.subscription,
+		subscription: sub.id,
 		cancel: sub.cancel
 	}))
 
@@ -148,7 +148,7 @@ export const actions = {
 		error(404, "Something went wrong!")
 	},
 
-	subscriptions: async ({
+	toggleSubscription: async ({
 		request,
 		locals: { supabaseServer, user, getProfile },
 		url: { origin, searchParams }
@@ -177,7 +177,7 @@ export const actions = {
 			)
 		}
 
-		const subscriptionID = searchParams.get("product")
+		const subscriptionID = searchParams.get("id")
 
 		if (!subscriptionID) {
 			return setError(
@@ -227,5 +227,140 @@ export const actions = {
 		})
 
 		return { form, subscription: subscriptionID }
+	},
+
+	refund: async ({
+		locals: { supabaseServer, user, getProfile },
+		url: { origin, searchParams }
+	}) => {
+		if (!user) {
+			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
+		}
+
+		const profile = await getProfile()
+
+		if (!profile) {
+			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
+		}
+
+		if (!profile.stripe) {
+			error(
+				500,
+				"You don't have a customer id. This should not be possible! Please contact support@waspscripts.dev"
+			)
+		}
+
+		const subscriptionID = searchParams.get("id")
+
+		if (!subscriptionID) {
+			error(
+				500,
+				"Something went wrong! Seems like no subscription was selected. If this keeps occuring please contact support@waspscripts.dev"
+			)
+		}
+
+		const customer = await stripe.customers.retrieve(profile.stripe, {
+			expand: ["subscriptions"]
+		})
+
+		if (customer.deleted) {
+			error(
+				500,
+				"That customer profile does not exist. Refresh the page, if the issue persists please contact support@waspscripts.dev"
+			)
+		}
+
+		if (!customer.subscriptions) {
+			error(500, "You don't have any subscription to refund.")
+		}
+
+		const subscription = customer.subscriptions.data.find(
+			(subscription) => subscription.id === subscriptionID
+		)
+
+		if (!subscription) {
+			error(
+				500,
+				"The subscription you want to refund either doesn't exist or doesn't belong to you. Refresh the page, if this keeps happening, please contact support@waspscripts.dev"
+			)
+		}
+
+		const anchorDate = new Date(subscription.billing_cycle_anchor * 1000)
+		const now = Date.now()
+		const diffMs = now - anchorDate.getTime()
+
+		const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+		if (diffDays > 0) {
+			error(
+				500,
+				"The subscription you want to refund is outside of the refund window. Refresh the page, if this keeps happening, please contact support@waspscripts.dev"
+			)
+		}
+
+		const invoiceID = subscription.latest_invoice as string
+		const invoice = await stripe.invoices.retrieve(invoiceID, {
+			expand: ["payments"]
+		})
+
+		const payments = invoice.payments?.data
+
+		if (!payments || payments.length === 0) {
+			error(
+				500,
+				"Couldn't find payments for the subscription. Refresh the page, if this keeps happening, please contact support@waspscripts.dev"
+			)
+		}
+
+		const last_payment = payments.find((payment) => payment.status === "paid")
+
+		if (!last_payment) {
+			error(
+				500,
+				"Couldn't find last payment for the subscription. Refresh the page, if this keeps happening, please contact support@waspscripts.dev"
+			)
+		}
+
+		const intent = last_payment.payment.payment_intent as string
+		const amount = last_payment.amount_paid
+
+		if (!amount || !intent) {
+			error(
+				500,
+				"Couldn't setup refund. Refresh the page, if this keeps happening, please contact support@waspscripts.dev"
+			)
+		}
+
+		try {
+			await stripe.refunds.create({
+				payment_intent: intent,
+				amount: amount - Math.ceil((amount * (subscription.application_fee_percent ?? 0)) / 100),
+				reason: "requested_by_customer",
+				refund_application_fee: false,
+				reverse_transfer: true
+			})
+		} catch (err) {
+			console.error(err)
+			error(
+				500,
+				"Failed to issue refund. Refresh the page, if this keeps happening, please contact support@waspscripts.dev"
+			)
+		}
+
+		try {
+			await stripe.subscriptions.cancel(subscriptionID, {
+				cancellation_details: {
+					comment: "Refunded through waspscripts.com"
+				}
+			})
+		} catch (err) {
+			console.error(err)
+			error(
+				500,
+				"Failed to cancel subscription. Refresh the page, if this keeps happening, please contact support@waspscripts.dev"
+			)
+		}
+
+		redirect(303, "/subscriptions")
 	}
 }
