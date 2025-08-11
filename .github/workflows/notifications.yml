@@ -10,13 +10,9 @@ jobs:
       - name: Discord notification
         shell: bash
         run: |
-          DESC="
-          Commit message:
-          ${{ github.event.workflow_run.head_commit.message }}"
-
           BODY=$(jq -nc \
             --arg title "Website Update" \
-            --arg desc "$DESC" \
+            --arg desc "${{ github.event.workflow_run.head_commit.message }}" \
             --arg url  "https://github.com/WaspScripts/wasp-webapp/commit/${{ github.event.workflow_run.head_commit.id }}" \
             --arg foot "Author: ${{ github.event.workflow_run.head_commit.author.name }}" \
             --argjson color 16742912 \
