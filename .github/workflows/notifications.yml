@@ -1,4 +1,4 @@
-name: Version
+name: Notifications
 on:
   push:
     branches: [main]
