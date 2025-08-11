@@ -213,7 +213,6 @@
 									/>
 								{:else}
 									{@const script = getScript(product) as ScriptProduct}
-
 									<RefundModal name={script.name} username={script.username} {id} price={priceEx} />
 								{/if}
 							{:else}
