@@ -8,6 +8,7 @@ import { zod } from "sveltekit-superforms/adapters"
 import type { TScriptStatus, TScriptTypes } from "$lib/types/collection"
 import { pad } from "$lib/client/utils"
 import { updateScript } from "$lib/server/scripts.server"
+import { DISCORD_WEBHOOK } from "$env/static/private"
 
 const scriptDefaultContent = `### {$title} by {$author}
 
@@ -106,7 +107,7 @@ export const load = async ({ locals: { supabaseServer, user, session } }) => {
 }
 
 export const actions = {
-	default: async ({ request, locals: { user, session, supabaseServer, getProfile } }) => {
+	default: async ({ request, locals: { user, session, supabaseServer, getProfile }, fetch }) => {
 		if (!user || !session) {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		}
@@ -226,7 +227,30 @@ export const actions = {
 
 		await updateScript(data.id)
 
-		if (data.url) redirect(303, "/scripts/" + data.url)
+		if (data.url) {
+			const body = {
+				embeds: [
+					{
+						title: "New Script: " + form.data.title,
+						description: form.data.description,
+						color: 0xf56f27,
+						footer: {
+							text: "Author: " + profile.username,
+							icon_url: profile.avatar
+						}
+					}
+				]
+			}
+			const res = await fetch(DISCORD_WEBHOOK, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(body)
+			})
+
+			if (!res.ok) console.error("Failed to send webhook", await res.text())
+
+			redirect(303, "/scripts/" + data.url)
+		}
 		redirect(303, "/scripts")
 	}
 }
