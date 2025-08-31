@@ -2,7 +2,7 @@ import { error } from "@sveltejs/kit"
 import { formatError } from "$lib/utils"
 import { createStripeCustomer } from "$lib/server/stripe.server"
 
-export const GET = async ({ request, locals: { supabaseServer } }) => {
+export const POST = async ({ request, locals: { supabaseServer } }) => {
 	console.log("💻 Launcher sign up")
 	const data = await request.json()
 	const access_token = data?.access_token
