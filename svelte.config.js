@@ -34,6 +34,7 @@ const config = {
 				"connect-src": [
 					"self",
 					"ws://localhost:*",
+					"http://localhost:*",
 					"https://db.waspscripts.dev",
 					"ws://db.waspscripts.dev",
 					"wss://db.waspscripts.dev"
