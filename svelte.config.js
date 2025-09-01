@@ -39,6 +39,7 @@ const config = {
 					"ws://db.waspscripts.dev",
 					"wss://db.waspscripts.dev"
 				],
+
 				"frame-src": [
 					"self",
 					"https://stripe-data-exports.s3.amazonaws.com/",

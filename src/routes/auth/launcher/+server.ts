@@ -38,7 +38,10 @@ export const POST = async ({ request, locals: { supabaseServer } }) => {
 			}),
 			{
 				status: 200,
-				headers: { "Content-Type": "application/json" }
+				headers: {
+					"Content-Type": "application/json",
+					"Access-Control-Allow-Origin": "*"
+				}
 			}
 		)
 	}
@@ -73,7 +76,10 @@ export const POST = async ({ request, locals: { supabaseServer } }) => {
 		}),
 		{
 			status: 200,
-			headers: { "Content-Type": "application/json" }
+			headers: {
+				"Content-Type": "application/json",
+				"Access-Control-Allow-Origin": "*"
+			}
 		}
 	)
 }
