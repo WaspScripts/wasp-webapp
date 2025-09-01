@@ -33,7 +33,7 @@ export const POST = async ({ request }) => {
 				.from("subscriptions")
 				.insert({
 					id: subscriptionCreated.id,
-					user_id: subscriptionCreated.metadata.wsid,
+					user_id: subscriptionCreated.metadata.user_id,
 					product: subscriptionCreated.items.data[0].price.product.toString(),
 					price: subscriptionCreated.items.data[0].price.id,
 					date_end: new Date(subscriptionCreated.cancel_at! * 1000).toISOString(),
