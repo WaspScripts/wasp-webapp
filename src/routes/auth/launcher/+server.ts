@@ -1,40 +1,26 @@
 import { error } from "@sveltejs/kit"
 import { formatError } from "$lib/utils"
 import { createStripeCustomer } from "$lib/server/stripe.server"
+import { supabaseAdmin } from "$lib/server/supabase.server"
 
-export const POST = async ({ request, locals: { supabaseServer } }) => {
+export const POST = async ({ request }) => {
 	console.log("💻 Launcher sign up")
 	const data = await request.json()
-	const access_token = data?.access_token
-	const refresh_token = data?.refresh_token
+	const id = data?.user_id
 
-	if (!access_token) error(403, "No access_token received.")
-	if (!refresh_token) error(403, "No refresh_token received.")
+	if (!id) error(403, "No user_id received.")
 
-	const {
-		data: { user },
-		error: err
-	} = await supabaseServer.auth.setSession({ access_token, refresh_token })
-	if (err) error(401, formatError(err))
-	if (!user) error(401, "Failed to get user.")
-
-	const {
-		data: { session }
-	} = await supabaseServer.auth.getSession()
-
-	const { count } = await supabaseServer
+	const { count } = await supabaseAdmin
 		.schema("profiles")
 		.from("profiles")
 		.select("*", { count: "exact", head: true })
-		.eq("id", user.id)
+		.eq("id", id)
 		.single()
 
 	if (count) {
 		return new Response(
 			JSON.stringify({
-				success: true,
-				access_token: session?.access_token,
-				refresh_token: session?.refresh_token
+				success: true
 			}),
 			{
 				status: 200,
@@ -44,6 +30,15 @@ export const POST = async ({ request, locals: { supabaseServer } }) => {
 				}
 			}
 		)
+	}
+
+	const {
+		data: { user },
+		error: getUserErr
+	} = await supabaseAdmin.auth.admin.getUserById(id)
+	if (!user) {
+		console.error("No user with such ID: ", getUserErr)
+		error(401, "No user with such ID.")
 	}
 
 	if (user.email && user.app_metadata.provider == "discord") {
@@ -56,7 +51,7 @@ export const POST = async ({ request, locals: { supabaseServer } }) => {
 		)
 		if (!stripe) error(403, "Failed to create stripe user for " + user.id)
 
-		const { error: err } = await supabaseServer.schema("profiles").from("profiles").insert({
+		const { error: err } = await supabaseAdmin.schema("profiles").from("profiles").insert({
 			id: user.id,
 			stripe,
 			discord,
@@ -70,9 +65,7 @@ export const POST = async ({ request, locals: { supabaseServer } }) => {
 
 	return new Response(
 		JSON.stringify({
-			success: true,
-			access_token: session?.access_token,
-			refresh_token: session?.refresh_token
+			success: true
 		}),
 		{
 			status: 200,
