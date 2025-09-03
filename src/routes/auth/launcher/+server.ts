@@ -1,4 +1,4 @@
-import { error } from "@sveltejs/kit"
+import { error, json } from "@sveltejs/kit"
 import { formatError } from "$lib/utils"
 import { createStripeCustomer } from "$lib/server/stripe.server"
 import { supabaseAdmin } from "$lib/server/supabase.server"
@@ -18,18 +18,7 @@ export const POST = async ({ request }) => {
 		.single()
 
 	if (count) {
-		return new Response(
-			JSON.stringify({
-				success: true
-			}),
-			{
-				status: 200,
-				headers: {
-					"Content-Type": "application/json",
-					"Access-Control-Allow-Origin": "*"
-				}
-			}
-		)
+		return json({ success: true })
 	}
 
 	const {
@@ -49,7 +38,10 @@ export const POST = async ({ request }) => {
 			discord,
 			user.user_metadata["custom_claims"]["global_name"]
 		)
-		if (!stripe) error(403, "Failed to create stripe user for " + user.id)
+
+		if (!stripe) {
+			error(403, "Failed to create stripe user for " + user.id)
+		}
 
 		const { error: err } = await supabaseAdmin.schema("profiles").from("profiles").insert({
 			id: user.id,
@@ -63,16 +55,5 @@ export const POST = async ({ request }) => {
 		if (err) error(500, "Failed to INSERT profile: " + formatError(err))
 	}
 
-	return new Response(
-		JSON.stringify({
-			success: true
-		}),
-		{
-			status: 200,
-			headers: {
-				"Content-Type": "application/json",
-				"Access-Control-Allow-Origin": "*"
-			}
-		}
-	)
+	return json({ success: true })
 }

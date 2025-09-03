@@ -13,6 +13,7 @@
 	import Discord from "./Discord.svelte"
 	import GitHub from "./GitHub.svelte"
 	import YouTube from "./YouTube.svelte"
+	import UserCog from "svelte-lucide/UserCog.svelte"
 
 	let showMenu = $state(false)
 	let showProfile = $state(false)
@@ -62,21 +63,21 @@
 
 <nav class="col-span-12 row-span-1 w-full flex-col text-sm xl:text-base">
 	<div
-		class="bg-surface-200/30 dark:bg-surface-800/30 flex h-full justify-between font-semibold backdrop-blur-md"
+		class="flex h-full justify-between bg-surface-200/30 font-semibold backdrop-blur-md dark:bg-surface-800/30"
 	>
 		<button
 			name="Menu"
 			aria-label="Open the navigation menu"
-			class="justify-left text-primary-500 my-auto flex h-full p-2 align-middle lg:hidden"
+			class="justify-left my-auto flex h-full p-2 align-middle text-primary-500 lg:hidden"
 			onclick={() => {
 				showMenu = !showMenu
 				if (showMenu) showProfile = false
 			}}
 		>
 			{#if showMenu}
-				<X class="text-surface-900-100 mx-2 my-auto" />
+				<X class="mx-2 my-auto text-surface-900-100" />
 			{:else}
-				<Menu class="text-surface-900-100 mx-2 my-auto" />
+				<Menu class="mx-2 my-auto text-surface-900-100" />
 			{/if}
 			<Logo selected={true} />
 		</button>
@@ -85,7 +86,7 @@
 			<li class="h-12">
 				<a
 					href="/"
-					class="hover:text-primary-600-400 flex h-full place-content-center place-items-center"
+					class="flex h-full place-content-center place-items-center hover:text-primary-600-400"
 					class:text-primary-600-400={"Home" === currentPage}
 					aria-label="Navigate to home page"
 				>
@@ -97,7 +98,7 @@
 					<li class="h-12">
 						<a
 							href={getLink(route)}
-							class="hover:text-primary-600-400 flex h-full place-content-center place-items-center"
+							class="flex h-full place-content-center place-items-center hover:text-primary-600-400"
 							class:text-primary-600-400={route === currentPage}
 							aria-label="Navigate to {route.toLowerCase()} page"
 						>
@@ -119,7 +120,7 @@
 				}}
 			>
 				{#if profile}
-					<span class="group-hover:text-primary-500 mx-2 my-auto hidden md:block">
+					<span class="mx-2 my-auto hidden group-hover:text-primary-500 md:block">
 						{profile.username}
 					</span>
 				{/if}
@@ -145,7 +146,7 @@
 	</div>
 
 	<ul
-		class="bg-surface-200/30 dark:bg-surface-800/30 absolute z-50 w-full backdrop-blur-md lg:hidden {showMenu
+		class="absolute z-50 w-full bg-surface-200/30 backdrop-blur-md lg:hidden dark:bg-surface-800/30 {showMenu
 			? 'flex flex-col'
 			: 'hidden'}"
 	>
@@ -153,7 +154,7 @@
 			<li class="h-12">
 				<a
 					href={getLink(route)}
-					class="hover:text-primary-400 dark:hover:text-primary-100 flex h-full place-content-center place-items-center"
+					class="flex h-full place-content-center place-items-center hover:text-primary-400 dark:hover:text-primary-100"
 					class:text-primary-500={route === currentPage}
 					class:dark:text-primary-400={route === currentPage}
 					aria-label="Navigate to {route.toLowerCase()} page"
@@ -179,7 +180,7 @@
 
 	<form
 		method="POST"
-		class="bg-surface-200/30 dark:bg-surface-800/30 absolute z-50 w-full py-14 backdrop-blur-md {showProfile
+		class="absolute z-50 w-full bg-surface-200/30 py-14 backdrop-blur-md dark:bg-surface-800/30 {showProfile
 			? 'flex flex-col'
 			: 'hidden'}"
 		use:enhance
@@ -191,13 +192,25 @@
 
 					<a
 						href="/user/{profile.id}"
-						class="btn preset-filled-secondary-500 mx-auto flex"
+						class="mx-auto my-2 btn flex preset-filled-secondary-500"
 						aria-label="Open profile page"
 						onclick={() => (showProfile = false)}
 					>
 						<UserRound />
 						Profile
 					</a>
+
+					{#if profile.role == "administrator"}
+						<a
+							href="/auth"
+							class="mx-auto btn flex preset-filled-secondary-500"
+							aria-label="Login as a different user"
+							onclick={() => (showProfile = false)}
+						>
+							<UserCog />
+							Login As
+						</a>
+					{/if}
 				</div>
 			</header>
 
@@ -211,7 +224,7 @@
 				<button
 					name="Logout"
 					aria-label="Logout"
-					class="btn preset-filled-secondary-500 mx-auto"
+					class="mx-auto btn preset-filled-secondary-500"
 					formaction="/auth?/logout"
 				>
 					<LogOut />

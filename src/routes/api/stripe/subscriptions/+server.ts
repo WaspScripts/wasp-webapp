@@ -26,6 +26,9 @@ export const POST = async ({ request }) => {
 		case "customer.subscription.created": {
 			const subscriptionCreated = data.object as Stripe.Subscription
 			if (subscriptionCreated.status !== "active") break
+			const items = subscriptionCreated.items.data
+			if (items.length != 1) error(409, "Subscription has multiple items only 1 was expected!")
+
 			console.log("INSERT profile.subscriptions: ", subscriptionCreated.id)
 
 			const { error: err } = await supabaseAdmin
@@ -36,15 +39,14 @@ export const POST = async ({ request }) => {
 					user_id: subscriptionCreated.metadata.user_id,
 					product: subscriptionCreated.items.data[0].price.product.toString(),
 					price: subscriptionCreated.items.data[0].price.id,
-					date_end: new Date(subscriptionCreated.cancel_at! * 1000).toISOString(),
+					date_end: new Date(items[0].current_period_end * 1000).toISOString(),
 					date_start: new Date(subscriptionCreated.start_date * 1000).toISOString(),
 					cancel: subscriptionCreated.cancel_at_period_end,
 					disabled: false
 				})
 
-			if (err) {
+			if (err)
 				error(500, "object: " + JSON.stringify(subscriptionCreated) + "\r\n" + formatError(err))
-			}
 
 			break
 		}
@@ -54,9 +56,12 @@ export const POST = async ({ request }) => {
 			if (subscriptionUpdated.status !== "active" && subscriptionUpdated.status !== "canceled")
 				break
 
+			const items = subscriptionUpdated.items.data
+			if (items.length != 1) error(409, "Subscription has multiple items only 1 was expected!")
+
 			console.log("UPDATE profile.subscription: ", subscriptionUpdated.id)
 
-			const date_end = new Date(subscriptionUpdated.cancel_at! * 1000).toISOString()
+			const date_end = new Date(items[0].current_period_end * 1000).toISOString()
 			const date_start = new Date(subscriptionUpdated.start_date * 1000).toISOString()
 			const cancel = subscriptionUpdated.cancel_at_period_end
 
@@ -79,9 +84,12 @@ export const POST = async ({ request }) => {
 
 		case "customer.subscription.deleted": {
 			const subscriptionDeleted = data.object as Stripe.Subscription
+			const items = subscriptionDeleted.items.data
+			if (items.length != 1) error(409, "Subscription has multiple items only 1 was expected!")
+
 			console.log("DELETE profile.subscriptions: ", subscriptionDeleted.id)
 
-			const date_end = new Date(subscriptionDeleted.canceled_at! * 1000).toISOString()
+			const date_end = new Date(items[0].current_period_end * 1000).toISOString()
 			const date_start = new Date(subscriptionDeleted.start_date * 1000).toISOString()
 			const cancel = subscriptionDeleted.cancel_at_period_end
 
