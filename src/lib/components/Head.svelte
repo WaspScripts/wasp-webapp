@@ -6,7 +6,7 @@
 		description,
 		keywords = undefined,
 		author = "Torwent",
-		img = "/multi-color-logo.png"
+		img = "/favicon.png"
 	} = $props()
 
 	const basekeywords =
