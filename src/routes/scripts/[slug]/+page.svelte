@@ -82,21 +82,21 @@
 							{/if}
 						</div>
 					{:else}
-						<div class="preset-outlined-surface-500 my-8 rounded-md p-4">
+						<div class="my-8 rounded-md preset-outlined-surface-500 p-4">
 							<h4 class="py-2">
 								This is a <span class="text-secondary-500">premium</span>
 								script that you don't have access to.
 							</h4>
 							<h5>
 								To be able to download this script buy a
-								<a href="/subscriptions" class="text-secondary-500 font-semibold hover:underline">
+								<a href="/subscriptions" class="font-semibold text-secondary-500 hover:underline">
 									subscription
 								</a>
 								that gives you access to it! You can buy it with the following products
 							</h5>
 
 							{#if script.metadata.type === "premium" && products}
-								<form method="POST" class="table-wrap my-12 flex justify-evenly overflow-auto">
+								<form method="POST" class="my-12 flex table-wrap justify-evenly overflow-auto">
 									<table class="table">
 										<TableHeader headers={["Product", "Type", "Price", "Interval", "Checkout"]} />
 										<tbody class="[&>tr]:hover:preset-tonal">
@@ -109,7 +109,7 @@
 													<td class="text-center">
 														<a
 															href="/subscriptions"
-															class="btn hover:text-primary-500 hover:cursor-pointer"
+															class="btn hover:cursor-pointer hover:text-primary-500"
 														>
 															<ExternalLink size="16" />
 															Bundle
@@ -120,7 +120,7 @@
 
 													<td>
 														<div
-															class="btn-group mx-auto flex w-fit flex-col rounded-md md:flex-row"
+															class="mx-auto btn-group flex w-fit flex-col rounded-md md:flex-row"
 														>
 															{#each bundle.prices as price, j (price.id)}
 																<button
@@ -160,7 +160,7 @@
 													<td class="text-center">
 														<a
 															href="/subscriptions"
-															class="btn hover:text-primary-500 hover:cursor-pointer"
+															class="btn hover:cursor-pointer hover:text-primary-500"
 														>
 															<ExternalLink size="16" />
 															<span>Script</span>
@@ -171,7 +171,7 @@
 
 													<td>
 														<div
-															class="btn-group mx-auto flex w-fit flex-col rounded-md md:flex-row"
+															class="mx-auto btn-group flex w-fit flex-col rounded-md md:flex-row"
 														>
 															{#each script.prices as price, j (price.id)}
 																<button

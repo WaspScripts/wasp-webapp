@@ -11,6 +11,7 @@
 	import { FileUpload, Switch } from "@skeletonlabs/skeleton-svelte"
 	import AdvancedButton from "../../AdvancedButton.svelte"
 	import { PUBLIC_SUPABASE_URL } from "$env/static/public"
+	import { onMount } from "svelte"
 
 	const { data } = $props()
 	let script = $derived(data.script)
@@ -34,6 +35,25 @@
 	let scriptStyle: 0 | 1 | 2 = $state(0)
 
 	let show: boolean[] = $state([false, false, false])
+
+	let wlVersions: {
+		version: string
+	}[] = $state([])
+
+	onMount(async () => {
+		const { data: versionsData, error: versionsErr } = await data.supabaseClient
+			.schema("scripts")
+			.from("wasplib")
+			.select("version")
+			.limit(20)
+			.order("created_at", { ascending: false })
+
+		if (versionsErr) {
+			console.error(versionsErr)
+			return
+		}
+		wlVersions = versionsData
+	})
 </script>
 
 <main>
@@ -117,7 +137,7 @@
 	{/if}
 
 	<div class="max-w-2x container mx-auto my-8 mb-6 flex flex-col">
-		<div class="btn-group preset-outlined-surface-500 mx-auto flex flex-col md:flex-row">
+		<div class="mx-auto btn-group flex flex-col preset-outlined-surface-500 md:flex-row">
 			{#each [" script page", " script card", " search result example"] as str, idx (str)}
 				<button
 					class="btn {show[idx] ? 'preset-filled' : 'hover:preset-tonal'}"
@@ -133,25 +153,25 @@
 		</div>
 
 		<article
-			class="xs:w-full preset-outlined-surface-500 mx-auto my-8 rounded-md p-8 md:w-6/7 lg:w-3/4"
+			class="xs:w-full mx-auto my-8 rounded-md preset-outlined-surface-500 p-8 md:w-6/7 lg:w-3/4"
 		>
 			<header class="my-8 text-center">
 				<h3>Edit Script</h3>
 			</header>
 			<form method="POST" enctype="multipart/form-data" use:enhance>
 				<div class="mx-auto my-8 flex flex-col justify-evenly md:flex-row">
-					<label class="label mx-auto my-4 flex w-fit place-items-center">
+					<label class="mx-auto my-4 label flex w-fit place-items-center">
 						<Switch
 							name="published"
 							checked={$form.published}
 							onCheckedChange={(e) => ($form.published = e.checked)}
 						/>
-						<span class="label-text mx-2 text-center">
+						<span class="mx-2 label-text text-center">
 							{#if $form.published}Public{:else}Hidden{/if}
 						</span>
 					</label>
 
-					<label class="label mx-auto my-4 flex w-fit place-items-center">
+					<label class="mx-auto my-4 label flex w-fit place-items-center">
 						<Switch
 							name="status"
 							checked={$form.status}
@@ -159,7 +179,7 @@
 							disabled={profile.role != "administrator"}
 							classes={profile.role == "administrator" ? "" : "disabled"}
 						/>
-						<span class="label-text mx-2 text-center">
+						<span class="mx-2 label-text text-center">
 							{#if $form.status}
 								{scriptStatus.official.icon}{scriptStatus.official.name}
 							{:else}
@@ -168,13 +188,13 @@
 						</span>
 					</label>
 
-					<label class="label mx-auto my-4 flex w-fit place-items-center">
+					<label class="mx-auto my-4 label flex w-fit place-items-center">
 						<Switch
 							name="type"
 							checked={$form.type}
 							onCheckedChange={(e) => ($form.type = e.checked)}
 						/>
-						<span class="label-text mx-2 text-center">
+						<span class="mx-2 label-text text-center">
 							{#if $form.type}
 								{scriptTypes.premium.icon}{scriptTypes.premium.name}
 							{:else}
@@ -301,14 +321,17 @@
 						<div class="w-full">
 							<label class="label">
 								<span class="label-text">WaspLib:</span>
-								<input
-									type="text"
+								<select
 									id="wasplib"
 									name="wasplib"
-									class="input"
+									class="select"
 									class:ring-error-500={$errors.wasplib}
 									bind:value={$form.wasplib}
-								/>
+								>
+									{#each wlVersions as ver}
+										<option value={ver.version}>{ver.version}</option>
+									{/each}
+								</select>
 							</label>
 							{#if $errors.wasplib}
 								<small class="text-error-500">{$errors.wasplib}</small>
@@ -481,7 +504,7 @@
 					</FileUpload>
 				</div>
 
-				<div class="preset-filled-surface-100-900 my-8 rounded-md p-8">
+				<div class="my-8 rounded-md preset-filled-surface-100-900 p-8">
 					<h5 class="my-8 text-center">Stats limits (every 5 minutes)</h5>
 					<div class="flex flex-col justify-between gap-4 md:flex-row">
 						<div class="flex w-full flex-col gap-4 lg:flex-row">
@@ -561,7 +584,7 @@
 				{#if $errors._errors && $errors._errors.length > 0}
 					<div class="my-8">
 						{#each $errors._errors as err (err)}
-							<div class="text-error-500 flex justify-center">{err}</div>
+							<div class="flex justify-center text-error-500">{err}</div>
 						{/each}
 					</div>
 				{/if}

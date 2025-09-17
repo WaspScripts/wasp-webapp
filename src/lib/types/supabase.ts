@@ -334,6 +334,10 @@ export type Database = {
 				Args: { userid: string }
 				Returns: string
 			}
+			get_email: {
+				Args: { user_id: string }
+				Returns: string
+			}
 			get_username: {
 				Args: { userid: string }
 				Returns: string
@@ -573,6 +577,21 @@ export type Database = {
 						referencedColumns: ["id"]
 					}
 				]
+			}
+			wasplib: {
+				Row: {
+					created_at: string
+					version: string
+				}
+				Insert: {
+					created_at?: string
+					version: string
+				}
+				Update: {
+					created_at?: string
+					version?: string
+				}
+				Relationships: []
 			}
 		}
 		Views: {
