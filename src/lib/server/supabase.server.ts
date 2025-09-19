@@ -47,8 +47,6 @@ export async function uploadFile(
 ) {
 	const contentType = path.endsWith(".jpg") || path.endsWith(".jpeg") ? "image/jpeg" : undefined
 
-	console.log(contentType)
-
 	const { error: err } = await supabase.storage
 		.from(bucket)
 		.upload(path, file, { upsert: true, contentType })

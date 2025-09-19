@@ -519,6 +519,21 @@ export type Database = {
 				}
 				Relationships: []
 			}
+			simba: {
+				Row: {
+					created_at: string
+					version: string
+				}
+				Insert: {
+					created_at?: string
+					version: string
+				}
+				Update: {
+					created_at?: string
+					version?: string
+				}
+				Relationships: []
+			}
 			stats_limits: {
 				Row: {
 					gp_max: number
@@ -613,6 +628,10 @@ export type Database = {
 			}
 		}
 		Functions: {
+			cron_update_simba_versions: {
+				Args: Record<PropertyKey, never>
+				Returns: undefined
+			}
 			get_revision: {
 				Args: { script_id: string }
 				Returns: number

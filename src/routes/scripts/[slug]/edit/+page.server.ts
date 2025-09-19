@@ -15,17 +15,36 @@ export const load = async ({ locals: { supabaseServer, user, session }, parent }
 
 	const { script } = await parent()
 
-	const { data, error: err } = await supabaseServer
-		.schema("scripts")
-		.from("versions")
-		.select("simba, wasplib")
-		.eq("id", script.id)
-		.eq("revision", script.protected.revision)
-		.single()
+	const promises = await Promise.all([
+		supabaseServer
+			.schema("scripts")
+			.from("simba")
+			.select("version")
+			.limit(20)
+			.order("created_at", { ascending: false }),
+		supabaseServer
+			.schema("scripts")
+			.from("wasplib")
+			.select("version")
+			.limit(20)
+			.order("created_at", { ascending: false }),
+		supabaseServer
+			.schema("scripts")
+			.from("versions")
+			.select("simba, wasplib")
+			.eq("id", script.id)
+			.eq("revision", script.protected.revision)
+			.single()
+	])
 
-	if (err) {
-		error(404, formatError(err))
-	}
+	const { data: simbaVersions, error: simbaErr } = promises[0]
+	if (simbaErr) error(500, simbaErr)
+
+	const { data: wlversions, error: wlErr } = promises[1]
+	if (wlErr) error(500, wlErr)
+
+	const { data, error: err } = promises[2]
+	if (err) error(404, formatError(err))
 
 	const form = await superValidate(
 		{
@@ -47,7 +66,21 @@ export const load = async ({ locals: { supabaseServer, user, session }, parent }
 		{ allowFiles: true, errors: false }
 	)
 
-	return { form }
+	return {
+		form,
+		simbaVersions: simbaVersions.map((v) => {
+			return {
+				label: v.version,
+				value: v.version
+			}
+		}),
+		wlVersions: wlversions.map((v) => {
+			return {
+				label: v.version,
+				value: v.version
+			}
+		})
+	}
 }
 
 export const actions = {
@@ -199,7 +232,19 @@ export const actions = {
 
 		if (fileErrors) return setError(form, "", fileErrors)
 
-		await updateScript(script.id)
+		const lastPromises = await Promise.all([
+			supabaseServer.schema("scripts").from("versions").upsert({
+				id: script.id,
+				revision: revision,
+				simba: form.data.simba,
+				wasplib: form.data.wasplib
+			}),
+			updateScript(script.id)
+		])
+
+		const { error: versionErr } = lastPromises[0]
+		if (versionErr)
+			return setError(form, "", "UPSERT scripts.versions failed\n\n" + JSON.stringify(versionErr))
 
 		redirect(303, "/scripts/" + data!.url)
 	}

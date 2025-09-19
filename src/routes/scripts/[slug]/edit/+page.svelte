@@ -8,17 +8,16 @@
 	import ScriptArticle from "../../ScriptArticle.svelte"
 	import ScriptCard from "$lib/components/ScriptCard.svelte"
 	import { updateScriptClientSchema } from "$lib/client/schemas"
-	import { FileUpload, Switch } from "@skeletonlabs/skeleton-svelte"
+	import { Combobox, FileUpload, Switch } from "@skeletonlabs/skeleton-svelte"
 	import AdvancedButton from "../../AdvancedButton.svelte"
 	import { PUBLIC_SUPABASE_URL } from "$env/static/public"
-	import { onMount } from "svelte"
 
 	const { data } = $props()
 	let script = $derived(data.script)
 	let profile = $derived(data.profile!)
 
 	const { form, errors, enhance, validate } = superForm(data.form!, {
-		dataType: "form",
+		dataType: "json",
 		multipleSubmits: "prevent",
 		taintedMessage: "Are you sure you want to leave?",
 		validators: zodClient(updateScriptClientSchema),
@@ -35,25 +34,6 @@
 	let scriptStyle: 0 | 1 | 2 = $state(0)
 
 	let show: boolean[] = $state([false, false, false])
-
-	let wlVersions: {
-		version: string
-	}[] = $state([])
-
-	onMount(async () => {
-		const { data: versionsData, error: versionsErr } = await data.supabaseClient
-			.schema("scripts")
-			.from("wasplib")
-			.select("version")
-			.limit(20)
-			.order("created_at", { ascending: false })
-
-		if (versionsErr) {
-			console.error(versionsErr)
-			return
-		}
-		wlVersions = versionsData
-	})
 </script>
 
 <main>
@@ -302,37 +282,31 @@
 					<h5 class="my-8 text-center">Versions</h5>
 					<div class="flex w-full flex-col gap-4 lg:flex-row">
 						<div class="w-full">
-							<label class="label">
-								<span class="label-text">Simba:</span>
-								<input
-									type="text"
-									id="simba"
-									name="simba"
-									class="input"
-									class:ring-error-500={$errors.simba != null}
-									bind:value={$form.simba}
-								/>
-							</label>
+							<Combobox
+								data={data.simbaVersions}
+								value={[$form.simba]}
+								onValueChange={(e) => ($form.simba = e.value[0])}
+								label="Simba:"
+								allowCustomValue={true}
+								defaultInputValue={$form.simba}
+								zIndex="1"
+							></Combobox>
 							{#if $errors.simba}
 								<small class="text-error-500">{$errors.simba}</small>
 							{/if}
 						</div>
 
 						<div class="w-full">
-							<label class="label">
-								<span class="label-text">WaspLib:</span>
-								<select
-									id="wasplib"
-									name="wasplib"
-									class="select"
-									class:ring-error-500={$errors.wasplib}
-									bind:value={$form.wasplib}
-								>
-									{#each wlVersions as ver}
-										<option value={ver.version}>{ver.version}</option>
-									{/each}
-								</select>
-							</label>
+							<Combobox
+								data={data.wlVersions}
+								value={[$form.wasplib]}
+								onValueChange={(e) => ($form.wasplib = e.value[0])}
+								label="WaspLib:"
+								allowCustomValue={true}
+								defaultInputValue={$form.wasplib}
+								zIndex="1"
+							></Combobox>
+
 							{#if $errors.wasplib}
 								<small class="text-error-500">{$errors.wasplib}</small>
 							{/if}

@@ -1,5 +1,6 @@
 import { bannerImage, baseScriptSchema, coverImage, scriptFile } from "$lib/client/schemas"
 import sharp from "sharp"
+import { supabaseAdmin } from "./supabase.server"
 
 async function checkServerImageDimensions(
 	file: File,
@@ -38,27 +39,26 @@ export const addScriptServerSchema = baseScriptSchema
 		"Minimum gold cannot exceed the maximum gold."
 	)
 	.refine(async (schema) => {
-		try {
-			const res = await fetch("https://github.com/Villavu/Simba/commit/" + schema.simba, {
-				method: "HEAD"
-			})
-			return res.ok
-		} catch {
-			return false
-		}
+		const { count, error } = await supabaseAdmin
+			.schema("scripts")
+			.from("simba")
+			.select("version", { head: true, count: "estimated" })
+			.limit(1)
+			.eq("version", schema.simba)
+
+		if (error || !count || count < 1) return false
+		return true
 	}, "Invalid Simba version.")
 	.refine(async (schema) => {
-		try {
-			const res = await fetch(
-				"https://github.com/WaspScripts/WaspLib/releases/tag/" + schema.wasplib,
-				{
-					method: "HEAD"
-				}
-			)
-			return res.ok
-		} catch {
-			return false
-		}
+		const { count, error } = await supabaseAdmin
+			.schema("scripts")
+			.from("wasplib")
+			.select("version", { head: true, count: "estimated" })
+			.limit(1)
+			.eq("version", schema.wasplib)
+
+		if (error || !count || count < 1) return false
+		return true
 	}, "Invalid WaspLib version.")
 
 export const updateScriptServerSchema = baseScriptSchema
@@ -86,25 +86,24 @@ export const updateScriptServerSchema = baseScriptSchema
 		"Minimum gold cannot exceed the maximum gold."
 	)
 	.refine(async (schema) => {
-		try {
-			const res = await fetch("https://github.com/Villavu/Simba/commit/" + schema.simba, {
-				method: "HEAD"
-			})
-			return res.ok
-		} catch {
-			return false
-		}
+		const { count, error } = await supabaseAdmin
+			.schema("scripts")
+			.from("simba")
+			.select("version", { head: true, count: "estimated" })
+			.limit(1)
+			.eq("version", schema.simba)
+
+		if (error || !count || count < 1) return false
+		return true
 	}, "Invalid Simba version.")
 	.refine(async (schema) => {
-		try {
-			const res = await fetch(
-				"https://github.com/WaspScripts/WaspLib/releases/tag/" + schema.wasplib,
-				{
-					method: "HEAD"
-				}
-			)
-			return res.ok
-		} catch {
-			return false
-		}
+		const { count, error } = await supabaseAdmin
+			.schema("scripts")
+			.from("wasplib")
+			.select("version", { head: true, count: "estimated" })
+			.limit(1)
+			.eq("version", schema.wasplib)
+
+		if (error || !count || count < 1) return false
+		return true
 	}, "Invalid WaspLib version.")
