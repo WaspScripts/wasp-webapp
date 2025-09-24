@@ -61,7 +61,7 @@
 
 			return {
 				id: sub.id,
-				user: sub.id,
+				user: sub.user_id,
 				username: sub.profiles.username,
 				date_start: sub.date_start,
 				date_end: sub.date_end,
@@ -102,7 +102,7 @@
 	{/snippet}
 	{#snippet content()}
 		<header class="flex flex-col justify-between">
-			<h1 class="lg:h4 my-4 text-center text-lg">
+			<h1 class="my-4 text-center text-lg lg:h4">
 				{name} subscriptions
 			</h1>
 			<h2 class="my-4 text-center">Total subscriptions: {count}</h2>
@@ -125,10 +125,10 @@
 				{/each}
 			</div>
 		</header>
-		<form method="POST" class="table-wrap max-h-[28rem]">
+		<form method="POST" class="max-h-[28rem] table-wrap">
 			<table class="table">
 				<TableHeader {headers} />
-				<tbody class="[&>tr]:hover:preset-tonal text-xs md:text-sm xl:text-base">
+				<tbody class="text-xs md:text-sm xl:text-base [&>tr]:hover:preset-tonal">
 					{#await getSubscriptions(id)}
 						<tr class="flex w-full">
 							<td class="h-full w-full p-0 text-xs"> Loading... </td>
@@ -199,7 +199,7 @@
 			</form>
 
 			<div class="my-auto">
-				<button type="button" class="btn preset-tonal m-auto" onclick={() => (open = false)}>
+				<button type="button" class="m-auto btn preset-tonal" onclick={() => (open = false)}>
 					Close
 				</button>
 			</div>

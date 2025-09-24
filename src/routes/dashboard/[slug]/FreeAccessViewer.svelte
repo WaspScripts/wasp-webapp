@@ -18,7 +18,7 @@
 		const { data, error } = await page.data.supabaseClient
 			.schema("profiles")
 			.from("free_access")
-			.select("id, date_start, date_end, profiles(username)")
+			.select("id, user_id, date_start, date_end, profiles(username)")
 			.eq("product", id)
 
 		if (error) {
@@ -29,6 +29,7 @@
 		return data.map((access) => {
 			return {
 				id: access.id,
+				user_id: access.user_id,
 				date_start: access.date_start,
 				date_end: access.date_end,
 				username: access.profiles?.username ?? "Null"
@@ -55,14 +56,14 @@
 	{/snippet}
 	{#snippet content()}
 		<header class="flex flex-col justify-between">
-			<h1 class="lg:h4 my-4 flex flex-col gap-4 text-lg lg:flex-row">{name} subscriptions</h1>
+			<h1 class="my-4 flex flex-col gap-4 text-lg lg:flex-row lg:h4">{name} subscriptions</h1>
 			<h2>Total: {count}</h2>
 		</header>
-		<div class="preset-outlined-surface-500 rounded-md p-1">
-			<form method="POST" class="table-wrap max-h-[28rem]">
+		<div class="rounded-md preset-outlined-surface-500 p-1">
+			<form method="POST" class="max-h-[28rem] table-wrap">
 				<table class="table">
 					<TableHeader {headers} />
-					<tbody class="[&>tr]:hover:preset-tonal text-xs md:text-sm xl:text-base">
+					<tbody class="text-xs md:text-sm xl:text-base [&>tr]:hover:preset-tonal">
 						{#await getFreeAccess(id)}
 							<tr class="flex w-full">
 								<td class="h-full w-full p-0 text-xs"> Loading... </td>
@@ -70,7 +71,7 @@
 						{:then freeAccess}
 							{#each freeAccess as row (row.id)}
 								<tr>
-									<td>{row.id}</td>
+									<td>{row.user_id}</td>
 									<td class="text-center">{row.username}</td>
 
 									<td class="text-center">{new Date(row.date_start).toLocaleString(userLocale)}</td>
@@ -94,7 +95,7 @@
 		</div>
 		<form
 			method="POST"
-			class="preset-outlined-surface-500 mx-auto flex flex-col justify-around rounded-md p-8 md:flex-row"
+			class="mx-auto flex flex-col justify-around rounded-md preset-outlined-surface-500 p-8 md:flex-row"
 		>
 			<label>
 				<span class="label-text">Add user:</span>
@@ -108,7 +109,7 @@
 
 			<button
 				type="submit"
-				class="btn preset-filled-success-500 my-4"
+				class="my-4 btn preset-filled-success-500"
 				formaction="?/addFree&product={id}"
 			>
 				<UserRoundPlus /> Add user</button

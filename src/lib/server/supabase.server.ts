@@ -121,14 +121,14 @@ export async function getPrivateProfile(id: string) {
 
 export async function addFreeAccess(
 	supabase: SupabaseClient,
-	id: string,
+	user_id: string,
 	product: string,
 	date_end: string
 ) {
 	const { error: err } = await supabase
 		.schema("profiles")
 		.from("free_access")
-		.insert({ product: product, id: id, date_end: date_end })
+		.insert({ product, user_id, date_end })
 
 	return err
 }
