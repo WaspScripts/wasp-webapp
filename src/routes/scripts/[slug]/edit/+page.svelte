@@ -287,6 +287,7 @@
 								value={[$form.simba]}
 								onValueChange={(e) => ($form.simba = e.value[0])}
 								label="Simba:"
+								ids={{ input: "simba" }}
 								allowCustomValue={true}
 								defaultInputValue={$form.simba}
 								zIndex="1"
@@ -302,6 +303,7 @@
 								value={[$form.wasplib]}
 								onValueChange={(e) => ($form.wasplib = e.value[0])}
 								label="WaspLib:"
+								ids={{ input: "wasplib" }}
 								allowCustomValue={true}
 								defaultInputValue={$form.wasplib}
 								zIndex="1"

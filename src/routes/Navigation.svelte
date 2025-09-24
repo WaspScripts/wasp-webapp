@@ -257,5 +257,5 @@
 	</form>
 </nav>
 <a href="https://waspscripts.com" class="bg-surface-300-700 py-2 text-center">
-	This website is for <b>Simba 2.0</b>. Click here to visit the legacy version of the website.
+	This website is for <b>Simba 2000</b>. Click here to visit the legacy version of the website.
 </a>
