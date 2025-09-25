@@ -98,7 +98,7 @@ For setup instructions you visit the setup [page](${website}/setup)
 - [SRL-T](https://Torwent.github.io/SRL-T/): SRL-T documentation
 - [WaspLib](https://Torwent.github.io/WaspLib/): SRL-T documentation
 - [Wasp Stats API](https://api.waspscripts.dev/docs): Stats API documentation
-- [Map](https://map.waspscripts.dev/): Interactive OSRS map
+- [Map](https://map.waspscripts.com/): Interactive OSRS map
 
 ## Scripts
 

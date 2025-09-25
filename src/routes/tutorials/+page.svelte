@@ -39,15 +39,24 @@
 		<h3 class="text-center">Useful resources</h3>
 
 		<div class="my-4 flex flex-col gap-2 lg:flex-row">
-			<a href="https://waspscripts.github.io/WaspLib/" class="mx-auto btn ring-primary-500 preset-filled-primary-200-800 ring-2">
+			<a
+				href="https://waspscripts.github.io/WaspLib/"
+				class="mx-auto btn preset-filled-primary-200-800 ring-2 ring-primary-500"
+			>
 				WaspLib Documentation
 			</a>
 
-			<a href="https://api.waspscripts.dev/docs" class="mx-auto btn ring-primary-500 preset-filled-primary-200-800 ring-2">
+			<a
+				href="https://api.waspscripts.dev/docs"
+				class="mx-auto btn preset-filled-primary-200-800 ring-2 ring-primary-500"
+			>
 				Stats API Documentation
 			</a>
 
-			<a href="https://map.waspscripts.dev" class="mx-auto btn ring-primary-500 preset-filled-primary-200-800 ring-2">
+			<a
+				href="https://map.waspscripts.com"
+				class="mx-auto btn preset-filled-primary-200-800 ring-2 ring-primary-500"
+			>
 				Interactive Map
 			</a>
 		</div>
@@ -96,7 +105,7 @@
 		<div class="my-8 grid place-items-center">
 			<a
 				href="https://github.com/WaspScripts/wasp-info/new/main/tutorials"
-				class="btn ring-secondary-500 preset-filled-secondary-200-800 ring-2"
+				class="btn preset-filled-secondary-200-800 ring-2 ring-secondary-500"
 			>
 				Add a tutorial through GitHub!
 			</a>

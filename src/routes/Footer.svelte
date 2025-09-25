@@ -6,7 +6,7 @@
 	import { WaspScripters } from "$lib/client/supabase"
 </script>
 
-<footer class="preset-filled-surface-100-900 z-40 my-auto h-fit">
+<footer class="z-40 my-auto h-fit preset-filled-surface-100-900">
 	<div class="mx-8 md:mx-0">
 		<header class="grid md:m-8 md:flex md:justify-between md:pt-8">
 			<div class="mx-auto my-6 lg:mx-0">
@@ -23,12 +23,16 @@
 						<li>
 							<a href="https://github.com/Villavu/SRL-Development" target="_blank">SRL repo</a>
 						</li>
-						<li><a href="https://github.com/WaspScripts/WaspLib" target="_blank">WaspLib repo</a></li>
 						<li>
-							<a href="https://waspscripts.github.io/WaspLib" target="_blank">WaspLib Documentation</a>
+							<a href="https://github.com/WaspScripts/WaspLib" target="_blank">WaspLib repo</a>
 						</li>
 						<li>
-							<a href="https://map.waspscripts.dev/" target="_blank">Interactive map</a>
+							<a href="https://waspscripts.github.io/WaspLib" target="_blank"
+								>WaspLib Documentation</a
+							>
+						</li>
+						<li>
+							<a href="https://map.waspscripts.com/" target="_blank">Interactive map</a>
 						</li>
 					</ul>
 				</nav>
