@@ -60,7 +60,10 @@ export const baseScriptSchema = z.object({
 	gp_max: z
 		.number()
 		.int("Only whole numbers are allowed.")
-		.max(600000, "That exceeds the reasonable profit limit.")
+		.max(600000, "That exceeds the reasonable profit limit."),
+	trackers: z.string().array().min(0),
+	minima: z.number().int("Only whole numbers are allowed.").array().min(0),
+	maxima: z.number().int("Only whole numbers are allowed.").array().min(0)
 })
 
 export const coverImage = z

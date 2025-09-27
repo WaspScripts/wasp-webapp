@@ -34,17 +34,25 @@ export const load = async ({ locals: { supabaseServer, user, session }, parent }
 			.select("simba, wasplib")
 			.eq("id", script.id)
 			.eq("revision", script.protected.revision)
+			.single(),
+		supabaseServer
+			.schema("stats")
+			.from("limits")
+			.select("xp_min, xp_max, gp_min, gp_max")
+			.eq("id", script.id)
+			.single(),
+		supabaseServer
+			.schema("stats")
+			.from("limits_custom")
+			.select("trackers, minima, maxima")
+			.eq("id", script.id)
 			.single()
 	])
 
-	const { data: simbaVersions, error: simbaErr } = promises[0]
-	if (simbaErr) error(500, simbaErr)
-
-	const { data: wlversions, error: wlErr } = promises[1]
-	if (wlErr) error(500, wlErr)
-
-	const { data, error: err } = promises[2]
-	if (err) error(404, formatError(err))
+	for (let i = 0; i < promises.length; i++) {
+		const { error: err } = promises[i]
+		if (err) error(500, formatError(err))
+	}
 
 	const form = await superValidate(
 		{
@@ -55,12 +63,15 @@ export const load = async ({ locals: { supabaseServer, user, session }, parent }
 			description: script.description,
 			content: script.content,
 			categories: script.metadata.categories,
-			simba: data.simba,
-			wasplib: data.wasplib,
-			xp_min: script.stats_limits.xp_min,
-			xp_max: script.stats_limits.xp_max,
-			gp_min: script.stats_limits.gp_min,
-			gp_max: script.stats_limits.gp_max
+			simba: promises[2].data!.simba,
+			wasplib: promises[2].data!.wasplib,
+			xp_min: promises[3].data!.xp_min,
+			xp_max: promises[3].data!.xp_max,
+			gp_min: promises[3].data!.gp_min,
+			gp_max: promises[3].data!.gp_max,
+			trackers: promises[4].data!.trackers,
+			minima: promises[4].data!.minima,
+			maxima: promises[4].data!.maxima
 		},
 		zod(updateScriptServerSchema),
 		{ allowFiles: true, errors: false }
@@ -68,13 +79,13 @@ export const load = async ({ locals: { supabaseServer, user, session }, parent }
 
 	return {
 		form,
-		simbaVersions: simbaVersions.map((v) => {
+		simbaVersions: promises[0].data!.map((v) => {
 			return {
 				label: v.version,
 				value: v.version
 			}
 		}),
-		wlVersions: wlversions.map((v) => {
+		wlVersions: promises[1].data!.map((v) => {
 			return {
 				label: v.version,
 				value: v.version
@@ -131,46 +142,46 @@ export const actions = {
 
 		console.log("📜 Updating script: ", script.title, " (", script.id + ")")
 
-		const updates = []
-		updates.push(
+		const { id } = script
+
+		const main = {
+			title: form.data.title,
+			description: form.data.description,
+			content: form.data.content,
+			published: form.data.published
+		}
+
+		const limits = {
+			xp_min: form.data.xp_min,
+			xp_max: form.data.xp_max,
+			gp_min: form.data.gp_min,
+			gp_max: form.data.gp_max
+		}
+
+		const limits_custom = {
+			trackers: form.data.trackers,
+			minima: form.data.minima,
+			maxima: form.data.maxima
+		}
+
+		const metadata = {
+			status: (form.data.status ? "official" : "community") as "official" | "community",
+			type: (form.data.type ? "premium" : "free") as "premium" | "free",
+			categories: form.data.categories
+		}
+
+		const updates = [
 			supabaseServer
 				.schema("scripts")
 				.from("scripts")
-				.update({
-					title: form.data.title,
-					description: form.data.description,
-					content: form.data.content,
-					published: form.data.published
-				})
-				.eq("id", script.id)
+				.update(main)
+				.eq("id", id)
 				.select("url")
-				.single()
-		)
-
-		updates.push(
-			supabaseServer
-				.schema("scripts")
-				.from("stats_limits")
-				.update({
-					xp_min: form.data.xp_min,
-					xp_max: form.data.xp_max,
-					gp_min: form.data.gp_min,
-					gp_max: form.data.gp_max
-				})
-				.eq("id", script.id)
-		)
-
-		updates.push(
-			supabaseServer
-				.schema("scripts")
-				.from("metadata")
-				.update({
-					status: form.data.status ? "official" : "community",
-					type: form.data.type ? "premium" : "free",
-					categories: form.data.categories
-				})
-				.eq("id", script.id)
-		)
+				.single(),
+			supabaseServer.schema("stats").from("limits").update(limits).eq("id", id),
+			supabaseServer.schema("stats").from("limits_custom").update(limits_custom).eq("id", id),
+			supabaseServer.schema("scripts").from("metadata").update(metadata).eq("id", id)
+		]
 
 		const awaitedUpdates = await Promise.all(updates)
 		const { data, error: errScript } = awaitedUpdates[0]
@@ -178,11 +189,7 @@ export const actions = {
 			return setError(form, "", "UPDATE scripts.scripts failed\n\n" + JSON.stringify(errScript))
 		const { error: errLimits } = awaitedUpdates[1]
 		if (errLimits)
-			return setError(
-				form,
-				"",
-				"UPDATE scripts.stats_limits failed\n\n" + JSON.stringify(errLimits)
-			)
+			return setError(form, "", "UPDATE stats.limits failed\n\n" + JSON.stringify(errLimits))
 		const { error: errMetadata } = awaitedUpdates[2]
 		if (errMetadata)
 			return setError(form, "", "UPDATE scripts.metadata failed\n\n" + JSON.stringify(errMetadata))

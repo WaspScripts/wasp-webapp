@@ -173,8 +173,7 @@ export async function fetchScriptByID(supabase: SupabaseClient<Database>, id: st
 		.select(
 			`id, title, description, content, url, published,
 			protected!left (author, revision, username, avatar, updated_at),
-			metadata!left (status, type, categories),
-			stats_limits!left (xp_min, xp_max, gp_min, gp_max)`
+			metadata!left (status, type, categories)`
 		)
 		.eq("id", id)
 		.single()
@@ -201,9 +200,7 @@ export async function scriptExists(
 		.from("scripts")
 		.select(
 			`id, url, title, description, content, published,
-			protected!protected_id_fkey (author, revision, updated_at),
-			stats_limits!stats_limits_id_fkey (min_xp, max_xp, min_gp, max_gp)
-			`
+			protected!protected_id_fkey (author, revision, updated_at)`
 		)
 		.eq((isUUID == null && UUID_V4_REGEX.test(slug)) || isUUID ? "id" : "url", slug)
 		.single()

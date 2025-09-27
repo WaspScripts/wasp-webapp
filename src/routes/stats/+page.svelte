@@ -26,9 +26,9 @@
 				{
 					event: "UPDATE",
 					schema: "stats",
-					table: "simba"
+					table: "values"
 				},
-				() => invalidate("supabase:stats")
+				() => invalidate("supabase:stats_values")
 			)
 			.subscribe()
 

@@ -55,9 +55,9 @@
 </h5>
 <p class="mx-auto my-8 text-center">
 	If you have any issues please contact <a
-		href="mailto: support@waspscripts.dev"
+		href="mailto: support@waspscripts.com"
 		class="font-semibold hover:underline"
 	>
-		support@waspscripts.dev
+		support@waspscripts.com
 	</a>
 </p> -->

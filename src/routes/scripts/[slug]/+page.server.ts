@@ -30,28 +30,28 @@ export const actions = {
 		if (!productID) {
 			error(
 				500,
-				"Something went wrong! Seems like no product was selected. If this keeps occuring please contact support@waspscripts.dev"
+				"Something went wrong! Seems like no product was selected. If this keeps occuring please contact support@waspscripts.com"
 			)
 		}
 
 		if (!priceID) {
 			error(
 				500,
-				"Something went wrong! Seems like no price was selected. If this keeps occuring please contact support@waspscripts.dev"
+				"Something went wrong! Seems like no price was selected. If this keeps occuring please contact support@waspscripts.com"
 			)
 		}
 
 		if (subs?.find((subscription) => subscription.product === productID)) {
 			error(
 				500,
-				"Something went wrong! Seems like are already subscribed to this product. If this is not the case and this keeps occuring please contact support@waspscripts.dev"
+				"Something went wrong! Seems like are already subscribed to this product. If this is not the case and this keeps occuring please contact support@waspscripts.com"
 			)
 		}
 
 		if (free?.find((access) => access.product === productID)) {
 			error(
 				500,
-				"Something went wrong! Seems like already have free access to this product. If this is not the case and this keeps occuring please contact support@waspscripts.dev"
+				"Something went wrong! Seems like already have free access to this product. If this is not the case and this keeps occuring please contact support@waspscripts.com"
 			)
 		}
 
@@ -67,7 +67,7 @@ export const actions = {
 		if (priceErr) {
 			error(
 				500,
-				"Something went wrong! Seems like that price doesn't belong to that product. If this keeps occuring please contact support@waspscripts.dev Erorr message:" +
+				"Something went wrong! Seems like that price doesn't belong to that product. If this keeps occuring please contact support@waspscripts.com Erorr message:" +
 					formatError(priceErr)
 			)
 		}

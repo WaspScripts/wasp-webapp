@@ -3,7 +3,7 @@ import { error, fail, redirect } from "@sveltejs/kit"
 import { addScriptServerSchema } from "$lib/server/schemas.server"
 import { scriptExists } from "$lib/client/supabase"
 import { doLogin, uploadFile } from "$lib/server/supabase.server"
-import { encodeSEO } from "$lib/utils"
+import { encodeSEO, formatError } from "$lib/utils"
 import { zod } from "sveltekit-superforms/adapters"
 import type { TScriptStatus, TScriptTypes } from "$lib/types/collection"
 import { pad } from "$lib/client/utils"
@@ -62,18 +62,20 @@ export const load = async ({ locals: { supabaseServer, user, session } }) => {
 			.order("created_at", { ascending: false })
 	])
 
-	const { data: simbaVersions, error: simbaErr } = promises[0]
-	if (simbaErr) error(500, simbaErr)
-
-	const { data: wlversions, error: wlErr } = promises[1]
-	if (wlErr) error(500, wlErr)
+	for (let i = 0; i < promises.length; i++) {
+		const { error: err } = promises[i]
+		if (err) error(500, formatError(err))
+	}
 
 	return {
 		form: await superValidate(
 			{
 				content: scriptDefaultContent,
-				simba: simbaVersions[0].version,
-				wasplib: wlversions[0].version
+				simba: promises[0].data![0].version,
+				wasplib: promises[1].data![0].version,
+				trackers: [],
+				minima: [],
+				maxima: []
 			},
 			zod(addScriptServerSchema),
 			{
@@ -81,18 +83,8 @@ export const load = async ({ locals: { supabaseServer, user, session } }) => {
 				errors: false
 			}
 		),
-		simbaVersions: simbaVersions.map((v) => {
-			return {
-				label: v.version,
-				value: v.version
-			}
-		}),
-		wlVersions: wlversions.map((v) => {
-			return {
-				label: v.version,
-				value: v.version
-			}
-		})
+		simbaVersions: promises[0].data!.map((v) => ({ label: v.version, value: v.version })),
+		wlVersions: promises[1].data!.map((v) => ({ label: v.version, value: v.version }))
 	}
 }
 
@@ -172,11 +164,18 @@ export const actions = {
 			gp_max: form.data.gp_max
 		}
 
+		const limits_custom = {
+			trackers: form.data.trackers,
+			minima: form.data.minima,
+			maxima: form.data.maxima
+		}
+
 		const versions = { revision: 1, simba: form.data.simba, wasplib: form.data.wasplib }
 
 		const inserts = [
 			supabaseServer.schema("scripts").from("metadata").update(metadata).eq("id", data.id),
-			supabaseServer.schema("scripts").from("stats_limits").update(limits).eq("id", data.id),
+			supabaseServer.schema("stats").from("limits").update(limits).eq("id", data.id),
+			supabaseServer.schema("stats").from("limits_custom").update(limits_custom).eq("id", data.id),
 			supabaseServer.schema("scripts").from("versions").update(versions).eq("id", data.id)
 		]
 
@@ -189,11 +188,7 @@ export const actions = {
 			return setError(form, "", "UPDATE scripts.metadata failed!\n\n" + JSON.stringify(errData))
 		}
 		if (errLimits) {
-			return setError(
-				form,
-				"",
-				"UPDATE scripts.stats_limits failed!\n\n" + JSON.stringify(errLimits)
-			)
+			return setError(form, "", "UPDATE stats.limits failed!\n\n" + JSON.stringify(errLimits))
 		}
 
 		//rename all scripts to script so we can always fetch them later regardless of name changes.

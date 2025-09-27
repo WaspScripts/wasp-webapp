@@ -17,7 +17,7 @@
 
 		const { data, error: err } = await supabaseClient
 			.schema("stats")
-			.from("simba")
+			.from("values")
 			.select("experience, gold, runtime")
 			.eq("id", id)
 			.single()

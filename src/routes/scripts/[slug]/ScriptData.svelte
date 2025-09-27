@@ -9,7 +9,7 @@
 	async function getScriptStats() {
 		const { data, error: err } = await page.data.supabaseClient
 			.schema("stats")
-			.from("simba")
+			.from("values")
 			.select("experience, gold, runtime, levels")
 			.eq("id", id)
 			.single()
@@ -72,7 +72,7 @@
 </script>
 
 <header class="text-center">
-	<div class="btn-group preset-outlined-surface-200-800 flex-col p-2 md:flex-row">
+	<div class="btn-group flex-col preset-outlined-surface-200-800 p-2 md:flex-row">
 		{#each authorButtons as btn, idx (btn)}
 			{#if idx > 0}
 				<button
@@ -99,7 +99,7 @@
 			{/await}
 		</h4>
 
-		<div class="text-small preset-outlined-surface-500 max-h-[10rem] overflow-auto">
+		<div class="text-small max-h-[10rem] overflow-auto preset-outlined-surface-500">
 			{#await scriptStats}
 				Loading...
 			{:then data}
@@ -122,7 +122,7 @@
 			{/await}
 		</h4>
 
-		<div class="text-small preset-outlined-surface-500 max-h-[10rem] overflow-auto">
+		<div class="text-small max-h-[10rem] overflow-auto preset-outlined-surface-500">
 			{#await scriptData}
 				Loading...
 			{:then data}
@@ -142,7 +142,7 @@
 			{/await}
 		</h4>
 
-		<div class="text-small preset-outlined-surface-500 max-h-[10rem] overflow-auto">
+		<div class="text-small max-h-[10rem] overflow-auto preset-outlined-surface-500">
 			{#await scriptMonthlyData}
 				Loading...
 			{:then data}

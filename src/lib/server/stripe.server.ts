@@ -198,7 +198,7 @@ export async function createStripeConnectAccount(
 				name: scripter.profiles.username,
 				support_url: "https://waspscripts.dev/scripters/" + scripter.url,
 				url: "https://waspscripts.dev/scripters/" + scripter.url,
-				support_email: "support@waspscripts.dev"
+				support_email: "support@waspscripts.com"
 			},
 			metadata: { id: scripter.id, username: scripter.profiles.username },
 			settings: {

@@ -109,11 +109,7 @@ export function replaceScriptContent(script: Script, locale: string = "pt-PT") {
 		revision: script.protected.revision.toString(),
 		updated_at: new Date(script.protected.updated_at).toLocaleString(locale),
 		revision_date: new Date(script.protected.updated_at).toLocaleString(locale, date),
-		revision_time: new Date(script.protected.updated_at).toLocaleString(locale, time),
-		min_xp: formatNumber(Number(script.stats_limits.xp_min * 12)),
-		max_xp: formatNumber(Number(script.stats_limits.xp_max * 12)),
-		min_gp: formatNumber(Number(script.stats_limits.gp_min * 12)),
-		max_gp: formatNumber(Number(script.stats_limits.gp_max * 12))
+		revision_time: new Date(script.protected.updated_at).toLocaleString(locale, time)
 	}
 
 	const result = script.content.replace(/\{\$([^{}\s$]+)\}/g, (match, placeholder) => {

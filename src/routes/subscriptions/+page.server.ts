@@ -58,7 +58,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"Something went wrong! Seems like no product was selected. If this keeps occuring please contact support@waspscripts.dev"
+				"Something went wrong! Seems like no product was selected. If this keeps occuring please contact support@waspscripts.com"
 			)
 		}
 
@@ -68,7 +68,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"Something went wrong! Seems like the selected product is invalid. If this keeps occuring please contact support@waspscripts.dev"
+				"Something went wrong! Seems like the selected product is invalid. If this keeps occuring please contact support@waspscripts.com"
 			)
 		}
 
@@ -76,7 +76,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"Something went wrong! Seems like are already subscribed to this product. If this is not the case and this keeps occuring please contact support@waspscripts.dev"
+				"Something went wrong! Seems like are already subscribed to this product. If this is not the case and this keeps occuring please contact support@waspscripts.com"
 			)
 		}
 
@@ -84,7 +84,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"Something went wrong! Seems like already have free access to this product. If this is not the case and this keeps occuring please contact support@waspscripts.dev"
+				"Something went wrong! Seems like already have free access to this product. If this is not the case and this keeps occuring please contact support@waspscripts.com"
 			)
 		}
 
@@ -94,7 +94,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"Something went wrong! Seems like the selected price is invalid. If this keeps occuring please contact support@waspscripts.dev Erorr message:"
+				"Something went wrong! Seems like the selected price is invalid. If this keeps occuring please contact support@waspscripts.com Erorr message:"
 			)
 		}
 
@@ -113,7 +113,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"Something went wrong! Seems like that product doesn't exist on the database. If this keeps occuring please contact support@waspscripts.dev Erorr message:"
+				"Something went wrong! Seems like that product doesn't exist on the database. If this keeps occuring please contact support@waspscripts.com Erorr message:"
 			)
 		}
 
@@ -173,7 +173,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"You don't have a customer id. This should not be possible! Please contact support@waspscripts.dev"
+				"You don't have a customer id. This should not be possible! Please contact support@waspscripts.com"
 			)
 		}
 
@@ -183,7 +183,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"Something went wrong! Seems like no subscription was selected. If this keeps occuring please contact support@waspscripts.dev"
+				"Something went wrong! Seems like no subscription was selected. If this keeps occuring please contact support@waspscripts.com"
 			)
 		}
 
@@ -195,7 +195,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"That customer profile does not exist. Refresh the page, if the issue persists please contact support@waspscripts.dev"
+				"That customer profile does not exist. Refresh the page, if the issue persists please contact support@waspscripts.com"
 			)
 		}
 
@@ -208,7 +208,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"You don't have any subscription active. Refresh the page, if this keeps happening, please contact support@waspscripts.dev"
+				"You don't have any subscription active. Refresh the page, if this keeps happening, please contact support@waspscripts.com"
 			)
 		}
 
@@ -218,7 +218,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"The subscription you want to cancel either doesn't exist or doesn't belong to you. Refresh the page, if this keeps happening, please contact support@waspscripts.dev"
+				"The subscription you want to cancel either doesn't exist or doesn't belong to you. Refresh the page, if this keeps happening, please contact support@waspscripts.com"
 			)
 		}
 
@@ -246,7 +246,7 @@ export const actions = {
 		if (!profile.stripe) {
 			error(
 				500,
-				"You don't have a customer id. This should not be possible! Please contact support@waspscripts.dev"
+				"You don't have a customer id. This should not be possible! Please contact support@waspscripts.com"
 			)
 		}
 
@@ -255,7 +255,7 @@ export const actions = {
 		if (!subscriptionID) {
 			error(
 				500,
-				"Something went wrong! Seems like no subscription was selected. If this keeps occuring please contact support@waspscripts.dev"
+				"Something went wrong! Seems like no subscription was selected. If this keeps occuring please contact support@waspscripts.com"
 			)
 		}
 
@@ -266,7 +266,7 @@ export const actions = {
 		if (customer.deleted) {
 			error(
 				500,
-				"That customer profile does not exist. Refresh the page, if the issue persists please contact support@waspscripts.dev"
+				"That customer profile does not exist. Refresh the page, if the issue persists please contact support@waspscripts.com"
 			)
 		}
 
@@ -281,7 +281,7 @@ export const actions = {
 		if (!subscription) {
 			error(
 				500,
-				"The subscription you want to refund either doesn't exist or doesn't belong to you. Refresh the page, if this keeps happening, please contact support@waspscripts.dev"
+				"The subscription you want to refund either doesn't exist or doesn't belong to you. Refresh the page, if this keeps happening, please contact support@waspscripts.com"
 			)
 		}
 
@@ -294,7 +294,7 @@ export const actions = {
 		if (diffDays > 0) {
 			error(
 				500,
-				"The subscription you want to refund is outside of the refund window. Refresh the page, if this keeps happening, please contact support@waspscripts.dev"
+				"The subscription you want to refund is outside of the refund window. Refresh the page, if this keeps happening, please contact support@waspscripts.com"
 			)
 		}
 
@@ -308,7 +308,7 @@ export const actions = {
 		if (!payments || payments.length === 0) {
 			error(
 				500,
-				"Couldn't find payments for the subscription. Refresh the page, if this keeps happening, please contact support@waspscripts.dev"
+				"Couldn't find payments for the subscription. Refresh the page, if this keeps happening, please contact support@waspscripts.com"
 			)
 		}
 
@@ -317,7 +317,7 @@ export const actions = {
 		if (!last_payment) {
 			error(
 				500,
-				"Couldn't find last payment for the subscription. Refresh the page, if this keeps happening, please contact support@waspscripts.dev"
+				"Couldn't find last payment for the subscription. Refresh the page, if this keeps happening, please contact support@waspscripts.com"
 			)
 		}
 
@@ -327,7 +327,7 @@ export const actions = {
 		if (!amount || !intent) {
 			error(
 				500,
-				"Couldn't setup refund. Refresh the page, if this keeps happening, please contact support@waspscripts.dev"
+				"Couldn't setup refund. Refresh the page, if this keeps happening, please contact support@waspscripts.com"
 			)
 		}
 
@@ -343,7 +343,7 @@ export const actions = {
 			console.error(err)
 			error(
 				500,
-				"Failed to issue refund. Refresh the page, if this keeps happening, please contact support@waspscripts.dev"
+				"Failed to issue refund. Refresh the page, if this keeps happening, please contact support@waspscripts.com"
 			)
 		}
 
@@ -357,7 +357,7 @@ export const actions = {
 			console.error(err)
 			error(
 				500,
-				"Failed to cancel subscription. Refresh the page, if this keeps happening, please contact support@waspscripts.dev"
+				"Failed to cancel subscription. Refresh the page, if this keeps happening, please contact support@waspscripts.com"
 			)
 		}
 

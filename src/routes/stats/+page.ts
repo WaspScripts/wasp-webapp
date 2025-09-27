@@ -4,7 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js"
 import { error } from "@sveltejs/kit"
 
 export const load = async ({ url, depends, parent }) => {
-	depends("supabase:stats")
+	depends("supabase:stats_values")
 
 	const pageN = Number(url.searchParams.get("page") || "-1")
 	const page = pageN < 0 || Number.isNaN(pageN) ? 1 : pageN

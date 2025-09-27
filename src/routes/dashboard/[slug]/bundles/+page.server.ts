@@ -150,7 +150,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"Something went wrong! Seems like no product was selected. If this keeps occuring please contact support@waspscripts.dev"
+				"Something went wrong! Seems like no product was selected. If this keeps occuring please contact support@waspscripts.com"
 			)
 		}
 
@@ -160,7 +160,7 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"Something went wrong! Seems like the selected bundle product is invalid. If this keeps occuring please contact support@waspscripts.dev"
+				"Something went wrong! Seems like the selected bundle product is invalid. If this keeps occuring please contact support@waspscripts.com"
 			)
 		}
 

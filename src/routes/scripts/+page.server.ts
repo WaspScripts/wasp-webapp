@@ -35,7 +35,7 @@ export async function load({ depends, url, locals: { supabaseServer } }) {
 			error(
 				500,
 				"Server error, this is probably not an issue on your end!\n" +
-					"SELECT scripts.featured failed!\n\n" +
+					"SELECT scripts.featured failed!" +
 					formatError(err)
 			)
 		}
