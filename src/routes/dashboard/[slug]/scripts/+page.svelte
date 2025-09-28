@@ -53,22 +53,22 @@
 	<div class="my-12 text-center">
 		<p>All prices are displayed in EUR (Euros €).</p>
 		<p>
-			Setting a price to 0 disables that interval. Setting all prices to 0 disables and hides the
-			product from the subscriptions page.
+			Setting a price to 0 disables that interval. Setting all prices to 0 disables and hides the product from
+			the subscriptions page.
 		</p>
 	</div>
 
 	<form
 		method="POST"
-		class="table-wrap preset-outlined-surface-400-600 mx-auto max-w-fit rounded-md"
+		class="mx-auto table-wrap max-w-fit rounded-md preset-outlined-surface-400-600"
 		use:scriptsEnhance
 	>
 		<table class="table border-separate space-y-6 text-xs">
-			<thead class="preset-filled-surface-200-800 rounded-md text-lg font-bold">
+			<thead class="rounded-md preset-filled-surface-200-800 text-lg font-bold">
 				<tr>
 					{#each headers as header (header)}
 						<th>
-							<span class="text-secondary-950-50 flex justify-center text-center">{header}</span>
+							<span class="flex justify-center text-center text-secondary-950-50">{header}</span>
 						</th>
 					{/each}
 				</tr>
@@ -80,7 +80,7 @@
 						<td class="text-center">
 							<input
 								name="name"
-								class="input preset-outlined-surface-500 mx-auto w-fit"
+								class="mx-auto input w-fit preset-outlined-surface-500"
 								type="text"
 								bind:value={$scriptsForm.scripts[i].name}
 							/>
@@ -95,7 +95,7 @@
 							<td class="text-center">
 								<input
 									name="prices"
-									class="input preset-outlined-surface-500 mx-auto w-24"
+									class="mx-auto input w-24 preset-outlined-surface-500"
 									type="number"
 									bind:value={$scriptsForm.scripts[i].prices[j].amount}
 									step="0.01"
@@ -143,19 +143,19 @@
 	<form
 		method="POST"
 		action="?/scriptAdd"
-		class="preset-outlined-surface-400-600 mx-auto my-12 flex flex-col rounded-md p-4 text-center"
+		class="mx-auto my-12 flex flex-col rounded-md preset-outlined-surface-400-600 p-4 text-center"
 		use:newScriptEnhance
 	>
 		<h1 class="my-4 text-lg">New Script</h1>
 
 		{#if available.length === 0}
-			<h2 class="text-warning-500 my-24 text-center text-lg">
-				You either have no premium scripts or all your premium scripts are already products in the
-				table above.
+			<h2 class="my-24 text-center text-lg text-warning-500">
+				You either have no premium scripts or all your premium scripts are already products in the table
+				above.
 			</h2>
 		{/if}
 
-		<label class="label mx-auto max-w-96">
+		<label class="mx-auto label max-w-96">
 			<span class="label-text">Script:</span>
 			<select
 				class="select"
@@ -195,6 +195,6 @@
 			{/each}
 		</div>
 
-		<button type="submit" class="btn preset-filled-primary-500 mx-auto my-8 w-32">Add</button>
+		<button type="submit" class="mx-auto my-8 btn w-32 preset-filled-primary-500">Add</button>
 	</form>
 </main>

@@ -4,14 +4,14 @@
 	let { content = "" } = $props()
 </script>
 
-<header class="text-secondary-500 my-8 text-center">
+<header class="my-8 text-center text-secondary-500">
 	<span class="text-2xl">Description:</span>
 </header>
 
 <div
-	class="preset-outlined-surface-500 mx-auto my-8 max-h-[50rem] w-full max-w-4xl overflow-auto rounded-md p-8"
+	class="mx-auto my-8 max-h-[50rem] w-full max-w-4xl overflow-auto rounded-md preset-outlined-surface-500 p-8"
 >
-	<article class="text-md prose dark:prose-invert m-8 mb-12 max-w-lg md:max-w-7xl md:text-xl">
+	<article class="text-md m-8 prose mb-12 max-w-lg md:max-w-7xl md:text-xl dark:prose-invert">
 		{@html DOMPurify.sanitize(mardownRenderer.render(content))}
 	</article>
 </div>

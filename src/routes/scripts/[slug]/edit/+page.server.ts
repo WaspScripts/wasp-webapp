@@ -95,11 +95,7 @@ export const load = async ({ locals: { supabaseServer, user, session }, parent }
 }
 
 export const actions = {
-	default: async ({
-		request,
-		params: { slug },
-		locals: { supabaseServer, user, session, getProfile }
-	}) => {
+	default: async ({ request, params: { slug }, locals: { supabaseServer, user, session, getProfile } }) => {
 		if (!user || !session) {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		}
@@ -171,13 +167,7 @@ export const actions = {
 		}
 
 		const updates = [
-			supabaseServer
-				.schema("scripts")
-				.from("scripts")
-				.update(main)
-				.eq("id", id)
-				.select("url")
-				.single(),
+			supabaseServer.schema("scripts").from("scripts").update(main).eq("id", id).select("url").single(),
 			supabaseServer.schema("stats").from("limits").update(limits).eq("id", id),
 			supabaseServer.schema("stats").from("limits_custom").update(limits_custom).eq("id", id),
 			supabaseServer.schema("scripts").from("metadata").update(metadata).eq("id", id)
@@ -185,11 +175,9 @@ export const actions = {
 
 		const awaitedUpdates = await Promise.all(updates)
 		const { data, error: errScript } = awaitedUpdates[0]
-		if (errScript)
-			return setError(form, "", "UPDATE scripts.scripts failed\n\n" + JSON.stringify(errScript))
+		if (errScript) return setError(form, "", "UPDATE scripts.scripts failed\n\n" + JSON.stringify(errScript))
 		const { error: errLimits } = awaitedUpdates[1]
-		if (errLimits)
-			return setError(form, "", "UPDATE stats.limits failed\n\n" + JSON.stringify(errLimits))
+		if (errLimits) return setError(form, "", "UPDATE stats.limits failed\n\n" + JSON.stringify(errLimits))
 		const { error: errMetadata } = awaitedUpdates[2]
 		if (errMetadata)
 			return setError(form, "", "UPDATE scripts.metadata failed\n\n" + JSON.stringify(errMetadata))
@@ -208,24 +196,14 @@ export const actions = {
 		if (form.data.cover) {
 			console.log("Updating script cover")
 			files.push(
-				updateImgFile(
-					supabaseServer,
-					"imgs",
-					"scripts/" + script.id + "/cover.jpg",
-					form.data.cover
-				)
+				updateImgFile(supabaseServer, "imgs", "scripts/" + script.id + "/cover.jpg", form.data.cover)
 			)
 		}
 
 		if (form.data.banner) {
 			console.log("Updating script banner")
 			files.push(
-				updateImgFile(
-					supabaseServer,
-					"imgs",
-					"scripts/" + script.id + "/banner.jpg",
-					form.data.banner
-				)
+				updateImgFile(supabaseServer, "imgs", "scripts/" + script.id + "/banner.jpg", form.data.banner)
 			)
 		}
 

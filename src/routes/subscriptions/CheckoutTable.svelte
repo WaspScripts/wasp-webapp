@@ -184,7 +184,7 @@
 	<!-- class="xl:mx-w-7xl table-wrap mx-auto w-full max-w-md rounded-md preset-outlined-surface-500 md:max-w-3xl lg:max-w-6xl" -->
 	<form
 		method="POST"
-		class="table-wrap preset-outlined-surface-500 mx-auto w-[95%] rounded-md lg:w-4/5"
+		class="mx-auto table-wrap w-[95%] rounded-md preset-outlined-surface-500 lg:w-4/5"
 		use:enhance
 	>
 		<table class="table border-separate space-y-6 text-xs md:text-sm">
@@ -227,10 +227,10 @@
 
 							<td class="text-center">
 								{#if bundleArray[i].active}
-									<div class="btn-group mx-auto flex w-fit flex-col lg:flex-row">
+									<div class="mx-auto btn-group flex w-fit flex-col lg:flex-row">
 										{#each bundleArray[i].prices, j}
 											<button
-												class="btn preset-outlined-surface-500 w-full"
+												class="btn w-full preset-outlined-surface-500"
 												class:border-primary-500={bundleArray[i].prices[j].active}
 												onclick={(e) => {
 													e.preventDefault()
@@ -277,7 +277,7 @@
 							<td class="text-center">
 								<a
 									href="/scripts/{scriptArray[i].url}"
-									class="btn hover:text-primary-500 hover:cursor-pointer"
+									class="btn hover:cursor-pointer hover:text-primary-500"
 								>
 									<ExternalLink size="16" />
 									<span>Script</span>
@@ -288,10 +288,10 @@
 
 							<td class="text-center">
 								{#if scriptArray[i].active}
-									<div class="btn-group mx-auto flex w-fit flex-col lg:flex-row">
+									<div class="mx-auto btn-group flex w-fit flex-col lg:flex-row">
 										{#each scriptArray[i].prices, j}
 											<button
-												class="btn preset-outlined-surface-500 w-full"
+												class="btn w-full preset-outlined-surface-500"
 												class:border-primary-500={scriptArray[i].prices[j].active}
 												onclick={(e) => {
 													e.preventDefault()

@@ -10,9 +10,7 @@
 	let { scripters, count, amount } = $derived(data)
 
 	const pageStr = page.url.searchParams.get("page") || "-1"
-	let currentPage = $state(
-		Number(pageStr) < 0 || Number.isNaN(Number(pageStr)) ? 1 : Number(pageStr)
-	)
+	let currentPage = $state(Number(pageStr) < 0 || Number.isNaN(Number(pageStr)) ? 1 : Number(pageStr))
 
 	let search = $state(decodeURIComponent(page.url.searchParams.get("search") || "").trim())
 </script>
@@ -27,8 +25,7 @@
 	<header class="py-8 text-center">
 		<h3>Welcome to the Developers section.</h3>
 		<p>
-			Here you can find information about the developers involved directly or indirectly with
-			WaspScripts.
+			Here you can find information about the developers involved directly or indirectly with WaspScripts.
 		</p>
 	</header>
 
@@ -36,7 +33,7 @@
 		<input
 			type="text"
 			placeholder="🔍 Search username, name, info, ..."
-			class="input mx-auto max-w-3xl"
+			class="mx-auto input max-w-3xl"
 			bind:value={search}
 			oninput={() =>
 				replaceQuery(page.url, {

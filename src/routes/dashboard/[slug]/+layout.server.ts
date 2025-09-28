@@ -16,8 +16,7 @@ export const load = async ({
 
 	if (user.id !== slug) {
 		const profile = await getProfile()
-		if (profile?.role != "administrator")
-			error(403, "You cannot access another scripter dashboard.")
+		if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
 	}
 
 	async function getScripts() {
@@ -151,11 +150,7 @@ export const load = async ({
 		)
 	}
 
-	const promises = await Promise.all([
-		getScripts(),
-		getScripter(supabaseServer, slug),
-		getProducts()
-	])
+	const promises = await Promise.all([getScripts(), getScripter(supabaseServer, slug), getProducts()])
 
 	const lastPromises = await Promise.all([getData(productIDs), getPrices(productIDs)])
 

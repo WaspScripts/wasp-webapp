@@ -31,30 +31,25 @@
 </script>
 
 <div
-	class="card card-hover preset-filled-surface-200-800 hover:preset-outlined flex h-96 w-64 flex-col shadow-sm"
+	class="flex h-96 w-64 flex-col card preset-filled-surface-200-800 shadow-sm card-hover hover:preset-outlined"
 >
 	<header class="m-1">
 		<img src={imgLink} alt="Script cover" class="rounded-md contain-content" loading="lazy" />
 	</header>
 	<section class="m-2 flex h-full flex-col">
 		<header class="flex h-fit flex-col">
-			<span class="text-primary-600 dark:text-primary-500 font-semibold whitespace-break-spaces">
+			<span class="font-semibold whitespace-break-spaces text-primary-600 dark:text-primary-500">
 				{script.title}
 			</span>
-			<span class="text-primary-600 dark:text-secondary-500 text-xs drop-shadow">
+			<span class="text-xs text-primary-600 drop-shadow dark:text-secondary-500">
 				by
-				<a
-					href="/scripters/{encodeSEO(username.normalize('NFKC'))}"
-					class="hover:preset-tonal-secondary"
-				>
+				<a href="/scripters/{encodeSEO(username.normalize('NFKC'))}" class="hover:preset-tonal-secondary">
 					{username}
 				</a>
 				{#if !script.published}<small class="text-error-500">Unpublished</small>{/if}
 			</span>
 		</header>
-		<article
-			class="text-surface-600 dark:text-surface-300 my-4 h-full overflow-y-auto text-sm break-words"
-		>
+		<article class="my-4 h-full overflow-y-auto text-sm break-words text-surface-600 dark:text-surface-300">
 			{cropString(script.description, 80)}
 		</article>
 	</section>

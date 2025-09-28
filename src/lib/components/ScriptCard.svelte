@@ -6,12 +6,10 @@
 	import { Tooltip } from "@skeletonlabs/skeleton-svelte"
 	import { onMount } from "svelte"
 
-	let { script, customCover, link }: { script: Script; customCover?: string; link?: string } =
-		$props()
+	let { script, customCover, link }: { script: Script; customCover?: string; link?: string } = $props()
 
 	let imgLink = $state(
-		customCover ??
-			PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/cover.jpg"
+		customCover ?? PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/cover.jpg"
 	)
 
 	$effect(() => {
@@ -21,8 +19,7 @@
 	})
 
 	$effect(() => {
-		imgLink =
-			PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/cover.jpg"
+		imgLink = PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/cover.jpg"
 	})
 
 	onMount(async () => {
@@ -32,15 +29,13 @@
 		} else imgLink = "/cover.jpg"
 	})
 
-	const categoriesTooltip: boolean[] = $state(
-		new Array(script?.metadata.categories.length).fill(false)
-	)
+	const categoriesTooltip: boolean[] = $state(new Array(script?.metadata.categories.length).fill(false))
 	let status = $state(false)
 	let type = $state(false)
 </script>
 
 <div
-	class="card card-hover preset-filled-surface-200-800 hover:preset-outlined mx-auto flex h-fit w-fit flex-col shadow-sm"
+	class="mx-auto flex h-fit w-fit flex-col card preset-filled-surface-200-800 shadow-sm card-hover hover:preset-outlined"
 	class:cursor-pointer={link}
 >
 	<button
@@ -58,10 +53,10 @@
 		}}
 	>
 		<header class="flex h-fit flex-col">
-			<span class="text-primary-600 dark:text-primary-500 font-semibold whitespace-break-spaces">
+			<span class="font-semibold whitespace-break-spaces text-primary-600 dark:text-primary-500">
 				{script.title}
 			</span>
-			<span class="text-primary-600 dark:text-secondary-500 text-xs drop-shadow">
+			<span class="text-xs text-primary-600 drop-shadow dark:text-secondary-500">
 				by
 				<a
 					href="/scripters/{encodeSEO(script.protected.username.replaceAll(' ', '-'))}"
@@ -72,9 +67,7 @@
 				{#if !script.published}<small class="text-error-500">Unpublished</small>{/if}
 			</span>
 		</header>
-		<article
-			class="text-surface-600 dark:text-surface-300 my-4 h-full overflow-y-auto text-sm break-words"
-		>
+		<article class="my-4 h-full overflow-y-auto text-sm break-words text-surface-600 dark:text-surface-300">
 			{cropString(script.description, 80)}
 		</article>
 	</button>

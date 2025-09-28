@@ -7,9 +7,9 @@
 
 <a
 	href="/scripters/{scripter.url}"
-	class="card card-hover preset-filled-surface-200-800 border-surface-300-700 hover:border-primary-300-700 m-4 mx-auto w-full max-w-md min-w-xs rounded-md border-2"
+	class="m-4 mx-auto w-full max-w-md min-w-xs card rounded-md border-2 border-surface-300-700 preset-filled-surface-200-800 card-hover hover:border-primary-300-700"
 >
-	<div class="text-md text-primary-600 dark:text-primary-500 flex truncate font-semibold">
+	<div class="text-md flex truncate font-semibold text-primary-600 dark:text-primary-500">
 		<Avatar
 			src={scripter.profiles.avatar}
 			name={scripter.profiles.username}
@@ -19,7 +19,7 @@
 			{scripter.profiles.username}
 			{#if scripter.realname}
 				<!-- Name -->
-				<small class="text-surface-400 truncate text-xs">
+				<small class="truncate text-xs text-surface-400">
 					A.K.A {scripter.realname}
 				</small>
 			{/if}

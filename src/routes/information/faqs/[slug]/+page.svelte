@@ -27,13 +27,13 @@
 
 <a
 	href="/information/faqs"
-	class="text-surface-900-100 border-surface-200-800 hover:preset-outlined-primary-500 mx-4 inline-flex justify-between border px-4 py-2 text-left text-sm font-medium shadow-sm"
+	class="mx-4 inline-flex justify-between border border-surface-200-800 px-4 py-2 text-left text-sm font-medium text-surface-900-100 shadow-sm hover:preset-outlined-primary-500"
 >
 	{meta.title}
 	<ChevronsDownUp class="h-4" />
 </a>
-<div class="card preset-filled-surface-100-900 w-full p-4 text-center">
-	<article class="prose border-surface-300 dark:prose-invert mx-auto my-8 py-6">
+<div class="w-full card preset-filled-surface-100-900 p-4 text-center">
+	<article class="mx-auto my-8 prose border-surface-300 py-6 dark:prose-invert">
 		<div class="mx-8 md:mx-auto">
 			<Content />
 		</div>
@@ -42,7 +42,7 @@
 		<div class="flex justify-between">
 			<div class="my-4 flex gap-2 text-center">
 				<span class="my-auto">Author:</span>
-				<span class="text-primary-500 flex justify-center">
+				<span class="flex justify-center text-primary-500">
 					{#await getUsername(meta.author)}
 						Loading...
 					{:then author}
@@ -55,18 +55,14 @@
 			{#if meta.coauthors}
 				<h5 class="justify-center text-center">
 					Co-Authors:
-					<div class="text-secondary-500 my-2 flex items-baseline justify-center text-sm">
+					<div class="my-2 flex items-baseline justify-center text-sm text-secondary-500">
 						{#each meta.coauthors as coauthor (coauthor)}
 							{#await getUsername(coauthor)}
 								Loading
 							{:then author}
 								<span class="mx-2 flex">
 									<span class="my-auto">{author.username}</span>
-									<Avatar
-										src={author.avatar}
-										name={author.username ?? "Error"}
-										classes="mx-1 w-6 h-6"
-									/>
+									<Avatar src={author.avatar} name={author.username ?? "Error"} classes="mx-1 w-6 h-6" />
 								</span>
 							{/await}
 						{/each}

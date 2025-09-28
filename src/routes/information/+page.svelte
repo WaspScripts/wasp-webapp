@@ -4,7 +4,7 @@
 
 <a
 	href="/information/faqs"
-	class="preset-outlined-surface-500 hover:preset-outlined-primary-500 inline-flex w-full justify-between px-4 py-2 text-sm font-medium"
+	class="inline-flex w-full justify-between preset-outlined-surface-500 px-4 py-2 text-sm font-medium hover:preset-outlined-primary-500"
 >
 	❓ Frequently Asked Questions
 	<ChevronsUpDown class="h-5" />
@@ -12,7 +12,7 @@
 
 <a
 	href="/information/errors"
-	class="preset-outlined-surface-500 hover:preset-outlined-primary-500 inline-flex w-full justify-between px-4 py-2 text-sm font-medium"
+	class="inline-flex w-full justify-between preset-outlined-surface-500 px-4 py-2 text-sm font-medium hover:preset-outlined-primary-500"
 >
 	⚠️ Common Errors
 	<ChevronsUpDown class="h-5" />

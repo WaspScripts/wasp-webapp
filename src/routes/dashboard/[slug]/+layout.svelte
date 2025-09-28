@@ -10,11 +10,7 @@
 	let tab = $derived(page.url.pathname.split("/").pop())
 </script>
 
-<Head
-	title="Dashboard"
-	description="Scripter dashboard"
-	keywords="Dashboard, Scripter, Developer"
-/>
+<Head title="Dashboard" description="Scripter dashboard" keywords="Dashboard, Scripter, Developer" />
 
 <main class="">
 	<h3 class="my-4 flex justify-center gap-2">
@@ -31,10 +27,7 @@
 	</h3>
 
 	<div class="my-8 grid place-items-center">
-		<a
-			href="/scripters/{data.scripter ? data.scripter.url : ''}"
-			class="btn preset-filled-primary-500"
-		>
+		<a href="/scripters/{data.scripter ? data.scripter.url : ''}" class="btn preset-filled-primary-500">
 			Scripter profile
 		</a>
 	</div>

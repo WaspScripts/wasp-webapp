@@ -107,11 +107,7 @@
 				<input name="enddate" type="date" class="input" />
 			</label>
 
-			<button
-				type="submit"
-				class="my-4 btn preset-filled-success-500"
-				formaction="?/addFree&product={id}"
-			>
+			<button type="submit" class="my-4 btn preset-filled-success-500" formaction="?/addFree&product={id}">
 				<UserRoundPlus /> Add user</button
 			>
 		</form>

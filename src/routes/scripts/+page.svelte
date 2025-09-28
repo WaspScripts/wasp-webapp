@@ -17,9 +17,7 @@
 	const { count } = $derived(data)
 
 	const pageStr = $derived(page.url.searchParams.get("page") || "-1")
-	const currentPage = $derived(
-		Number(pageStr) < 0 || Number.isNaN(Number(pageStr)) ? 1 : Number(pageStr)
-	)
+	const currentPage = $derived(Number(pageStr) < 0 || Number.isNaN(Number(pageStr)) ? 1 : Number(pageStr))
 
 	let search = $state(decodeURIComponent(page.url.searchParams.get("search") || "").trim())
 	let statusFilter = $state(page.url.searchParams.get("status") ?? "")
@@ -72,7 +70,7 @@
 
 <header class="my-4 flex h-full justify-around">
 	<!-- Button: Left -->
-	<button type="button" class="btn-icon hover:preset-tonal h-auto lg:ml-4" onclick={carouselLeft}>
+	<button type="button" class="btn-icon h-auto hover:preset-tonal lg:ml-4" onclick={carouselLeft}>
 		<ArrowRight class="rotate-180" />
 	</button>
 
@@ -81,28 +79,21 @@
 		class="hide-scrollbar col-span-10 flex snap-x snap-mandatory overflow-x-auto scroll-smooth text-white"
 	>
 		{#each featured as feature (feature.id)}
-			<a
-				href="/scripts/{feature.url}"
-				class="relative w-full shrink-0 snap-center rounded-lg text-center"
-			>
-				<CarouselEntry
-					id={feature.id}
-					title={feature.title}
-					username={feature.protected.username}
-				/>
+			<a href="/scripts/{feature.url}" class="relative w-full shrink-0 snap-center rounded-lg text-center">
+				<CarouselEntry id={feature.id} title={feature.title} username={feature.protected.username} />
 			</a>
 		{/each}
 	</div>
 
 	<!-- Button: Right -->
-	<button type="button" class="btn-icon hover:preset-tonal h-auto lg:mr-4" onclick={carouselRight}>
+	<button type="button" class="btn-icon h-auto hover:preset-tonal lg:mr-4" onclick={carouselRight}>
 		<ArrowRight />
 	</button>
 </header>
 
 <div class="flex h-full w-full">
 	<aside class="mx-2 my-4 hidden h-full lg:block lg:text-sm xl:text-base">
-		<label class="label my-4">
+		<label class="my-4 label">
 			<span class="label-text">Status:</span>
 			<select
 				name="status"
@@ -120,7 +111,7 @@
 			</select>
 		</label>
 
-		<label class="label my-4">
+		<label class="my-4 label">
 			<span class="label-text">Type:</span>
 			<select
 				name="type"
@@ -129,10 +120,8 @@
 				bind:value={typeFilter}
 				onchange={() => handleFilter("type", typeFilter)}
 			>
-				<option
-					value=""
-					selected={typeFilter == null || typeFilter == ""}
-					class="selection:bg-primary-500">🕹️All</option
+				<option value="" selected={typeFilter == null || typeFilter == ""} class="selection:bg-primary-500"
+					>🕹️All</option
 				>
 				{#each Object.values(scriptTypes) as type (type.value)}
 					<option value={type.value} selected={type.value == typeFilter}>
@@ -142,7 +131,7 @@
 			</select>
 		</label>
 
-		<div class="label my-4 h-auto">
+		<div class="my-4 label h-auto">
 			<span class="label-text">Categories</span>
 			<div class="select flex h-auto w-auto flex-col gap-1 overflow-y-scroll p-3">
 				{#each categories as category (category.value)}
@@ -151,7 +140,7 @@
 							type="checkbox"
 							id={category.value}
 							name={category.name}
-							class="checkbox my-auto"
+							class="my-auto checkbox"
 							onchange={() => {
 								const i = categoriesFilter.indexOf(category.value)
 								if (i === -1) categoriesFilter.push(category.value)
@@ -178,7 +167,7 @@
 		{/if}
 
 		<div class="mx-4 my-4 h-full lg:hidden">
-			<label class="label my-4">
+			<label class="my-4 label">
 				<span class="label-text">Status:</span>
 				<select
 					name="status"
@@ -196,7 +185,7 @@
 				</select>
 			</label>
 
-			<label class="label my-4">
+			<label class="my-4 label">
 				<span class="label-text">Type:</span>
 				<select
 					name="type"
@@ -205,10 +194,8 @@
 					bind:value={typeFilter}
 					onchange={() => handleFilter("type", typeFilter)}
 				>
-					<option
-						value=""
-						selected={typeFilter == null || typeFilter == ""}
-						class="selection:bg-primary-500">🕹️All</option
+					<option value="" selected={typeFilter == null || typeFilter == ""} class="selection:bg-primary-500"
+						>🕹️All</option
 					>
 					{#each Object.values(scriptTypes) as type (type.value)}
 						<option value={type.value} selected={type.value == typeFilter}>
@@ -240,7 +227,7 @@
 			<input
 				type="text"
 				placeholder="🔍Search script by id, name, categories, author, content, ..."
-				class="input mx-auto max-w-3xl"
+				class="mx-auto input max-w-3xl"
 				bind:value={search}
 				oninput={() =>
 					replaceQuery(page.url, {

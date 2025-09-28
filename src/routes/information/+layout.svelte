@@ -18,8 +18,8 @@
 
 	<header class="py-12 text-center">
 		<p class="py-6">
-			Hopefully you found what you were looking for here, if not feel free to join the discord
-			server and ask around!
+			Hopefully you found what you were looking for here, if not feel free to join the discord server and ask
+			around!
 		</p>
 		<Discord />
 	</header>

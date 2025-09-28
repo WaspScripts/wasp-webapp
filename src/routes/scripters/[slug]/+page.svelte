@@ -17,9 +17,7 @@
 	let { amount } = $state(data)
 
 	const pageStr = page.url.searchParams.get("page") || "-1"
-	let currentPage = $state(
-		Number(pageStr) < 0 || Number.isNaN(Number(pageStr)) ? 1 : Number(pageStr)
-	)
+	let currentPage = $state(Number(pageStr) < 0 || Number.isNaN(Number(pageStr)) ? 1 : Number(pageStr))
 
 	let search = $state(decodeURIComponent(page.url.searchParams.get("search") || "").trim())
 
@@ -62,7 +60,7 @@
 				{#if $form.github}
 					<a
 						href={$form.github}
-						class="btn preset-filled-surface-300-700 hover:text-secondary-500 mx-5 h-full"
+						class="mx-5 btn h-full preset-filled-surface-300-700 hover:text-secondary-500"
 					>
 						<Github />
 					</a>
@@ -90,7 +88,7 @@
 				<h4 class="my-24 text-center">
 					{$form.description ?? "This scripter did not add a description."}
 				</h4>
-				<article class="prose dark:prose-invert mx-auto my-24">
+				<article class="mx-auto my-24 prose dark:prose-invert">
 					{#if $form.content}
 						{@html $form.content}
 					{:else}
@@ -109,7 +107,7 @@
 						<h2 class="mb-12">
 							You can preview your changes in the "Information" tab but don't forget to save.
 						</h2>
-						<label class="label my-4">
+						<label class="my-4 label">
 							<span class="label-text">Real name:</span>
 							<input class="input" bind:value={$form.realname} />
 							{#if $errors.id}
@@ -118,7 +116,7 @@
 								{/each}
 							{/if}
 						</label>
-						<label class="label my-4">
+						<label class="my-4 label">
 							<span class="label-text">GitHub:</span>
 							<input class="input" bind:value={$form.github} />
 							{#if $errors.github}
@@ -127,7 +125,7 @@
 								{/each}
 							{/if}
 						</label>
-						<label class="label my-4">
+						<label class="my-4 label">
 							<span class="label-text">Paypal ID:</span>
 							<input class="input" bind:value={$form.paypal} />
 							{#if $errors.paypal}
@@ -136,7 +134,7 @@
 								{/each}
 							{/if}
 						</label>
-						<label class="label my-4">
+						<label class="my-4 label">
 							<span class="label-text">Description:</span>
 							<input class="input" bind:value={$form.description} />
 							{#if $errors.description}
@@ -145,7 +143,7 @@
 								{/each}
 							{/if}
 						</label>
-						<label class="label my-4">
+						<label class="my-4 label">
 							<span class="label-text">Content:</span>
 							<textarea class="textarea h-44" bind:value={$form.content}> </textarea>
 							{#if $errors.content}
@@ -162,7 +160,7 @@
 				<input
 					type="text"
 					placeholder="🔍Search script by id, name, categories, author, content, ..."
-					class="input mx-auto my-8 max-w-3xl"
+					class="mx-auto my-8 input max-w-3xl"
 					bind:value={search}
 					oninput={() =>
 						replaceQuery(page.url, {

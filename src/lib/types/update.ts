@@ -21,9 +21,7 @@ try {
 			accept: "application/json",
 			authorization:
 				"Basic " +
-				Buffer.from(`${process.env.BASIC_AUTH_USER}:${process.env.BASIC_AUTH_PASS}`).toString(
-					"base64"
-				)
+				Buffer.from(`${process.env.BASIC_AUTH_USER}:${process.env.BASIC_AUTH_PASS}`).toString("base64")
 		}
 	})
 

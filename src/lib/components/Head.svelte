@@ -1,13 +1,7 @@
 <script lang="ts">
 	import { page } from "$app/state"
 
-	let {
-		title,
-		description,
-		keywords = undefined,
-		author = "Torwent",
-		img = "/favicon.png"
-	} = $props()
+	let { title, description, keywords = undefined, author = "Torwent", img = "/favicon.png" } = $props()
 
 	const basekeywords =
 		"OldSchool, RuneScape, OSRS, 2007, Color, Colour, Bot, Botting, Wasp, Scripts, WaspScripts, Simba, Open, Source, OpenSource"

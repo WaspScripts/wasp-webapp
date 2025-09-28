@@ -66,8 +66,7 @@
 				date_start: sub.date_start,
 				date_end: sub.date_end,
 				price: value,
-				interval:
-					priceData[i].interval.charAt(0).toUpperCase() + priceData[i].interval.slice(1) + "ly",
+				interval: priceData[i].interval.charAt(0).toUpperCase() + priceData[i].interval.slice(1) + "ly",
 				state: sub.cancel ? (sub.disabled ? 2 : 1) : 0
 			}
 		})
@@ -185,9 +184,7 @@
 				<div class:hidden={!allOpen}>
 					<h1 class="h2">ARE YOU SURE?</h1>
 					<p>This cannot be undone!</p>
-					<button type="button" class="btn preset-tonal" onclick={() => (allOpen = false)}>
-						Go Back
-					</button>
+					<button type="button" class="btn preset-tonal" onclick={() => (allOpen = false)}> Go Back </button>
 					<button
 						type="submit"
 						class="btn preset-filled-error-500 hover:text-error-500"
@@ -199,9 +196,7 @@
 			</form>
 
 			<div class="my-auto">
-				<button type="button" class="m-auto btn preset-tonal" onclick={() => (open = false)}>
-					Close
-				</button>
+				<button type="button" class="m-auto btn preset-tonal" onclick={() => (open = false)}> Close </button>
 			</div>
 		</footer>
 	{/snippet}

@@ -22,16 +22,7 @@
 
 	const routes = $derived(
 		profile?.role == "scripter" || profile?.role == "moderator" || profile?.role == "administrator"
-			? [
-					"Home",
-					"Setup",
-					"Scripts",
-					"Stats",
-					"Subscriptions",
-					"Information",
-					"Tutorials",
-					"Dashboard"
-				]
+			? ["Home", "Setup", "Scripts", "Stats", "Subscriptions", "Information", "Tutorials", "Dashboard"]
 			: ["Home", "Setup", "Scripts", "Stats", "Subscriptions", "Information", "Tutorials"]
 	)
 

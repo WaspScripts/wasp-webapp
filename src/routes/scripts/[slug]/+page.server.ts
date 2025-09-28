@@ -74,13 +74,7 @@ export const actions = {
 
 		const stripeUser = data.products.user_id !== PUBLIC_SUPER_USER_ID ? data.products.stripe : null
 
-		const url = await createCheckoutSession(
-			profile.id,
-			profile.stripe,
-			stripeUser ?? null,
-			data.id,
-			origin
-		)
+		const url = await createCheckoutSession(profile.id, profile.stripe, stripeUser ?? null, data.id, origin)
 
 		if (url) redirect(303, url)
 		return error(500, "Something went wrong!")

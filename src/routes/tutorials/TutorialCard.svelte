@@ -11,7 +11,7 @@
 
 <a
 	href={link}
-	class="preset-filled-surface-100-900 hover:preset-tonal-surface m-4 block max-w-[40rem] rounded-md ring-2 {tutorial.level ===
+	class="m-4 block max-w-[40rem] rounded-md preset-filled-surface-100-900 ring-2 hover:preset-tonal-surface {tutorial.level ===
 	0
 		? 'ring-sky-400 dark:ring-sky-500'
 		: tutorial.level === 1
@@ -20,16 +20,16 @@
 >
 	<div>
 		<div class="flex flex-col p-3">
-			<div class="text-md text-shadow text-primary-500 truncate font-semibold">
+			<div class="text-md text-shadow truncate font-semibold text-primary-500">
 				{tutorial.title}
 				{#if !tutorial.published}<small class="text-error-500">Unpublished</small>{/if}
 			</div>
 
-			<small class="text-surface-400 mt-1 truncate text-xs">
+			<small class="mt-1 truncate text-xs text-surface-400">
 				by {tutorial.username}
 			</small>
 
-			<div class="text-surface-600 dark:text-surface-300 mt-4 mb-1 text-sm">
+			<div class="mt-4 mb-1 text-sm text-surface-600 dark:text-surface-300">
 				{tutorial.description}
 			</div>
 		</div>

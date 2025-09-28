@@ -45,16 +45,14 @@ export const POST = async ({ request }) => {
 					disabled: false
 				})
 
-			if (err)
-				error(500, "object: " + JSON.stringify(subscriptionCreated) + "\r\n" + formatError(err))
+			if (err) error(500, "object: " + JSON.stringify(subscriptionCreated) + "\r\n" + formatError(err))
 
 			break
 		}
 
 		case "customer.subscription.updated": {
 			const subscriptionUpdated = data.object as Stripe.Subscription
-			if (subscriptionUpdated.status !== "active" && subscriptionUpdated.status !== "canceled")
-				break
+			if (subscriptionUpdated.status !== "active" && subscriptionUpdated.status !== "canceled") break
 
 			const items = subscriptionUpdated.items.data
 			if (items.length != 1) error(409, "Subscription has multiple items only 1 was expected!")
@@ -111,12 +109,7 @@ export const POST = async ({ request }) => {
 					console.error(err)
 					error(
 						404,
-						"Failed to void invoce: " +
-							invoice +
-							" for sub: " +
-							subscriptionDeleted.id +
-							"  Error: " +
-							err
+						"Failed to void invoce: " + invoice + " for sub: " + subscriptionDeleted.id + "  Error: " + err
 					)
 				}
 			}

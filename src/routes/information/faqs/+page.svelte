@@ -13,18 +13,18 @@
 
 <a
 	href="/information/"
-	class="preset-outlined-surface-500 hover:preset-outlined-primary-500 inline-flex w-full justify-between px-4 py-2 text-sm font-medium"
+	class="inline-flex w-full justify-between preset-outlined-surface-500 px-4 py-2 text-sm font-medium hover:preset-outlined-primary-500"
 >
 	❓ Frequently Asked Questions
 	<ChevronsDownUp class="h-5" />
 </a>
 
-<div class="preset-filled-surface-100-900 flex flex-col py-4">
+<div class="flex flex-col preset-filled-surface-100-900 py-4">
 	<form onchange={(e) => e.currentTarget.requestSubmit()} class="mx-4">
 		<input
 			type="text"
 			placeholder="🔍Search for frequently asked questions"
-			class="input mx-auto max-w-3xl"
+			class="mx-auto input max-w-3xl"
 			bind:value={search}
 			oninput={() => replaceQuery(page.url, { search: search })}
 		/>
@@ -35,7 +35,7 @@
 	{#each faqs as faq (faq)}
 		<a
 			href="/information/faqs/{faq.url}"
-			class="text-surface-900-100 border-surface-200-800 hover:preset-outlined-primary-500 mx-4 inline-flex justify-between border px-4 py-2 text-left text-sm font-medium shadow-sm"
+			class="mx-4 inline-flex justify-between border border-surface-200-800 px-4 py-2 text-left text-sm font-medium text-surface-900-100 shadow-sm hover:preset-outlined-primary-500"
 		>
 			{faq.title}
 			<ChevronsUpDown class="h-4" />
@@ -45,7 +45,7 @@
 
 <a
 	href="/information/errors"
-	class="preset-outlined-surface-500 hover:preset-outlined-primary-500 inline-flex w-full justify-between px-4 py-2 text-sm font-medium"
+	class="inline-flex w-full justify-between preset-outlined-surface-500 px-4 py-2 text-sm font-medium hover:preset-outlined-primary-500"
 >
 	⚠️ Common Errors
 	<ChevronsUpDown class="h-5" />

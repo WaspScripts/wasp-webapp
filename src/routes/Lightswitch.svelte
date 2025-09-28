@@ -16,12 +16,7 @@
 		document.documentElement.classList.toggle("dark", dark)
 	}}
 >
-	<button
-		id="lightswitch"
-		class="btn hover:preset-tonal my-auto"
-		title="Toggle dark mode."
-		type="submit"
-	>
+	<button id="lightswitch" class="my-auto btn hover:preset-tonal" title="Toggle dark mode." type="submit">
 		<SunMoon />
 	</button>
 </form>

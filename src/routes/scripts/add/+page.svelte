@@ -48,6 +48,7 @@
 		type: $form.type ? "premium" : "free",
 		categories: $form.categories
 	})
+
 	let limitsData: ScriptLimits = $state({
 		xp_min: $form.xp_min,
 		xp_max: $form.xp_max,
@@ -131,12 +132,7 @@
 					<div
 						class="my-auto mr-3 grid h-8 w-8 content-center justify-center overflow-clip rounded-full bg-white"
 					>
-						<img
-							src="/favicon.png"
-							alt="WaspScripts Logo"
-							class="h-5 align-middle"
-							loading="lazy"
-						/>
+						<img src="/favicon.png" alt="WaspScripts Logo" class="h-5 align-middle" loading="lazy" />
 					</div>
 					<div class="block">
 						<span class="block">WaspScripts</span>
@@ -171,9 +167,7 @@
 			{/each}
 		</div>
 
-		<article
-			class="xs:w-full mx-auto my-8 rounded-md preset-outlined-surface-500 p-8 md:w-6/7 lg:w-3/4"
-		>
+		<article class="xs:w-full mx-auto my-8 rounded-md preset-outlined-surface-500 p-8 md:w-6/7 lg:w-3/4">
 			<header class="my-8 text-center">
 				<h3>Edit Script</h3>
 			</header>
@@ -208,11 +202,7 @@
 					</label>
 
 					<label class="mx-auto my-4 label flex w-fit place-items-center">
-						<Switch
-							name="type"
-							checked={$form.type}
-							onCheckedChange={(e) => ($form.type = e.checked)}
-						/>
+						<Switch name="type" checked={$form.type} onCheckedChange={(e) => ($form.type = e.checked)} />
 						<span class="mx-2 label-text text-center">
 							{#if $form.type}
 								{scriptTypes.premium.icon}{scriptTypes.premium.name}
@@ -368,16 +358,8 @@
 							? "Must be exactly 300x200 pixels and JPG format."
 							: $errors.cover.toString()}
 						onFileReject={console.error}
-						interfaceIcon={coverStyle === 0
-							? ""
-							: coverStyle === 1
-								? "text-success-500"
-								: "text-error-500"}
-						interfaceText={coverStyle === 0
-							? ""
-							: coverStyle === 1
-								? "text-success-500"
-								: "text-error-500"}
+						interfaceIcon={coverStyle === 0 ? "" : coverStyle === 1 ? "text-success-500" : "text-error-500"}
+						interfaceText={coverStyle === 0 ? "" : coverStyle === 1 ? "text-success-500" : "text-error-500"}
 						interfaceSubtext="type-scale-1 opacity-60 {coverStyle === 0
 							? ''
 							: coverStyle === 1
@@ -423,16 +405,8 @@
 						subtext={$errors.banner == null
 							? "Must be exactly 1920x768 pixels and JPG format."
 							: $errors.banner.toString()}
-						interfaceIcon={bannerStyle === 0
-							? ""
-							: bannerStyle === 1
-								? "text-success-500"
-								: "text-error-500"}
-						interfaceText={bannerStyle === 0
-							? ""
-							: bannerStyle === 1
-								? "text-success-500"
-								: "text-error-500"}
+						interfaceIcon={bannerStyle === 0 ? "" : bannerStyle === 1 ? "text-success-500" : "text-error-500"}
+						interfaceText={bannerStyle === 0 ? "" : bannerStyle === 1 ? "text-success-500" : "text-error-500"}
 						interfaceSubtext="type-scale-1 opacity-60 {bannerStyle === 0
 							? ''
 							: bannerStyle === 1
@@ -476,19 +450,9 @@
 						accept=".simba"
 						maxFiles={1}
 						maxFileSize={1024 * 1024 * 50}
-						subtext={$errors.script == null
-							? "Must be a simba script file."
-							: $errors.script.toString()}
-						interfaceIcon={scriptStyle === 0
-							? ""
-							: scriptStyle === 1
-								? "text-success-500"
-								: "text-error-500"}
-						interfaceText={scriptStyle === 0
-							? ""
-							: scriptStyle === 1
-								? "text-success-500"
-								: "text-error-500"}
+						subtext={$errors.script == null ? "Must be a simba script file." : $errors.script.toString()}
+						interfaceIcon={scriptStyle === 0 ? "" : scriptStyle === 1 ? "text-success-500" : "text-error-500"}
+						interfaceText={scriptStyle === 0 ? "" : scriptStyle === 1 ? "text-success-500" : "text-error-500"}
 						interfaceSubtext="type-scale-1 opacity-60 {scriptStyle === 0
 							? ''
 							: scriptStyle === 1

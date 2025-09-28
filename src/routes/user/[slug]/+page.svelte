@@ -36,14 +36,14 @@
 	<RoleBadge />
 
 	<h5 class="py-8">
-		If you want you can change your email/password already anyway. This can be used to login without
-		discord for developing purposes. (e.g. github actions.)
+		If you want you can change your email/password already anyway. This can be used to login without discord
+		for developing purposes. (e.g. github actions.)
 	</h5>
 
 	<form class="my-6 flex w-full flex-col" method="POST" use:enhance>
 		{#if $errors._errors}
 			{#each $errors._errors as err (err)}
-				<small class="text-error-500 flex">{err}</small>
+				<small class="flex text-error-500">{err}</small>
 			{/each}
 		{/if}
 
@@ -56,7 +56,7 @@
 			<small class="text-success-500">Your password has been updated.</small>
 		{/if}
 
-		<label class="label my-4">
+		<label class="my-4 label">
 			<span class="label-text">Email:</span>
 			<input class="input" class:border-error-500={$errors.email} bind:value={$authForm.email} />
 			{#if $errors.email}
@@ -65,13 +65,9 @@
 				{/each}
 			{/if}
 		</label>
-		<label class="label my-4">
+		<label class="my-4 label">
 			<span class="label-text">Password:</span>
-			<input
-				class="input"
-				class:border-error-500={$errors.password}
-				bind:value={$authForm.password}
-			/>
+			<input class="input" class:border-error-500={$errors.password} bind:value={$authForm.password} />
 			{#if $errors.password}
 				{#each $errors.password as err (err)}
 					<small class="text-error-500">{err}</small>
@@ -79,6 +75,6 @@
 			{/if}
 		</label>
 
-		<button type="submit" class="btn preset-filled-primary-500 mx-auto my-4"> Update </button>
+		<button type="submit" class="mx-auto my-4 btn preset-filled-primary-500"> Update </button>
 	</form>
 </main>

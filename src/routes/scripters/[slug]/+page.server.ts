@@ -45,8 +45,7 @@ export const load = async ({
 
 	const filteredScripts = scripts.slice(Math.max(0, start), Math.min(scripts.length, finish + 1))
 
-	if (scripter.content)
-		scripter.content = DOMPurify.sanitize((await mdvsvexCompile(scripter.content)).code)
+	if (scripter.content) scripter.content = DOMPurify.sanitize((await mdvsvexCompile(scripter.content)).code)
 
 	return {
 		scripter,

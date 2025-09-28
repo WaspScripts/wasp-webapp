@@ -9,9 +9,7 @@
 	let { pageSize = $bindable(), count = 0, data, children } = $props()
 
 	const pageStr = page.url.searchParams.get("page") || "-1"
-	let currentPage = $state(
-		Number(pageStr) < 0 || Number.isNaN(Number(pageStr)) ? 1 : Number(pageStr)
-	)
+	let currentPage = $state(Number(pageStr) < 0 || Number.isNaN(Number(pageStr)) ? 1 : Number(pageStr))
 
 	let ascending = $state(page.url.searchParams.get("ascending")?.toLowerCase() === "true")
 	let headers: (keyof Stats)[] = ["username", "experience", "gold", "levels", "runtime"]
@@ -31,7 +29,7 @@
 </script>
 
 <div class="table-wrap">
-	<table class="mx-auto my-8 table w-full overflow-auto text-left text-xs md:text-sm">
+	<table class="table mx-auto my-8 w-full overflow-auto text-left text-xs md:text-sm">
 		<thead class="preset-filled-surface-100-900 text-lg font-bold uppercase">
 			<tr>
 				{#each headers as header (header)}

@@ -33,9 +33,7 @@ export const GET = async ({ url: { searchParams } }) => {
 			)
 		}
 	} else if (session.mode === "payment") {
-		console.error(
-			"Checkout session " + sessionID + " is a single time payment which is not implemented yet!"
-		)
+		console.error("Checkout session " + sessionID + " is a single time payment which is not implemented yet!")
 		throw error(403, "NOT IMPLEMENTED YET!")
 	}
 

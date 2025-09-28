@@ -23,11 +23,11 @@
 	{/snippet}
 	{#snippet content()}
 		<header class="flex justify-between">
-			<h5 class="lg:h4 my-4 flex flex-col gap-4 text-lg lg:flex-row">
+			<h5 class="my-4 flex flex-col gap-4 text-lg lg:flex-row lg:h4">
 				Choose the scripts you want on this bundle:
 			</h5>
 		</header>
-		<article class="table-wrap my-12 max-h-[28rem] w-full">
+		<article class="my-12 max-h-[28rem] table-wrap w-full">
 			<table class="table">
 				<tbody class="[&>tr]:hover:preset-tonal">
 					{@render children()}
@@ -40,9 +40,7 @@
 		</small>
 
 		<footer class="my-4 flex gap-4">
-			<button type="button" class="btn preset-tonal mx-auto" onclick={() => (open = false)}
-				>Confirm</button
-			>
+			<button type="button" class="mx-auto btn preset-tonal" onclick={() => (open = false)}>Confirm</button>
 		</footer>
 	{/snippet}
 </Modal>

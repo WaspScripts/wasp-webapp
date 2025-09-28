@@ -69,10 +69,7 @@ export async function load({ depends, url }) {
 		}
 	}
 
-	const filteredTutorials = tutorials.slice(
-		Math.max(0, start),
-		Math.min(tutorials.length, finish + 1)
-	)
+	const filteredTutorials = tutorials.slice(Math.max(0, start), Math.min(tutorials.length, finish + 1))
 
 	return { tutorials: filteredTutorials, amount, count: tutorials.length }
 }

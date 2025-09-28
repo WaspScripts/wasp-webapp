@@ -13,8 +13,7 @@ const redirects: Handle = async ({ event, resolve }) => {
 		const path = event.url.pathname.slice(14)
 		if (path === "") return resolve(event)
 
-		const searchParams =
-			event.url.searchParams.toString() + "&path=" + encodeURI(path.replaceAll("_-_", "/"))
+		const searchParams = event.url.searchParams.toString() + "&path=" + encodeURI(path.replaceAll("_-_", "/"))
 
 		return redirect(303, "/auth/callback?" + searchParams)
 	}
@@ -22,20 +21,16 @@ const redirects: Handle = async ({ event, resolve }) => {
 }
 
 const supabase: Handle = async ({ event, resolve }) => {
-	event.locals.supabaseServer = createServerClient<Database>(
-		PUBLIC_SUPABASE_URL,
-		PUBLIC_SUPABASE_ANON_KEY,
-		{
-			cookies: {
-				getAll: () => event.cookies.getAll(),
-				setAll: (cookiesToSet) => {
-					cookiesToSet.forEach(({ name, value, options }) => {
-						event.cookies.set(name, value, { ...options, path: "/" })
-					})
-				}
+	event.locals.supabaseServer = createServerClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+		cookies: {
+			getAll: () => event.cookies.getAll(),
+			setAll: (cookiesToSet) => {
+				cookiesToSet.forEach(({ name, value, options }) => {
+					event.cookies.set(name, value, { ...options, path: "/" })
+				})
 			}
 		}
-	)
+	})
 
 	event.locals.launcherSupabase = createServerClient<Database>(
 		PUBLIC_SUPABASE_URL,
@@ -172,8 +167,7 @@ const theme: Handle = async ({ event, resolve }) => {
 	}
 
 	return await resolve(event, {
-		transformPageChunk: ({ html }) =>
-			html.replace('data-theme=""', `data-theme="${cookieTheme ?? "wasp"}"`)
+		transformPageChunk: ({ html }) => html.replace('data-theme=""', `data-theme="${cookieTheme ?? "wasp"}"`)
 	})
 }
 
@@ -186,11 +180,4 @@ const performanceCheck: Handle = async ({ event, resolve }) => {
 	return response
 }
 
-export const handle: Handle = sequence(
-	redirects,
-	darkMode,
-	theme,
-	supabase,
-	authGuard,
-	performanceCheck
-)
+export const handle: Handle = sequence(redirects, darkMode, theme, supabase, authGuard, performanceCheck)

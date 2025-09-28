@@ -12,12 +12,9 @@
 />
 
 <main class="container mx-auto my-24 max-w-2xl flex-grow">
-	<header class="text-center my-24">
-		<h1 class="text-xl font-bold sm:text-2xl md:text-3xl">
-			WaspScripts
-
-		</h1>
-		<h2 class="text-lg font-bold sm:text-xl md:text-2xl uppercase">
+	<header class="my-24 text-center">
+		<h1 class="text-xl font-bold sm:text-2xl md:text-3xl">WaspScripts</h1>
+		<h2 class="text-lg font-bold uppercase sm:text-xl md:text-2xl">
 			100%
 			<span class="animate-character bg-clip-text text-transparent">color</span>
 			100% open source
@@ -40,21 +37,18 @@
 	</header>
 
 	<p class="my-12 text-center">
-		WaspScripts is a collection of open source color scripts written for Simba on top of SRL and
-		WaspLib.
+		WaspScripts is a collection of open source color scripts written for Simba on top of SRL and WaspLib.
 		<br />
-		If you are new to Simba and don't know what it is, Simba is just the oldest color botting program
-		still around, it's ancestor, SCAR dates back to RuneScape Classic.
+		If you are new to Simba and don't know what it is, Simba is just the oldest color botting program still around,
+		it's ancestor, SCAR dates back to RuneScape Classic.
 	</p>
 	<p class="my-6 text-center">
-		We use the most advanced image recognition and computer vision techniques like template
-		matching, OCR, edge detection and color math to build efficient color OSRS bot scripts.
+		We use the most advanced image recognition and computer vision techniques like template matching, OCR,
+		edge detection and color math to build efficient color OSRS bot scripts.
 	</p>
 	<p class="my-6 text-center">
 		For more information, help and/or questions look through the
-		<a href="/faq" class="decoration-transparent" aria-label="Open frequently asked questions page">
-			FAQ
-		</a>
+		<a href="/faq" class="decoration-transparent" aria-label="Open frequently asked questions page"> FAQ </a>
 		or join the discord community!
 	</p>
 </main>

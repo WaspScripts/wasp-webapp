@@ -10,7 +10,7 @@
 
 <a
 	href={"https://github.com/WaspScripts/wasp-info/" + link}
-	class="btn preset-filled-surface-200-800 preset-tonal mx-auto my-4 p-2"
+	class="mx-auto my-4 btn preset-filled-surface-200-800 preset-tonal p-2"
 >
 	<svg width="20" height="20" data-icon="github">
 		<symbol id="ai:local:github" viewBox="0 0 24 24">

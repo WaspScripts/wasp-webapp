@@ -10,8 +10,7 @@ export const POST = async ({ request }) => {
 	const hookPassword = request.headers.get("password")
 	const req = await request.json()
 
-	if (hookPassword !== SUPABASE_SCRIPTERS_WEBHOOK_SECRET)
-		error(403, "Webhook secret doesn't match.")
+	if (hookPassword !== SUPABASE_SCRIPTERS_WEBHOOK_SECRET) error(403, "Webhook secret doesn't match.")
 
 	console.log("📌 POST => ", req)
 

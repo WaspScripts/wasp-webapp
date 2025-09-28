@@ -23,6 +23,31 @@
 		if (!result) products = await getProducts(supabaseClient, script.id)
 		return result
 	}
+
+	let limits = $state({
+		xp_min: 0,
+		xp_max: 0,
+		gp_min: 0,
+		gp_max: 0
+	})
+
+	async function getLimits() {
+		const { data, error: err } = await supabaseClient
+			.schema("stats")
+			.from("limits")
+			.select("xp_min, xp_max, gp_min, gp_max")
+			.eq("id", script.id)
+			.single()
+		if (err) {
+			console.error(err)
+			return
+		}
+		limits = data
+	}
+
+	getLimits()
+
+	let content = $derived(replaceScriptContent(script, limits))
 </script>
 
 <Head
@@ -42,10 +67,7 @@
 	>
 		<img
 			class="rounded-md"
-			src={PUBLIC_SUPABASE_URL +
-				"/storage/v1/object/public/imgs/scripts/" +
-				script.id +
-				"/banner.jpg"}
+			src={PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/banner.jpg"}
 			alt="Script banner"
 			loading="lazy"
 		/>
@@ -68,16 +90,11 @@
 					{#if has_access}
 						<div class="grid justify-center justify-items-center gap-8 py-12">
 							<div class="my-8 flex flex-col gap-8 lg:flex-row">
-								<AdvancedButton
-									id={script.id}
-									title={script.title}
-									rev={script.protected.revision}
-								/>
+								<AdvancedButton id={script.id} title={script.title} rev={script.protected.revision} />
 							</div>
 							{#if canEdit(profile?.id, profile?.role, script.protected.author)}
 								<div class="my-8 grid place-items-center">
-									<a href="{page.url.pathname}/edit" class="btn preset-filled-secondary-500">Edit</a
-									>
+									<a href="{page.url.pathname}/edit" class="btn preset-filled-secondary-500">Edit</a>
 								</div>
 							{/if}
 						</div>
@@ -107,10 +124,7 @@
 													</td>
 
 													<td class="text-center">
-														<a
-															href="/subscriptions"
-															class="btn hover:cursor-pointer hover:text-primary-500"
-														>
+														<a href="/subscriptions" class="btn hover:cursor-pointer hover:text-primary-500">
 															<ExternalLink size="16" />
 															Bundle
 														</a>
@@ -119,9 +133,7 @@
 													<td class="text-center">{getCurrentPrice(bundle.prices)}</td>
 
 													<td>
-														<div
-															class="mx-auto btn-group flex w-fit flex-col rounded-md md:flex-row"
-														>
+														<div class="mx-auto btn-group flex w-fit flex-col rounded-md md:flex-row">
 															{#each bundle.prices as price, j (price.id)}
 																<button
 																	type="button"
@@ -158,10 +170,7 @@
 													</td>
 
 													<td class="text-center">
-														<a
-															href="/subscriptions"
-															class="btn hover:cursor-pointer hover:text-primary-500"
-														>
+														<a href="/subscriptions" class="btn hover:cursor-pointer hover:text-primary-500">
 															<ExternalLink size="16" />
 															<span>Script</span>
 														</a>
@@ -170,9 +179,7 @@
 													<td class="text-center">{getCurrentPrice(script.prices)}</td>
 
 													<td>
-														<div
-															class="mx-auto btn-group flex w-fit flex-col rounded-md md:flex-row"
-														>
+														<div class="mx-auto btn-group flex w-fit flex-col rounded-md md:flex-row">
 															{#each script.prices as price, j (price.id)}
 																<button
 																	type="button"
@@ -213,5 +220,5 @@
 		{/if}
 	</div>
 
-	<ScriptArticle content={replaceScriptContent(script)} />
+	<ScriptArticle {content} />
 </main>

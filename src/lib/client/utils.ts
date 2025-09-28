@@ -4,11 +4,7 @@ import type { Script, ScriptLimits, ScriptPublic } from "$lib/types/collection"
 import { ACCEPTED_IMAGE_TYPES, formatNumber } from "$lib/utils"
 import { error } from "@sveltejs/kit"
 
-export async function replaceQuery(
-	url: URL,
-	values: Record<string, string>,
-	noscroll: boolean = true
-) {
+export async function replaceQuery(url: URL, values: Record<string, string>, noscroll: boolean = true) {
 	if (!browser) return
 
 	const { origin, pathname, searchParams } = url
@@ -73,10 +69,10 @@ export function getScriptContent(
 		updated_at: new Date(Date.now()).toLocaleString(locale),
 		revision_date: new Date(Date.now()).toLocaleString(locale, date),
 		revision_time: new Date(Date.now()).toLocaleString(locale, time),
-		min_xp: formatNumber(Number(limits.xp_min * 12)),
-		max_xp: formatNumber(Number(limits.xp_max * 12)),
-		min_gp: formatNumber(Number(limits.gp_min * 12)),
-		max_gp: formatNumber(Number(limits.gp_max * 12))
+		xp_min: formatNumber(Number(limits.xp_min * 12)),
+		xp_max: formatNumber(Number(limits.xp_max * 12)),
+		gp_min: formatNumber(Number(limits.gp_min * 12)),
+		gp_max: formatNumber(Number(limits.gp_max * 12))
 	}
 
 	const result = script.content.replace(/\{\$([^{}\s$]+)\}/g, (match, placeholder) => {
@@ -87,7 +83,7 @@ export function getScriptContent(
 	return result
 }
 
-export function replaceScriptContent(script: Script, locale: string = "pt-PT") {
+export function replaceScriptContent(script: Script, limits: ScriptLimits, locale: string = "pt-PT") {
 	const date: Intl.DateTimeFormatOptions = {
 		day: "2-digit",
 		month: "2-digit",
@@ -109,7 +105,11 @@ export function replaceScriptContent(script: Script, locale: string = "pt-PT") {
 		revision: script.protected.revision.toString(),
 		updated_at: new Date(script.protected.updated_at).toLocaleString(locale),
 		revision_date: new Date(script.protected.updated_at).toLocaleString(locale, date),
-		revision_time: new Date(script.protected.updated_at).toLocaleString(locale, time)
+		revision_time: new Date(script.protected.updated_at).toLocaleString(locale, time),
+		xp_min: formatNumber(Number(limits.xp_min * 12)),
+		xp_max: formatNumber(Number(limits.xp_max * 12)),
+		gp_min: formatNumber(Number(limits.gp_min * 12)),
+		gp_max: formatNumber(Number(limits.gp_max * 12))
 	}
 
 	const result = script.content.replace(/\{\$([^{}\s$]+)\}/g, (match, placeholder) => {
@@ -120,11 +120,7 @@ export function replaceScriptContent(script: Script, locale: string = "pt-PT") {
 	return result
 }
 
-export async function checkClientImageDimensions(
-	file: File,
-	w: number,
-	h: number
-): Promise<boolean> {
+export async function checkClientImageDimensions(file: File, w: number, h: number): Promise<boolean> {
 	if (!browser) return false
 	if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) return false
 

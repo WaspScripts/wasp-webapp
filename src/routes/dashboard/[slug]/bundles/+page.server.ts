@@ -101,11 +101,9 @@ export const load = async ({ locals: { supabaseServer }, params: { slug }, paren
 
 	const promises = await Promise.all([
 		superValidate({ bundles }, zod(bundleArraySchema)),
-		superValidate(
-			{ user_id: slug, prices: newPrices, bundledScripts: scripts },
-			zod(newBundleSchema),
-			{ errors: false }
-		)
+		superValidate({ user_id: slug, prices: newPrices, bundledScripts: scripts }, zod(newBundleSchema), {
+			errors: false
+		})
 	])
 
 	return {
@@ -123,15 +121,11 @@ export const actions = {
 		url: { origin, searchParams, pathname },
 		params: { slug }
 	}) => {
-		if (!user)
-			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
+		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
 
-		const promises = await Promise.all([
-			getProfile(),
-			superValidate(request, zod(bundleArraySchema))
-		])
+		const promises = await Promise.all([getProfile(), superValidate(request, zod(bundleArraySchema))])
 		const profile = promises[0]
 		const form = promises[1]
 
@@ -245,8 +239,7 @@ export const actions = {
 		url: { origin, pathname },
 		params: { slug }
 	}) => {
-		if (!user)
-			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
+		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
 
@@ -277,8 +270,7 @@ export const actions = {
 		url: { origin, searchParams },
 		params: { slug }
 	}) => {
-		if (!user)
-			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
+		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
 
@@ -314,8 +306,7 @@ export const actions = {
 		url: { origin, searchParams },
 		params: { slug }
 	}) => {
-		if (!user)
-			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
+		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
 
@@ -343,8 +334,7 @@ export const actions = {
 		url: { origin, searchParams },
 		params: { slug }
 	}) => {
-		if (!user)
-			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
+		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
 
@@ -388,8 +378,7 @@ export const actions = {
 		url: { origin, searchParams },
 		params: { slug }
 	}) => {
-		if (!user)
-			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
+		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
 

@@ -36,12 +36,10 @@
 	<h1 class="my-12 justify-center text-center">General stats</h1>
 
 	<div
-		class="xl:mx-w-7xl table-wrap preset-outlined-surface-500 mx-auto max-w-md rounded-md md:max-w-3xl lg:max-w-6xl"
+		class="xl:mx-w-7xl mx-auto table-wrap max-w-md rounded-md preset-outlined-surface-500 md:max-w-3xl lg:max-w-6xl"
 	>
 		<table class="table border-separate space-y-6 text-xs">
-			<TableHeader
-				headers={["Scripts", "Premium scripts", "Subscribers", "Cancelling", "Free access"]}
-			/>
+			<TableHeader headers={["Scripts", "Premium scripts", "Subscribers", "Cancelling", "Free access"]} />
 
 			<tbody class="preset-filled-surface-200-800 [&>tr]:hover:preset-tonal">
 				<tr class="table-row">
@@ -67,7 +65,7 @@
 					{#each scripters as scripter (scripter.id)}
 						<a
 							href="/dashboard/{scripter.id}/general"
-							class="btn preset-outlined-tertiary-300-700 hover:border-secondary-500 m-2 mx-auto flex w-full justify-around font-bold"
+							class="m-2 mx-auto btn flex w-full justify-around preset-outlined-tertiary-300-700 font-bold hover:border-secondary-500"
 						>
 							<Avatar
 								src={scripter.profiles.avatar}

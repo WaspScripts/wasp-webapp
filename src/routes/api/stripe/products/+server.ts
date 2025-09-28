@@ -45,8 +45,7 @@ export const POST = async ({ request }) => {
 		}
 
 		case "product.updated": {
-			if (!data.previous_attributes || !Object.keys(data.previous_attributes).includes("name"))
-				break
+			if (!data.previous_attributes || !Object.keys(data.previous_attributes).includes("name")) break
 
 			const productUpdated = data.object as Stripe.Product
 

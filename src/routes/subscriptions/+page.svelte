@@ -24,13 +24,7 @@
 	{#if profile}
 		{#await subscriptions then subscriptions}
 			{#if subscriptions.length > 0}
-				<SubscriptionsTable
-					data={data.subscriptionsform}
-					{bundles}
-					{scripts}
-					{subscriptions}
-					{prices}
-				/>
+				<SubscriptionsTable data={data.subscriptionsform} {bundles} {scripts} {subscriptions} {prices} />
 			{/if}
 		{/await}
 

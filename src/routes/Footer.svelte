@@ -27,9 +27,7 @@
 							<a href="https://github.com/WaspScripts/WaspLib" target="_blank">WaspLib repo</a>
 						</li>
 						<li>
-							<a href="https://waspscripts.github.io/WaspLib" target="_blank"
-								>WaspLib Documentation</a
-							>
+							<a href="https://waspscripts.github.io/WaspLib" target="_blank">WaspLib Documentation</a>
 						</li>
 						<li>
 							<a href="https://map.waspscripts.com/" target="_blank">Interactive map</a>
@@ -64,11 +62,7 @@
 		<footer class="my-8 flex flex-col sm:flex-row">
 			<span class="mx-auto my-auto text-sm sm:text-center">
 				This webapp is open source! Checkout
-				<a
-					class="permalink text-secondary-500"
-					href="https://github.com/torwent/wasp-webapp"
-					target="_blank"
-				>
+				<a class="permalink text-secondary-500" href="https://github.com/torwent/wasp-webapp" target="_blank">
 					WaspScripts source code
 				</a>
 				!

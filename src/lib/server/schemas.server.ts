@@ -2,11 +2,7 @@ import { bannerImage, baseScriptSchema, coverImage, scriptFile } from "$lib/clie
 import sharp from "sharp"
 import { supabaseAdmin } from "./supabase.server"
 
-async function checkServerImageDimensions(
-	file: File,
-	width: number,
-	height: number
-): Promise<boolean> {
+async function checkServerImageDimensions(file: File, width: number, height: number): Promise<boolean> {
 	if (file == null) return false
 	try {
 		const image = sharp(Buffer.from(await file.arrayBuffer()))
@@ -34,10 +30,7 @@ export const addScriptServerSchema = baseScriptSchema
 		(schema) => schema.xp_min <= schema.xp_max,
 		"Minimum experience cannot exceed the maximum experience."
 	)
-	.refine(
-		(schema) => schema.gp_min <= schema.gp_max,
-		"Minimum gold cannot exceed the maximum gold."
-	)
+	.refine((schema) => schema.gp_min <= schema.gp_max, "Minimum gold cannot exceed the maximum gold.")
 	.refine(async (schema) => {
 		const { count, error } = await supabaseAdmin
 			.schema("scripts")
@@ -81,10 +74,7 @@ export const updateScriptServerSchema = baseScriptSchema
 		(schema) => schema.xp_min <= schema.xp_max,
 		"Minimum experience cannot exceed the maximum experience."
 	)
-	.refine(
-		(schema) => schema.gp_min <= schema.gp_max,
-		"Minimum gold cannot exceed the maximum gold."
-	)
+	.refine((schema) => schema.gp_min <= schema.gp_max, "Minimum gold cannot exceed the maximum gold.")
 	.refine(async (schema) => {
 		const { count, error } = await supabaseAdmin
 			.schema("scripts")

@@ -114,16 +114,7 @@
 	>
 		<table class="table border-separate space-y-6 text-xs md:text-sm">
 			<TableHeader
-				headers={[
-					"Product",
-					"Type",
-					"Price",
-					"Interval",
-					"Start date",
-					"End date",
-					"Renew",
-					"Refund"
-				]}
+				headers={["Product", "Type", "Price", "Interval", "Start date", "End date", "Renew", "Refund"]}
 			/>
 			<tbody class="preset-filled-surface-200-800 [&>tr]:hover:preset-tonal">
 				{#each subscriptions as { id, product, price, date_start, date_end, disabled }, i (id)}

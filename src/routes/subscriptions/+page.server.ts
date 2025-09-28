@@ -105,9 +105,7 @@ export const actions = {
 			.select("user_id, stripe")
 			.eq("id", productID)
 			.single()
-		console.log(
-			`└────🦾 Product owner data took ${(performance.now() - start).toFixed(2)} ms to check!`
-		)
+		console.log(`└────🦾 Product owner data took ${(performance.now() - start).toFixed(2)} ms to check!`)
 
 		if (err) {
 			return setError(
@@ -119,13 +117,7 @@ export const actions = {
 
 		const stripeUser = data.user_id !== PUBLIC_SUPER_USER_ID ? data.stripe : null
 
-		const url = await createCheckoutSession(
-			profile.id,
-			profile.stripe,
-			stripeUser,
-			selectedPrice.id,
-			origin
-		)
+		const url = await createCheckoutSession(profile.id, profile.stripe, stripeUser, selectedPrice.id, origin)
 
 		if (url) redirect(303, url)
 		return setError(form, "", "Something went wrong!")
@@ -157,10 +149,7 @@ export const actions = {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		}
 
-		const promises = await Promise.all([
-			getProfile(),
-			superValidate(request, zod(subscriptionsSchema))
-		])
+		const promises = await Promise.all([getProfile(), superValidate(request, zod(subscriptionsSchema))])
 
 		const profile = promises[0]
 		const form = promises[1]
@@ -229,10 +218,7 @@ export const actions = {
 		return { form, subscription: subscriptionID }
 	},
 
-	refund: async ({
-		locals: { supabaseServer, user, getProfile },
-		url: { origin, searchParams }
-	}) => {
+	refund: async ({ locals: { supabaseServer, user, getProfile }, url: { origin, searchParams } }) => {
 		if (!user) {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		}

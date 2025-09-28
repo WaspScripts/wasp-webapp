@@ -8,31 +8,9 @@ export const UUID_V4_REGEX =
 export const MB_SIZE = 1000000
 export const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg"]
 
-export function formatError(err: AuthError): string
-export function formatError(err: PostgrestError): string
 export function formatError(err: AuthError | PostgrestError) {
 	console.error(err)
-	let message = ""
-	const authErr = err as AuthError
-	const pgErr = err as PostgrestError
-
-	if (authErr.name) {
-		message += "Authentication Error\n\n"
-		message += "Error   : " + authErr.name + "\n"
-		message += "Code    : " + authErr.code + "\n"
-		message += "Status  : " + authErr.status + "\n"
-		message += "Message : " + authErr.message + "\n"
-		message += authErr.cause ? "Cause   : " + authErr.cause + "\n" : ""
-		message += authErr.stack ? "Stack   : " + authErr.stack + "\n" : ""
-	} else if (pgErr.details) {
-		message += "Database Error\n\n"
-		message += "Code    : " + pgErr.code + "\n"
-		message += "Details : " + pgErr.details + "\n"
-		message += "Message : " + pgErr.message + "\n"
-		message += "Hint    : " + pgErr.hint + "\n"
-	}
-
-	return message
+	return JSON.stringify(err)
 }
 
 //String
@@ -71,7 +49,7 @@ export function formatNumber(n: number): string {
 		f = f / 1000
 	}
 
-	return parseFloat(f.toFixed(2)).toString() + " " + arr[i]
+	return parseFloat(f.toFixed(2)).toString() + arr[i]
 }
 
 export function encodeSEO(url: string) {

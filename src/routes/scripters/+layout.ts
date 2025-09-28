@@ -26,16 +26,13 @@ export const load = async ({ url: { searchParams }, parent }) => {
 			.limit(1, { referencedTable: "profiles" })
 
 		query =
-			search === ""
-				? query.order("url").range(start, finish)
-				: query.ilike("search", "%" + search + "%")
+			search === "" ? query.order("url").range(start, finish) : query.ilike("search", "%" + search + "%")
 
 		const { data, error: err, count } = await query.overrideTypes<ScripterBase[]>()
 
 		if (err) error(500, formatError(err))
 
-		if (!browser && data.length === 1)
-			redirect(303, "/scripters/" + encodeSEO(data[0].profiles.username))
+		if (!browser && data.length === 1) redirect(303, "/scripters/" + encodeSEO(data[0].profiles.username))
 
 		return { scripters: data, count: count ?? 0 }
 	}

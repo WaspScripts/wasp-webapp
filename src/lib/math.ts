@@ -86,9 +86,7 @@ function truncatedGauss(left = 0, right = 1, cutoff = 0) {
 	let result = cutoff + 1
 	while (result >= cutoff) {
 		//need to implement nzRandom
-		result = Math.abs(
-			Math.sqrt(-2 * Math.log(Math.random())) * Math.cos(2 * Math.PI * Math.random())
-		)
+		result = Math.abs(Math.sqrt(-2 * Math.log(Math.random())) * Math.cos(2 * Math.PI * Math.random()))
 	}
 
 	return (result / cutoff) * (right - left) + left
@@ -144,9 +142,7 @@ function skewedRand(mode: number, lo: number, hi: number, cutoff = 0) {
 
 	while (result >= cutoff) {
 		//todo: implement nzRandom
-		result = Math.abs(
-			Math.sqrt(-2 * Math.log(Math.random())) * Math.cos(2 * Math.PI * Math.random())
-		)
+		result = Math.abs(Math.sqrt(-2 * Math.log(Math.random())) * Math.cos(2 * Math.PI * Math.random()))
 	}
 
 	return (result / cutoff) * (top - mode) + mode

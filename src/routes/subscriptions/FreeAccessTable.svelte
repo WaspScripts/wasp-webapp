@@ -33,7 +33,7 @@
 <div class="mx-auto w-screen max-w-fit">
 	<h1 class="my-12 justify-center text-center font-bold">Free access</h1>
 
-	<div class="table-wrap preset-outlined-surface-500 mx-auto max-w-[95%] rounded-md">
+	<div class="mx-auto table-wrap max-w-[95%] rounded-md preset-outlined-surface-500">
 		<table class="table border-separate space-y-6 text-xs md:text-sm">
 			<TableHeader headers={["Product", "Type", "Start date", "End date"]} />
 			<tbody class="preset-filled-surface-200-800 [&>tr]:hover:preset-tonal">
@@ -82,7 +82,7 @@
 
 								<td class="text-center">
 									<a href="/scripts/{script.url}" class="permalink">
-										<button class="btn hover:text-primary-500 hover:cursor-pointer">
+										<button class="btn hover:cursor-pointer hover:text-primary-500">
 											<ExternalLink size="16" />
 											<span>Script</span>
 										</button>

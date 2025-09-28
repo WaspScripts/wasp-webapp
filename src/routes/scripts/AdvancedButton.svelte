@@ -47,7 +47,7 @@
 	<button
 		name={title}
 		aria-label="Download {title} revision {rev}"
-		class="btn preset-filled-primary-500 hover:preset-tonal-primary h-full rounded-r-none uppercase"
+		class="btn h-full rounded-r-none preset-filled-primary-500 uppercase hover:preset-tonal-primary"
 		onclick={download}
 	>
 		<FileDown />
@@ -56,7 +56,7 @@
 	<select
 		name="revision"
 		id="revision-select"
-		class="select preset-filled-surface-500 hover:preset-tonal-surface rounded-l-none uppercase"
+		class="select rounded-l-none preset-filled-surface-500 uppercase hover:preset-tonal-surface"
 		bind:value={rev}
 	>
 		{#each revisions as r (r)}

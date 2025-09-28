@@ -26,10 +26,7 @@ export async function load({ depends, url, locals: { supabaseServer } }) {
 	let scripts = await (search !== "" ? searchScriptsIndex(search) : allScripts)
 
 	async function getFeatured() {
-		const { data, error: err } = await supabaseServer
-			.schema("scripts")
-			.from("featured")
-			.select("id")
+		const { data, error: err } = await supabaseServer.schema("scripts").from("featured").select("id")
 
 		if (err) {
 			error(

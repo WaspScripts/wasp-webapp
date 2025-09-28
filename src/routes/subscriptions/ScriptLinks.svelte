@@ -26,7 +26,7 @@
 	{/snippet}
 	{#snippet content()}
 		<header class="flex justify-between">
-			<h5 class="h5 lg:h4 flex flex-col gap-4 lg:flex-row">
+			<h5 class="flex flex-col gap-4 h5 lg:flex-row lg:h4">
 				<span>{bundle.name}</span>
 				<span>
 					{#await bundle.username}
@@ -41,10 +41,7 @@
 			<table class="table">
 				<tbody class="[&>tr]:hover:preset-tonal">
 					{#each bundle.scripts as script (script.id)}
-						<tr
-							class="flex h-full w-full cursor-pointer"
-							onclick={() => goto("/scripts/" + script.url)}
-						>
+						<tr class="flex h-full w-full cursor-pointer" onclick={() => goto("/scripts/" + script.url)}>
 							<td class="text-xs">
 								<div class="align-items-center ml-3 flex">
 									<ExternalLink size="16" class="mr-4" />

@@ -14,8 +14,7 @@ export const GET = async ({ url: { searchParams }, locals: { supabaseServer } })
 		const description = searchParams.get("error_description")
 		if (description) {
 			message += "<p>Message: " + decodeURI(description) + "</p>"
-			if (description.includes("email"))
-				message += "<p>Make sure you have your email linked to discord!</p>"
+			if (description.includes("email")) message += "<p>Make sure you have your email linked to discord!</p>"
 		}
 
 		error(401, message)

@@ -9,11 +9,7 @@ export const supabaseAdmin = createClient<Database>(PUBLIC_SUPABASE_URL, SUPABAS
 	auth: { autoRefreshToken: true, persistSession: false }
 })
 
-export async function doLogin(
-	supabase: SupabaseClient,
-	origin: string,
-	searchParams: URLSearchParams
-) {
+export async function doLogin(supabase: SupabaseClient, origin: string, searchParams: URLSearchParams) {
 	const provider = searchParams.get("provider") as Provider
 	const path = searchParams.get("path")
 
@@ -39,49 +35,27 @@ export async function updateScriptFile(file: File) {
 	return new File([fileString], file.name, { type: "text/plain" })
 }
 
-export async function uploadFile(
-	supabase: SupabaseClient,
-	bucket: string,
-	path: string,
-	file: File
-) {
+export async function uploadFile(supabase: SupabaseClient, bucket: string, path: string, file: File) {
 	const contentType = path.endsWith(".jpg") || path.endsWith(".jpeg") ? "image/jpeg" : undefined
 
-	const { error: err } = await supabase.storage
-		.from(bucket)
-		.upload(path, file, { upsert: true, contentType })
+	const { error: err } = await supabase.storage.from(bucket).upload(path, file, { upsert: true, contentType })
 
 	if (err) {
 		console.error(err)
 		return (
-			"storage " +
-			bucket +
-			" UPLOAD " +
-			path +
-			" failed with the following error: " +
-			JSON.stringify(err)
+			"storage " + bucket + " UPLOAD " + path + " failed with the following error: " + JSON.stringify(err)
 		)
 	}
 }
 
-export async function updateImgFile(
-	supabase: SupabaseClient,
-	bucket: string,
-	path: string,
-	file: File
-) {
+export async function updateImgFile(supabase: SupabaseClient, bucket: string, path: string, file: File) {
 	const { error: err } = await supabase.storage
 		.from(bucket)
 		.update(path, file, { upsert: true, contentType: "image/jpeg" })
 	if (err) {
 		console.error(err)
 		return (
-			"storage " +
-			bucket +
-			" UPLOAD " +
-			path +
-			" failed with the following error: " +
-			JSON.stringify(err)
+			"storage " + bucket + " UPLOAD " + path + " failed with the following error: " + JSON.stringify(err)
 		)
 	}
 }

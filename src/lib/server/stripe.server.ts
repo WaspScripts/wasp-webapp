@@ -38,9 +38,7 @@ export async function createCheckoutSession(
 			const start = performance.now()
 			const stripeAccount = await stripe.accounts.retrieve(stripeUser)
 			currency = stripeAccount.default_currency ?? currency
-			console.log(
-				`└────🪙 Account currency took ${(performance.now() - start).toFixed(2)} ms to check!`
-			)
+			console.log(`└────🪙 Account currency took ${(performance.now() - start).toFixed(2)} ms to check!`)
 		} catch (err: unknown) {
 			console.error(err)
 			return null
@@ -67,9 +65,7 @@ export async function createCheckoutSession(
 			success_url: origin + "/subscriptions/success?session_id={CHECKOUT_SESSION_ID}",
 			cancel_url: origin + "/subscriptions/cancel?session_id={CHECKOUT_SESSION_ID}"
 		})
-		console.log(
-			`└────🛒 Checkout session took ${(performance.now() - start).toFixed(2)} ms to create!`
-		)
+		console.log(`└────🛒 Checkout session took ${(performance.now() - start).toFixed(2)} ms to create!`)
 	} catch (err: unknown) {
 		console.error(err)
 		return null
@@ -85,10 +81,7 @@ export async function getStripeConnectAccount(id: string | null | undefined) {
 	try {
 		stripeAccount = await stripe.accounts.retrieve(id)
 	} catch (error) {
-		console.error(
-			"An error occurred when calling the Stripe API to create an account session",
-			error
-		)
+		console.error("An error occurred when calling the Stripe API to create an account session", error)
 	}
 
 	return stripeAccount
@@ -102,10 +95,7 @@ export async function getStripeConnectAccountBalance(id: string | null | undefin
 			stripeAccount: id
 		})
 	} catch (error) {
-		console.error(
-			"An error occurred when calling the Stripe API to create an account session",
-			error
-		)
+		console.error("An error occurred when calling the Stripe API to create an account session", error)
 	}
 
 	return stripeBalance
@@ -137,21 +127,13 @@ export async function getStripeSession(account: string | null | undefined) {
 			}
 		})
 	} catch (error) {
-		console.error(
-			"An error occurred when calling the Stripe API to create an account session",
-			error
-		)
+		console.error("An error occurred when calling the Stripe API to create an account session", error)
 	}
 
 	return accountSession?.client_secret ?? null
 }
 
-export async function createStripeCustomer(
-	id: string,
-	email: string,
-	discord: string,
-	username: string
-) {
+export async function createStripeCustomer(id: string, email: string, discord: string, username: string) {
 	let customer: Stripe.Customer
 
 	try {
@@ -261,10 +243,7 @@ export async function updateStripeConnectAccount(id: string, dba: string) {
 	try {
 		await stripe.accounts.update(id, { business_profile: { name: dba } })
 	} catch (error) {
-		console.error(
-			"An error occurred when calling the Stripe API to create an account session",
-			error
-		)
+		console.error("An error occurred when calling the Stripe API to create an account session", error)
 		return false
 	}
 
@@ -330,10 +309,7 @@ export async function updateStripePrice(price: Price) {
 	await Promise.all(promises)
 }
 
-export async function createStripeBundleProduct(
-	supabase: SupabaseClient<Database>,
-	bundle: BundleSchema
-) {
+export async function createStripeBundleProduct(supabase: SupabaseClient<Database>, bundle: BundleSchema) {
 	const scripts = bundle.bundledScripts.reduce((acc: string[], script) => {
 		if (script.active) acc.push(script.id)
 		return acc
@@ -376,11 +352,7 @@ export async function createStripeBundleProduct(
 	await Promise.all(stripePromises)
 }
 
-export async function createStripeScriptProduct(
-	script: NewScriptSchema,
-	name: string,
-	user_id: string
-) {
+export async function createStripeScriptProduct(script: NewScriptSchema, name: string, user_id: string) {
 	script.prices = script.prices.filter((price) => price.amount > 0)
 	if (script.prices.length === 0) return
 

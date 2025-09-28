@@ -1,10 +1,4 @@
-import type {
-	ProfileRole,
-	Script,
-	Scripter,
-	SimpleScripter,
-	StatsTotal
-} from "$lib/types/collection"
+import type { ProfileRole, Script, Scripter, SimpleScripter, StatsTotal } from "$lib/types/collection"
 import type { Database } from "$lib/types/supabase"
 import { UUID_V4_REGEX, formatError } from "$lib/utils"
 import type { SupabaseClient } from "@supabase/supabase-js"
@@ -88,11 +82,7 @@ export async function getStatsTotal(supabase: SupabaseClient) {
 	return data
 }
 
-export function canEdit(
-	id: string | null | undefined,
-	role: ProfileRole,
-	author: string | null | undefined
-) {
+export function canEdit(id: string | null | undefined, role: ProfileRole, author: string | null | undefined) {
 	if (!id || !role || !author) return false
 	if (["administrator", "moderator"].includes(role)) return true
 	return id === author
@@ -187,11 +177,7 @@ export async function fetchScriptByID(supabase: SupabaseClient<Database>, id: st
 	return data
 }
 
-export async function scriptExists(
-	supabase: SupabaseClient,
-	slug: string,
-	isUUID: boolean | null = null
-) {
+export async function scriptExists(supabase: SupabaseClient, slug: string, isUUID: boolean | null = null) {
 	if (scripts.has(slug)) return true
 
 	console.log("💥 Fetching script " + slug)
@@ -212,11 +198,7 @@ export async function scriptExists(
 	return true
 }
 
-export async function canDownload(
-	supabase: SupabaseClient,
-	role: ProfileRole,
-	script_id: string | null
-) {
+export async function canDownload(supabase: SupabaseClient, role: ProfileRole, script_id: string | null) {
 	if (!script_id) return false
 	if (role && ["administrator", "moderator", "tester"].includes(role)) return true
 
@@ -228,12 +210,7 @@ export async function canDownload(
 	return data ?? false
 }
 
-export async function getSignedURL(
-	supabase: SupabaseClient,
-	bucket: string,
-	path: string,
-	file: string
-) {
+export async function getSignedURL(supabase: SupabaseClient, bucket: string, path: string, file: string) {
 	path += "/" + file
 
 	const { data, error: err } = await supabase.storage.from(bucket).createSignedUrl(path, 10)

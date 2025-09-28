@@ -20,8 +20,7 @@ const content = z
 		message: "Must be at least 10 characters long"
 	})
 	.refine((str) => str === null || str === "" || str.includes(" "), {
-		message:
-			"You have no spaces, this is supposed to be at least a couple of words, ideally a few sentences."
+		message: "You have no spaces, this is supposed to be at least a couple of words, ideally a few sentences."
 	})
 
 const categoryKeys = Object.keys(scriptCategories) as TScriptCategories
@@ -41,18 +40,12 @@ export const baseScriptSchema = z.object({
 		.regex(/^[a-fA-F0-9]+$/, "Must be a valid hexadecimal string"),
 	wasplib: z
 		.string()
-		.regex(
-			/^\d{4}\.\d{2}\.\d{2}-[a-fA-F0-9]{7}$/,
-			"Must match format YYYY.MM.DD-HEX with valid hex"
-		),
+		.regex(/^\d{4}\.\d{2}\.\d{2}-[a-fA-F0-9]{7}$/, "Must match format YYYY.MM.DD-HEX with valid hex"),
 	xp_min: z
 		.number()
 		.int("Only whole numbers are allowed.")
 		.gte(0, "There's no way to lose experience in OSRS."),
-	xp_max: z
-		.number()
-		.int("Only whole numbers are allowed.")
-		.max(60000, "That exceeds the reasonable limit."),
+	xp_max: z.number().int("Only whole numbers are allowed.").max(60000, "That exceeds the reasonable limit."),
 	gp_min: z
 		.number()
 		.int("Only whole numbers are allowed.")
@@ -97,10 +90,7 @@ export const addScriptClientSchema = baseScriptSchema
 		(schema) => schema.xp_min <= schema.xp_max,
 		"Minimum experience cannot exceed the maximum experience."
 	)
-	.refine(
-		(schema) => schema.gp_min <= schema.gp_max,
-		"Minimum gold cannot exceed the maximum gold."
-	)
+	.refine((schema) => schema.gp_min <= schema.gp_max, "Minimum gold cannot exceed the maximum gold.")
 
 export type AddScriptSchema = z.infer<typeof addScriptClientSchema>
 
@@ -124,10 +114,7 @@ export const updateScriptClientSchema = baseScriptSchema
 		(schema) => schema.xp_min <= schema.xp_max,
 		"Minimum experience cannot exceed the maximum experience."
 	)
-	.refine(
-		(schema) => schema.gp_min <= schema.gp_max,
-		"Minimum gold cannot exceed the maximum gold."
-	)
+	.refine((schema) => schema.gp_min <= schema.gp_max, "Minimum gold cannot exceed the maximum gold.")
 
 export type UpdateScriptSchema = z.infer<typeof updateScriptClientSchema>
 
@@ -163,20 +150,14 @@ export const profileSchema = z.object({
 
 export const scripterSchema = z.object({
 	id: z.string().uuid("ID must be a valid UUIDv4."),
-	realname: z
-		.string()
-		.min(2, "If your name really has less than 2 characters contact Torwent.")
-		.nullable(),
+	realname: z.string().min(2, "If your name really has less than 2 characters contact Torwent.").nullable(),
 	description: z
 		.string()
 		.min(6, "Must be more than 6 characters long.")
 		.max(32, "Must be less than 32 characters long.")
 		.includes(" ", { message: "This should be a sentence or at least a couple of words." })
 		.nullable(),
-	github: z
-		.string()
-		.startsWith("https://github.com/", "This should be a github user profile.")
-		.nullable(),
+	github: z.string().startsWith("https://github.com/", "This should be a github user profile.").nullable(),
 	paypal: z
 		.string()
 		.length(
@@ -236,10 +217,7 @@ export const checkoutSchema = z.object({
 })
 
 const newPriceSchema = z.object({
-	amount: z
-		.number()
-		.gte(0, "Amount has to be a positive value.")
-		.lte(200, "Amount can't be more than 200€."),
+	amount: z.number().gte(0, "Amount has to be a positive value.").lte(200, "Amount can't be more than 200€."),
 	interval: z.string().min(4).max(5).regex(new RegExp("week|month|year")),
 	currency: z.string().length(3).regex(new RegExp("eur"))
 })

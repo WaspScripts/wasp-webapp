@@ -61,17 +61,12 @@
 
 <main class="m-4 min-h-96">
 	{#if !scripter.stripe}
-		<form
-			method="POST"
-			action="?/createStripe"
-			class="my-32 grid place-items-center"
-			use:countryEnhance
-		>
+		<form method="POST" action="?/createStripe" class="my-32 grid place-items-center" use:countryEnhance>
 			<h3>Stripe Account</h3>
 
 			<div class="my-4">
 				<label for="code">Choose a country (this cannot be changed later):</label>
-				<select class="select my-2" name="code" id="code" bind:value={$countryForm.code}>
+				<select class="my-2 select" name="code" id="code" bind:value={$countryForm.code}>
 					<option value="AU">Australia (AU)</option>
 					<option value="AT">Austria (AT)</option>
 					<option value="BE">Belgium (BE)</option>
@@ -117,21 +112,17 @@
 				</select>
 			</div>
 			{#if $countryErrors && $countryErrors.code}
-				<div
-					class="bg-surface-700 text-error-500 max-h-24 overflow-x-hidden overflow-y-scroll rounded-md"
-				>
+				<div class="max-h-24 overflow-x-hidden overflow-y-scroll rounded-md bg-surface-700 text-error-500">
 					{$countryErrors.code}
 				</div>
 			{/if}
 			{#if $countryAllErrors}
-				<div
-					class="bg-surface-700 text-error-500 max-h-24 overflow-x-hidden overflow-y-scroll rounded-md"
-				>
+				<div class="max-h-24 overflow-x-hidden overflow-y-scroll rounded-md bg-surface-700 text-error-500">
 					{#each $countryAllErrors as err, i (err.path)}
 						{#if i === 0}
 							Errors:
 						{/if}
-						<small class="text-error-500 mx-8 flex rounded-md">
+						<small class="mx-8 flex rounded-md text-error-500">
 							Error path: {err.path}
 							{#each err.messages as message (message)}
 								{message}
@@ -146,18 +137,13 @@
 		</form>
 	{:else}
 		<div class="flex justify-around">
-			<form
-				method="POST"
-				action="?/displayName"
-				class="my-32 flex place-items-center"
-				use:dbaEnhance
-			>
+			<form method="POST" action="?/displayName" class="my-32 flex place-items-center" use:dbaEnhance>
 				<div class="my-4">
 					<label for="dba">Invoice display name:</label>
-					<input class="input my-2" name="dba" id="dba" bind:value={$dbaForm.dba} />
+					<input class="my-2 input" name="dba" id="dba" bind:value={$dbaForm.dba} />
 					{#if $dbaErrors.dba}
 						<div
-							class="bg-surface-700 text-error-500 max-h-24 overflow-x-hidden overflow-y-scroll rounded-md"
+							class="max-h-24 overflow-x-hidden overflow-y-scroll rounded-md bg-surface-700 text-error-500"
 						>
 							{#each $dbaErrors.dba as err (err)}
 								{err}
@@ -165,15 +151,13 @@
 						</div>
 					{/if}
 				</div>
-				<button class="btn preset-filled-secondary-500 mx-4 mt-6 h-10">Update</button>
+				<button class="mx-4 mt-6 btn h-10 preset-filled-secondary-500">Update</button>
 			</form>
 
 			<form method="POST" action="?/updateStripe" class="my-32 block place-items-center">
 				<div class="my-4 grid">
 					<span>Account information</span>
-					<button class="btn preset-filled-secondary-500 my-2 h-10">
-						Update stripe connected account
-					</button>
+					<button class="my-2 btn h-10 preset-filled-secondary-500"> Update stripe connected account </button>
 				</div>
 			</form>
 		</div>
@@ -195,20 +179,18 @@
 		{#if stripeAccount}
 			{#if stripeAccount.requirements?.currently_due && stripeAccount.requirements?.currently_due.length > 0}
 				<div class="mb-24 flex flex-col">
-					<span class="text-error-500 my-2">Missing account information:</span>
+					<span class="my-2 text-error-500">Missing account information:</span>
 
-					<div class="bg-surface-700 text-error-500 my-2 grid">
+					<div class="my-2 grid bg-surface-700 text-error-500">
 						{#each stripeAccount.requirements?.currently_due as requirement (requirement)}
 							<small class="mx-auto w-full">{requirement}</small>
 						{/each}
 					</div>
 					<small>
-						This can be updated on the "Update stripe connected account" button. Ask Torwent for
-						help if needed.
+						This can be updated on the "Update stripe connected account" button. Ask Torwent for help if
+						needed.
 					</small>
-					<small class="text-error-500">
-						Not having this complete may result in you not getting paid.
-					</small>
+					<small class="text-error-500"> Not having this complete may result in you not getting paid. </small>
 				</div>
 			{/if}
 		{/if}

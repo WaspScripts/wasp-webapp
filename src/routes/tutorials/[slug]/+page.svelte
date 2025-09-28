@@ -35,7 +35,7 @@
 	<div class="my-8 grid place-items-center">
 		<a
 			href="https://github.com/Torwent/wasp-info/edit/main/tutorials/{meta.order}.md"
-			class="preset-filled-tertiary-500 btn flex flex-col md:flex-row"
+			class="btn flex flex-col preset-filled-tertiary-500 md:flex-row"
 		>
 			<span>Found something wrong?</span>
 			<span> Edit on GitHub! </span>
@@ -45,7 +45,7 @@
 	<h3 class="my-4 text-center leading-normal font-semibold">{meta.description}</h3>
 	<h4 class="my-12 text-center">
 		Author:
-		<span class="text-primary-500 flex justify-center">
+		<span class="flex justify-center text-primary-500">
 			{#await getUsername(meta.author)}
 				Loading...
 			{:then author}
@@ -57,18 +57,14 @@
 	{#if meta.coauthors}
 		<h5 class="justify-center text-center">
 			Co-Authors:
-			<div class="text-secondary-500 my-2 flex items-baseline justify-center text-sm">
+			<div class="my-2 flex items-baseline justify-center text-sm text-secondary-500">
 				{#each meta.coauthors as coauthor (coauthor)}
 					{#await getUsername(coauthor)}
 						Loading
 					{:then author}
 						<span class="mx-2 flex">
 							<span class="my-auto">{author.username}</span>
-							<Avatar
-								src={author.avatar}
-								name={author.username ?? "Error"}
-								classes="mx-1 w-6 h-6"
-							/>
+							<Avatar src={author.avatar} name={author.username ?? "Error"} classes="mx-1 w-6 h-6" />
 						</span>
 					{/await}
 				{/each}
@@ -76,7 +72,7 @@
 		</h5>
 	{/if}
 	<article
-		class="prose border-surface-300 dark:prose-invert dark:border-surface-800 mx-auto my-8 border-t-2 py-6"
+		class="mx-auto my-8 prose border-t-2 border-surface-300 py-6 dark:border-surface-800 dark:prose-invert"
 	>
 		<div class="mx-8 md:mx-auto">
 			<Content />

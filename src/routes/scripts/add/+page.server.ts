@@ -101,18 +101,14 @@ export const actions = {
 		const profile = promises[0]
 		const form = promises[1]
 
-		if (profile?.id !== user.id)
-			return setError(form, "", "You can't add a script for another user.")
+		if (profile?.id !== user.id) return setError(form, "", "You can't add a script for another user.")
 
 		if (!form.valid) {
 			console.error("Form is not valid " + JSON.stringify(form.errors))
 			return fail(400, withFiles({ form }))
 		}
 
-		const tmp = await scriptExists(
-			supabaseServer,
-			encodeSEO(form.data.title + " by " + profile.username)
-		)
+		const tmp = await scriptExists(supabaseServer, encodeSEO(form.data.title + " by " + profile.username))
 		if (tmp) {
 			const msg = "A script with that name by you already exists! Choose a different name."
 			console.error(msg)

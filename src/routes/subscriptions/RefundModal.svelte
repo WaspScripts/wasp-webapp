@@ -61,9 +61,7 @@
 					{/await}
 				</span>
 			</b>
-			<p class="my-4">
-				You will not be refunded the processing fees and will lose instant access to it.
-			</p>
+			<p class="my-4">You will not be refunded the processing fees and will lose instant access to it.</p>
 			<p>The total amount you will be refunded will be roughly <b>{priceStr}</b>.</p>
 		</article>
 		<footer class="flex justify-end gap-4">

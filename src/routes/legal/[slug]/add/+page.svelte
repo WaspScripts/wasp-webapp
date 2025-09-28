@@ -25,7 +25,7 @@
 <div class="container mx-auto my-6 max-w-2xl flex-grow">
 	{#if show}
 		<div class="container mx-auto my-6 max-w-4xl flex-grow">
-			<article class="prose dark:prose-invert mx-auto py-6">
+			<article class="mx-auto prose py-6 dark:prose-invert">
 				{$form.content}
 			</article>
 		</div>
@@ -33,13 +33,13 @@
 
 	{#if data.profile?.role == "administrator"}
 		<div class="flex">
-			<button class="btn preset-filled mx-auto my-auto" onclick={() => (show = !show)}>
+			<button class="mx-auto my-auto btn preset-filled" onclick={() => (show = !show)}>
 				{#if show}Hide{:else}Show{/if} Post Preview
 			</button>
 		</div>
 
 		<form method="POST" use:enhance>
-			<label for="content" class="label my-2">
+			<label for="content" class="my-2 label">
 				<span class="label-text">Content:</span>
 				<textarea
 					id="content"

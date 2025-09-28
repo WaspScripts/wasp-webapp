@@ -15,7 +15,7 @@
 	let open = $state(false)
 </script>
 
-<div class="input-group hover:preset-tonal my-auto flex">
+<div class="my-auto input-group flex hover:preset-tonal">
 	<Popover
 		{open}
 		onOpenChange={(e) => (open = e.open)}
@@ -29,7 +29,7 @@
 			<span class="mx-4 my-auto flex lg:hidden xl:flex">{theme}</span>
 			<ChevronDown size="16" />{/snippet}
 		{#snippet content()}
-			<form class="card w-52" id="theme-form" method="POST" action="/?/setTheme" use:enhance>
+			<form class="w-52 card" id="theme-form" method="POST" action="/?/setTheme" use:enhance>
 				<header class="flex justify-between">
 					<p class="text-xl font-bold">Themes</p>
 					<button class="btn-icon hover:preset-tonal" onclick={() => (open = false)}><X /></button>
@@ -38,7 +38,7 @@
 					{#each themesData as entry (entry.value)}
 						<button
 							type="submit"
-							class="btn preset-outlined-surface-500 hover:border-primary-500 my-2"
+							class="my-2 btn preset-outlined-surface-500 hover:border-primary-500"
 							formaction="/?/setTheme={entry.value}"
 							onclick={() => {
 								theme = entry.value

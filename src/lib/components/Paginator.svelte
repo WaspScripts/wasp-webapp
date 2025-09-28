@@ -28,7 +28,7 @@
 		<select
 			name="size"
 			id="size"
-			class="select mx-auto max-w-[150px] md:mx-0"
+			class="mx-auto select max-w-[150px] md:mx-0"
 			bind:value={pageSize}
 			onchange={() => replaceQuery(page.url, { amount: pageSize.toString() })}
 		>
