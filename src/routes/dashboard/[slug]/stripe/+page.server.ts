@@ -57,7 +57,7 @@ export const actions = {
 		return { form }
 	},
 
-	updateStripe: async ({
+	onboardStripe: async ({
 		locals: { supabaseServer, user, getProfile },
 		url: { origin },
 		params: { slug }

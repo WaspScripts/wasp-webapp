@@ -169,26 +169,15 @@ export async function createAccount(
 }
 
 export async function getOnboardingLink(baseURL: string, scripter: Scripter) {
-	const account = await getAccount(scripter)
-
 	let accountLink: Stripe.Response<Stripe.AccountLink>
 
 	try {
-		if (!account!.tos_acceptance || !account!.tos_acceptance.date) {
-			accountLink = await stripe.accountLinks.create({
-				account: account!.id,
-				refresh_url: baseURL + "/api/stripe/connect/reauth",
-				return_url: baseURL + "/api/stripe/connect/return",
-				type: "account_onboarding"
-			})
-		} else {
-			accountLink = await stripe.accountLinks.create({
-				account: account!.id,
-				refresh_url: baseURL + "/api/stripe/connect/reauth",
-				return_url: baseURL + "/api/stripe/connect/return",
-				type: "account_update"
-			})
-		}
+		accountLink = await stripe.accountLinks.create({
+			account: scripter.stripe,
+			refresh_url: baseURL + "/api/stripe/connect/reauth",
+			return_url: baseURL + "/api/stripe/connect/return",
+			type: "account_onboarding"
+		})
 	} catch (err) {
 		console.error(err)
 		return

@@ -109,31 +109,26 @@
 			</button>
 		</form>
 	{:else}
-		<div class="flex justify-around">
-			<form method="POST" action="?/displayName" class="my-32 flex place-items-center" use:dbaEnhance>
-				<div class="my-4">
-					<label for="dba">Invoice display name:</label>
-					<input class="my-2 input" name="dba" id="dba" bind:value={$dbaForm.dba} />
-					{#if $dbaErrors.dba}
-						<div
-							class="max-h-24 overflow-x-hidden overflow-y-scroll rounded-md bg-surface-700 text-error-500"
-						>
-							{#each $dbaErrors.dba as err (err)}
-								{err}
-							{/each}
-						</div>
-					{/if}
-				</div>
-				<button class="mx-4 mt-6 btn h-10 preset-filled-secondary-500">Update</button>
-			</form>
+		<form method="POST" action="?/displayName" class="mx-auto my-32 flex justify-center" use:dbaEnhance>
+			<div class="my-4">
+				<label for="dba">Invoice display name:</label>
+				<input class="my-2 input" name="dba" id="dba" bind:value={$dbaForm.dba} />
+				{#if $dbaErrors.dba}
+					<div
+						class="max-h-24 overflow-x-hidden overflow-y-scroll rounded-md bg-surface-700 text-error-500"
+					>
+						{#each $dbaErrors.dba as err (err)}
+							{err}
+						{/each}
+					</div>
+				{/if}
+			</div>
+			<button class="mx-4 mt-6 btn h-10 preset-filled-secondary-500">Update</button>
+		</form>
 
-			<form method="POST" action="?/updateStripe" class="my-32 block place-items-center">
-				<div class="my-4 grid">
-					<span>Account information</span>
-					<button class="my-2 btn h-10 preset-filled-secondary-500"> Update stripe connected account </button>
-				</div>
-			</form>
-		</div>
+		<form method="POST" action="?/onboardStripe" class="flex justify-center">
+			<button class="my-2 btn h-10 preset-filled-secondary-500"> Update stripe connected account </button>
+		</form>
 
 		{#if account}
 			{#if account.requirements?.currently_due && account.requirements?.currently_due.length > 0}
@@ -153,7 +148,7 @@
 				</div>
 			{/if}
 
-			<form method="POST" action="?/stripeDashboard" class="my-32 block place-items-center">
+			<form method="POST" action="?/stripeDashboard" class="flex justify-center">
 				<button class="my-2 btn h-10 preset-filled-secondary-500"> Stripe Dashboard </button>
 			</form>
 		{/if}
