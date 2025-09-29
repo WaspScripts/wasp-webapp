@@ -7,6 +7,26 @@ import Stripe from "stripe"
 
 export const stripe = new Stripe(STRIPE_KEY, { apiVersion: "2025-05-28.basil", typescript: true })
 
+export async function createCustomer(id: string, email: string, discord: string, username: string) {
+	let customer: Stripe.Customer
+
+	try {
+		customer = await stripe.customers.create({
+			email: email,
+			name: username,
+			metadata: {
+				wsid: id,
+				discord: discord,
+				username: username
+			}
+		})
+	} catch (error) {
+		console.error(error)
+		return null
+	}
+	return customer.id
+}
+
 export async function createCustomerPortal(customer: string, origin: string) {
 	let portal: Stripe.BillingPortal.Session
 
@@ -74,78 +94,7 @@ export async function createCheckoutSession(
 	return session.url
 }
 
-export async function getStripeConnectAccount(scripter: Scripter) {
-	if (scripter.id == scripter.stripe) return null
-	let stripeAccount: Stripe.Account | null = null
-
-	try {
-		stripeAccount = await stripe.accounts.retrieve(scripter.stripe)
-	} catch (error) {
-		console.error("An error occurred when calling the Stripe API to create an account session", error)
-	}
-
-	return stripeAccount
-}
-
-export async function getStripeConnectAccountBalance(scripter: Scripter) {
-	if (scripter.id == scripter.stripe) return null
-	let stripeBalance: Stripe.Balance | null = null
-	try {
-		stripeBalance = await stripe.balance.retrieve({ stripeAccount: scripter.stripe })
-	} catch (error) {
-		console.error("An error occurred when calling the Stripe API to create an account session", error)
-	}
-
-	return stripeBalance
-}
-
-export async function getStripeSession(scripter: Scripter) {
-	if (scripter.id == scripter.stripe) return null
-	let session: Stripe.Response<Stripe.AccountSession> | null = null
-
-	try {
-		session = await stripe.accountSessions.create({
-			account: scripter.stripe,
-			components: {
-				payments: {
-					enabled: true,
-					features: { refund_management: true, dispute_management: true, capture_payments: true }
-				},
-				payouts: { enabled: true },
-				payment_details: {
-					enabled: true,
-					features: { refund_management: true, capture_payments: true, dispute_management: true }
-				}
-			}
-		})
-	} catch (error) {
-		console.error("An error occurred when calling the Stripe API to create an account session", error)
-	}
-
-	return session?.client_secret ?? null
-}
-
-export async function createStripeCustomer(id: string, email: string, discord: string, username: string) {
-	let customer: Stripe.Customer
-
-	try {
-		customer = await stripe.customers.create({
-			email: email,
-			name: username,
-			metadata: {
-				wsid: id,
-				discord: discord,
-				username: username
-			}
-		})
-	} catch (error) {
-		console.error(error)
-		return null
-	}
-	return customer.id
-}
-
-export async function createStripeConnectAccount(
+export async function createAccount(
 	supabase: SupabaseClient,
 	baseURL: string,
 	scripter: Scripter,
@@ -219,16 +168,27 @@ export async function createStripeConnectAccount(
 	return accountLink.url
 }
 
-export async function finishStripeConnectAccountSetup(baseURL: string, account: string) {
+export async function getOnboardingLink(baseURL: string, scripter: Scripter) {
+	const account = await getAccount(scripter)
+
 	let accountLink: Stripe.Response<Stripe.AccountLink>
 
 	try {
-		accountLink = await stripe.accountLinks.create({
-			account: account,
-			refresh_url: baseURL + "/api/stripe/connect/reauth",
-			return_url: baseURL + "/api/stripe/connect/return",
-			type: "account_update"
-		})
+		if (!account!.tos_acceptance || !account!.tos_acceptance.date) {
+			accountLink = await stripe.accountLinks.create({
+				account: account!.id,
+				refresh_url: baseURL + "/api/stripe/connect/reauth",
+				return_url: baseURL + "/api/stripe/connect/return",
+				type: "account_onboarding"
+			})
+		} else {
+			accountLink = await stripe.accountLinks.create({
+				account: account!.id,
+				refresh_url: baseURL + "/api/stripe/connect/reauth",
+				return_url: baseURL + "/api/stripe/connect/return",
+				type: "account_update"
+			})
+		}
 	} catch (err) {
 		console.error(err)
 		return
@@ -237,7 +197,37 @@ export async function finishStripeConnectAccountSetup(baseURL: string, account: 
 	return accountLink.url
 }
 
-export async function updateStripeConnectAccount(id: string, dba: string) {
+export async function getAccount(scripter: Scripter) {
+	if (scripter.id == scripter.stripe) return null
+	let account: Stripe.Account | null = null
+
+	try {
+		account = await stripe.accounts.retrieve(scripter.stripe)
+	} catch (error) {
+		console.error("An error occurred when calling the Stripe API to create an account session", error)
+	}
+
+	return account
+}
+
+export async function getLoginLink(scripter: Scripter) {
+	const account = await getAccount(scripter)
+	if (!account) return null
+
+	if (account.requirements?.currently_due && account.requirements.currently_due.length > 0) return null
+
+	let link: Stripe.Response<Stripe.LoginLink> | null = null
+
+	try {
+		link = await stripe.accounts.createLoginLink(account.id)
+	} catch (error) {
+		console.error("An error occurred when calling the Stripe API to create an account login link", error)
+	}
+
+	return link?.url ?? null
+}
+
+export async function updateAccountDBA(id: string, dba: string) {
 	try {
 		await stripe.accounts.update(id, { business_profile: { name: dba } })
 	} catch (error) {
@@ -248,7 +238,7 @@ export async function updateStripeConnectAccount(id: string, dba: string) {
 	return true
 }
 
-export async function updateStripeProduct(id: string, name: string) {
+export async function updateProduct(id: string, name: string) {
 	try {
 		await stripe.products
 			.update(id, {
@@ -260,7 +250,7 @@ export async function updateStripeProduct(id: string, name: string) {
 	}
 }
 
-async function createStripePriceEx(product: string, amount: number, interval: Interval) {
+async function createPriceEx(product: string, amount: number, interval: Interval) {
 	if (amount === 0) return
 	await stripe.prices
 		.create({
@@ -273,7 +263,7 @@ async function createStripePriceEx(product: string, amount: number, interval: In
 		.catch((err: unknown) => console.error(err))
 }
 
-export async function createStripePrice(price: PriceSchema, product: string) {
+export async function createPrice(price: PriceSchema, product: string) {
 	if (price.amount === 0) return
 	await stripe.prices
 		.create({
@@ -286,7 +276,7 @@ export async function createStripePrice(price: PriceSchema, product: string) {
 		.catch((err: unknown) => console.error(err))
 }
 
-export async function updateStripePrice(price: Price) {
+export async function updatePrice(price: Price) {
 	const promises = []
 	if (price.amount > 0)
 		promises.push(
@@ -305,7 +295,7 @@ export async function updateStripePrice(price: Price) {
 	await Promise.all(promises)
 }
 
-export async function createStripeBundleProduct(supabase: SupabaseClient<Database>, bundle: BundleSchema) {
+export async function createBundleProduct(supabase: SupabaseClient<Database>, bundle: BundleSchema) {
 	const scripts = bundle.bundledScripts.reduce((acc: string[], script) => {
 		if (script.active) acc.push(script.id)
 		return acc
@@ -341,14 +331,14 @@ export async function createStripeBundleProduct(supabase: SupabaseClient<Databas
 
 	bundle.prices.forEach((price) => {
 		if (price.amount) {
-			stripePromises.push(createStripePriceEx(product.id, price.amount, price.interval as Interval))
+			stripePromises.push(createPriceEx(product.id, price.amount, price.interval as Interval))
 		}
 	})
 
 	await Promise.all(stripePromises)
 }
 
-export async function createStripeScriptProduct(script: NewScriptSchema, name: string, user_id: string) {
+export async function createScriptProduct(script: NewScriptSchema, name: string, user_id: string) {
 	script.prices = script.prices.filter((price) => price.amount > 0)
 	if (script.prices.length === 0) return
 
@@ -366,7 +356,7 @@ export async function createStripeScriptProduct(script: NewScriptSchema, name: s
 
 	script.prices.forEach((price) => {
 		if (price.amount) {
-			stripePromises.push(createStripePriceEx(product.id, price.amount, price.interval as Interval))
+			stripePromises.push(createPriceEx(product.id, price.amount, price.interval as Interval))
 		}
 	})
 

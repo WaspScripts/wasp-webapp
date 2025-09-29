@@ -1,6 +1,6 @@
 import { error, redirect } from "@sveltejs/kit"
 import { formatError } from "$lib/utils"
-import { createStripeCustomer } from "$lib/server/stripe.server"
+import { createCustomer } from "$lib/server/stripe.server"
 
 export const GET = async ({ url: { searchParams }, locals: { supabaseServer } }) => {
 	console.log("💻 Logging in")
@@ -40,7 +40,7 @@ export const GET = async ({ url: { searchParams }, locals: { supabaseServer } })
 
 		if (user.email && user.app_metadata.provider == "discord") {
 			const discord = user.user_metadata["provider_id"]
-			const stripe = await createStripeCustomer(
+			const stripe = await createCustomer(
 				user.id,
 				user.email,
 				discord,

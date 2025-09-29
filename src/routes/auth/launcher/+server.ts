@@ -1,6 +1,6 @@
 import { error, json } from "@sveltejs/kit"
 import { formatError } from "$lib/utils"
-import { createStripeCustomer } from "$lib/server/stripe.server"
+import { createCustomer } from "$lib/server/stripe.server"
 import { supabaseAdmin } from "$lib/server/supabase.server"
 
 export const POST = async ({ request }) => {
@@ -32,7 +32,7 @@ export const POST = async ({ request }) => {
 
 	if (user.email && user.app_metadata.provider == "discord") {
 		const discord = user.user_metadata["provider_id"]
-		const stripe = await createStripeCustomer(
+		const stripe = await createCustomer(
 			user.id,
 			user.email,
 			discord,

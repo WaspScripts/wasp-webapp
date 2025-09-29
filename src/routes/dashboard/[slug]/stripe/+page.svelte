@@ -1,14 +1,10 @@
 <script lang="ts">
-	import { browser } from "$app/environment"
-	import { invalidate } from "$app/navigation"
-	import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from "$env/static/public"
 	import { countryCodeSchema, dbaSchema } from "$lib/client/schemas"
-	import { onMount } from "svelte"
 	import { superForm } from "sveltekit-superforms"
 	import { zodClient } from "sveltekit-superforms/adapters"
 
 	const { data } = $props()
-	const { scripter, stripeAccount, stripeBalance, stripeSession } = $derived(data)
+	const { scripter, account } = $derived(data)
 
 	const {
 		form: countryForm,
@@ -33,32 +29,6 @@
 		clearOnSubmit: "errors-and-message",
 		validators: zodClient(dbaSchema),
 		resetForm: true
-	})
-
-	onMount(async () => {
-		if (browser && document) {
-			const connectJS = await import("@stripe/connect-js")
-			const session = await stripeSession
-
-			if (session) {
-				async function fetchClientSecret() {
-					invalidate("dashboard:stripe_session")
-					return await stripeSession
-				}
-
-				const stripeConnectInstance = connectJS.loadConnectAndInitialize({
-					publishableKey: PUBLIC_STRIPE_PUBLISHABLE_KEY,
-					fetchClientSecret
-				})
-
-				if (stripeConnectInstance) {
-					let paymentContainer = document.getElementById("paymentContainer")
-					if (paymentContainer) paymentContainer.appendChild(stripeConnectInstance.create("payments"))
-					let payoutContainer = document.getElementById("payoutContainer")
-					if (payoutContainer) payoutContainer.appendChild(stripeConnectInstance.create("payouts"))
-				}
-			}
-		}
 	})
 </script>
 
@@ -165,27 +135,13 @@
 			</form>
 		</div>
 
-		{#if stripeBalance}
-			{@const available = stripeBalance?.available[0].amount ?? 0}
-			{@const pending = stripeBalance?.pending[0].amount ?? 0}
-			{@const currency = stripeBalance?.available[0].currency ?? ""}
-			<div class="my-8 flex justify-around">
-				<h4>
-					Balance: {(available + pending) / 100}
-					{currency}
-				</h4>
-				<h4>Available: {available / 100} {currency}</h4>
-				<h4>Settling: {pending / 100} {currency}</h4>
-			</div>
-		{/if}
-
-		{#if stripeAccount}
-			{#if stripeAccount.requirements?.currently_due && stripeAccount.requirements?.currently_due.length > 0}
-				<div class="mb-24 flex flex-col">
+		{#if account}
+			{#if account.requirements?.currently_due && account.requirements?.currently_due.length > 0}
+				<div class="mx-auto mb-24 flex flex-col">
 					<span class="my-2 text-error-500">Missing account information:</span>
 
 					<div class="my-2 grid bg-surface-700 text-error-500">
-						{#each stripeAccount.requirements?.currently_due as requirement (requirement)}
+						{#each account.requirements?.currently_due as requirement (requirement)}
 							<small class="mx-auto w-full">{requirement}</small>
 						{/each}
 					</div>
@@ -196,11 +152,10 @@
 					<small class="text-error-500"> Not having this complete may result in you not getting paid. </small>
 				</div>
 			{/if}
-		{/if}
 
-		<h5 class="mt-12 mb-4 text-center">Payments</h5>
-		<div id="paymentContainer" class="my-8"></div>
-		<h5 class="my-4 text-center">Payouts</h5>
-		<div id="payoutContainer" class="my-8"></div>
+			<form method="POST" action="?/stripeDashboard" class="my-32 block place-items-center">
+				<button class="my-2 btn h-10 preset-filled-secondary-500"> Stripe Dashboard </button>
+			</form>
+		{/if}
 	{/if}
 </main>

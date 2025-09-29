@@ -1,11 +1,11 @@
 import { bundleArraySchema, newBundleSchema } from "$lib/client/schemas"
 import { getScripter } from "$lib/client/supabase"
 import {
-	createStripeBundleProduct,
-	createStripePrice,
+	createBundleProduct,
+	createPrice,
 	stripe,
-	updateStripePrice,
-	updateStripeProduct
+	updatePrice,
+	updateProduct
 } from "$lib/server/stripe.server"
 import { addFreeAccess, cancelFreeAccess, doLogin } from "$lib/server/supabase.server"
 import { formatError, UUID_V4_REGEX } from "$lib/utils"
@@ -171,7 +171,7 @@ export const actions = {
 		if (errProducts) return setError(form, "", formatError(errProducts))
 		if (!productsData.bundle) return setError(form, "", "That product is missing a bundle ID!")
 
-		if (product.name !== productsData.name) await updateStripeProduct(product.id, product.name)
+		if (product.name !== productsData.name) await updateProduct(product.id, product.name)
 
 		const { data: pricesData, error: errPrices } = await supabaseServer
 			.schema("stripe")
@@ -191,7 +191,7 @@ export const actions = {
 			const updatePricesPromises = []
 			if (Math.round(newPrice.amount * 100) !== currentPrice.amount)
 				updatePricesPromises.push(
-					updateStripePrice({
+					updatePrice({
 						active: true,
 						amount: newPrice.amount,
 						currency: newPrice.currency as "eur" | "usd" | "cad" | "aud",
@@ -213,7 +213,7 @@ export const actions = {
 				pricesData.splice(j, 1)
 				continue
 			}
-			createPricePromises.push(createStripePrice(currentPrice, product.id))
+			createPricePromises.push(createPrice(currentPrice, product.id))
 		}
 
 		await Promise.all(createPricePromises)
@@ -257,7 +257,7 @@ export const actions = {
 		if (scripter.stripe == scripter.id) return setError(form, "", "Stripe account is not setup!")
 		if (!["administrator", "moderator"].includes(profile.role)) form.data.user_id = user.id
 
-		const err = await createStripeBundleProduct(supabaseServer, form.data)
+		const err = await createBundleProduct(supabaseServer, form.data)
 
 		if (err) return setError(form, "", err.message)
 

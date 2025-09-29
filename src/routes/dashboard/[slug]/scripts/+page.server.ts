@@ -1,11 +1,11 @@
 import { newScriptSchema, scriptArraySchema } from "$lib/client/schemas"
 import { getScripter } from "$lib/client/supabase"
 import {
-	createStripePrice,
-	createStripeScriptProduct,
+	createPrice,
+	createScriptProduct,
 	stripe,
-	updateStripePrice,
-	updateStripeProduct
+	updatePrice,
+	updateProduct
 } from "$lib/server/stripe.server"
 import { addFreeAccess, cancelFreeAccess, doLogin } from "$lib/server/supabase.server"
 import { formatError, UUID_V4_REGEX } from "$lib/utils"
@@ -146,7 +146,7 @@ export const actions = {
 
 		if (errProducts) return setError(form, "", errProducts.message)
 
-		if (product.name !== productsData.name) await updateStripeProduct(product.id, product.name)
+		if (product.name !== productsData.name) await updateProduct(product.id, product.name)
 
 		const { data: pricesData, error: errPrices } = await supabaseServer
 			.schema("stripe")
@@ -166,7 +166,7 @@ export const actions = {
 			const updatePricesPromises = []
 			if (Math.round(newPrice.amount * 100) !== currentPrice.amount)
 				updatePricesPromises.push(
-					updateStripePrice({
+					updatePrice({
 						active: true,
 						amount: newPrice.amount,
 						currency: newPrice.currency as "eur" | "usd" | "cad" | "aud",
@@ -188,7 +188,7 @@ export const actions = {
 				pricesData.splice(j, 1)
 				continue
 			}
-			createPricePromises.push(createStripePrice(currentPrice, product.id))
+			createPricePromises.push(createPrice(currentPrice, product.id))
 		}
 
 		await Promise.all(createPricePromises)
@@ -248,7 +248,7 @@ export const actions = {
 
 		if (errProtected) return setError(form, "", formatError(errProtected))
 
-		await createStripeScriptProduct(form.data, data.scripts.title, data.author)
+		await createScriptProduct(form.data, data.scripts.title, data.author)
 
 		redirect(303, pathname)
 	},
