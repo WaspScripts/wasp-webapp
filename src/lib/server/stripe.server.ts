@@ -5,7 +5,6 @@ import type { Database } from "$lib/types/supabase"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import Stripe from "stripe"
 
-export const stripe = new Stripe(STRIPE_KEY, { apiVersion: "2025-05-28.basil", typescript: true })
 
 export async function createCustomer(id: string, email: string, discord: string, username: string) {
 	let customer: Stripe.Customer

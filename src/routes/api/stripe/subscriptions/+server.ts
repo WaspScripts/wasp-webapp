@@ -30,7 +30,7 @@ export const POST = async ({ request }) => {
 			if (items.length != 1) error(409, "Subscription has multiple items only 1 was expected!")
 
 			console.log("INSERT profile.subscriptions: ", subscriptionCreated.id)
-			if (subscriptionCreated.id === "sub_1SAmNRG22w4J2Ay5Ndilt8Tk") break //temp fix....
+			if (subscriptionCreated.id === "sub_1SAmNRG22w4J2Ay5Ndilt8Tk") break //temp fix.... TODO REMOVE!
 
 			const { error: err } = await supabaseAdmin
 				.schema("profiles")
