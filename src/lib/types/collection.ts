@@ -22,6 +22,7 @@ export interface ScripterBase {
 	url: string
 	profiles: {
 		username: string
+		discord: string
 		avatar: string
 	}
 }
@@ -32,11 +33,11 @@ export interface SimpleScripter {
 }
 
 export interface Scripter extends ScripterBase {
-	id: string
-	stripe: string | undefined
-	github: string | undefined
-	paypal: string | undefined
-	content: string | undefined
+	id: Database["profiles"]["Tables"]["scripters"]["Row"]["id"]
+	stripe: Database["profiles"]["Tables"]["scripters"]["Row"]["stripe"]
+	github: Database["profiles"]["Tables"]["scripters"]["Row"]["github"]
+	paypal: Database["profiles"]["Tables"]["scripters"]["Row"]["paypal"]
+	content: Database["profiles"]["Tables"]["scripters"]["Row"]["content"]
 }
 
 export interface ScripterProfile {
@@ -143,32 +144,6 @@ export interface ScriptSimple {
 	metadata: { type: TScriptTypes }
 }
 
-export interface ScriptFeatured {
-	scripts: {
-		url: string
-		title: string
-		description: string
-		tooltip_emojis: string
-		protected: {
-			username: string
-			avatar: string
-		}
-	}
-}
-
-export interface CheckboxType {
-	id: number
-	name: string
-	emoji: string
-	main: boolean
-	checked: boolean
-}
-
-export interface Tooltip {
-	name: string
-	emoji: string
-}
-
 export interface ProductData {
 	id: string
 	user_id: string
@@ -238,11 +213,4 @@ export interface ScriptProduct {
 	active: boolean
 }
 
-export interface Category {
-	name: string
-	emoji: string
-}
-
-export interface SubCategory extends Category {
-	category: string
-}
+export type Interval = "week" | "month" | "year"

@@ -37,7 +37,8 @@ const config = {
 					"http://localhost:*",
 					"https://db.waspscripts.dev",
 					"ws://db.waspscripts.dev",
-					"wss://db.waspscripts.dev"
+					"wss://db.waspscripts.dev",
+					"https://connect-js.stripe.com"
 				],
 
 				"frame-src": [

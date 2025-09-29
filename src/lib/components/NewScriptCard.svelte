@@ -3,7 +3,6 @@
 	import type { ScriptMetaData, ScriptPublic } from "$lib/types/collection"
 	import { cropString, encodeSEO, scriptCategories, scriptStatus, scriptTypes } from "$lib/utils"
 	import { Tooltip } from "@skeletonlabs/skeleton-svelte"
-	import { onMount } from "svelte"
 
 	let {
 		script,
@@ -11,19 +10,8 @@
 		customCover = $bindable(undefined)
 	}: { script: ScriptPublic; metadata: ScriptMetaData; customCover: string | undefined } = $props()
 
-	let imgLink = $state(customCover ?? "/cover.jpg")
+	let imgLink = $derived(customCover ?? "/cover.jpg")
 	const username = page.data.profile?.username ?? "USERNAME"
-
-	$effect(() => {
-		imgLink = customCover ?? "/cover.jpg"
-	})
-
-	onMount(async () => {
-		if (imgLink !== "") {
-			const response = await fetch(imgLink)
-			if (response.status != 200) imgLink = "/cover.jpg"
-		} else imgLink = "/cover.jpg"
-	})
 
 	const categoriesTooltip: boolean[] = $state(new Array(metadata.categories.length).fill(false))
 	let status = $state(false)

@@ -93,7 +93,7 @@ export async function getScripter(supabase: SupabaseClient, slug: string) {
 		.schema("profiles")
 		.from("scripters")
 		.select(
-			`id, stripe, realname, description, content, url, github, paypal, content, profiles (username, avatar)`
+			`id, stripe, realname, description, content, url, github, paypal, content, profiles (username, discord, avatar)`
 		)
 		.eq(UUID_V4_REGEX.test(slug) ? "id" : "url", slug)
 		.single<Scripter>()

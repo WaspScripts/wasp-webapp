@@ -4,30 +4,12 @@
 	import type { Script } from "$lib/types/collection"
 	import { cropString, encodeSEO, scriptCategories, scriptStatus, scriptTypes } from "$lib/utils"
 	import { Tooltip } from "@skeletonlabs/skeleton-svelte"
-	import { onMount } from "svelte"
 
 	let { script, customCover, link }: { script: Script; customCover?: string; link?: string } = $props()
 
-	let imgLink = $state(
+	let imgLink = $derived(
 		customCover ?? PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/cover.jpg"
 	)
-
-	$effect(() => {
-		imgLink =
-			customCover ??
-			PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/cover.jpg"
-	})
-
-	$effect(() => {
-		imgLink = PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/cover.jpg"
-	})
-
-	onMount(async () => {
-		if (imgLink !== "") {
-			const response = await fetch(imgLink)
-			if (response.status != 200) imgLink = "/cover.jpg"
-		} else imgLink = "/cover.jpg"
-	})
 
 	const categoriesTooltip: boolean[] = $state(new Array(script?.metadata.categories.length).fill(false))
 	let status = $state(false)

@@ -141,7 +141,7 @@
 			? 'flex flex-col'
 			: 'hidden'}"
 	>
-		{#each routes as route, idx (route)}
+		{#each routes as route (route)}
 			<li class="h-12">
 				<a
 					href={getLink(route)}

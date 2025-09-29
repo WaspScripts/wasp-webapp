@@ -1,6 +1,6 @@
 import { STRIPE_KEY } from "$env/static/private"
 import type { BundleSchema, NewScriptSchema, PriceSchema } from "$lib/client/schemas"
-import type { Bundle, Price, Scripter } from "$lib/types/collection"
+import type { Interval, Price, Scripter } from "$lib/types/collection"
 import type { Database } from "$lib/types/supabase"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import Stripe from "stripe"
@@ -74,12 +74,12 @@ export async function createCheckoutSession(
 	return session.url
 }
 
-export async function getStripeConnectAccount(id: string | null | undefined) {
-	if (!id) return null
+export async function getStripeConnectAccount(scripter: Scripter) {
+	if (scripter.id == scripter.stripe) return null
 	let stripeAccount: Stripe.Account | null = null
 
 	try {
-		stripeAccount = await stripe.accounts.retrieve(id)
+		stripeAccount = await stripe.accounts.retrieve(scripter.stripe)
 	} catch (error) {
 		console.error("An error occurred when calling the Stripe API to create an account session", error)
 	}
@@ -87,13 +87,11 @@ export async function getStripeConnectAccount(id: string | null | undefined) {
 	return stripeAccount
 }
 
-export async function getStripeConnectAccountBalance(id: string | null | undefined) {
-	if (!id) return null
+export async function getStripeConnectAccountBalance(scripter: Scripter) {
+	if (scripter.id == scripter.stripe) return null
 	let stripeBalance: Stripe.Balance | null = null
 	try {
-		stripeBalance = await stripe.balance.retrieve({
-			stripeAccount: id
-		})
+		stripeBalance = await stripe.balance.retrieve({ stripeAccount: scripter.stripe })
 	} catch (error) {
 		console.error("An error occurred when calling the Stripe API to create an account session", error)
 	}
@@ -101,25 +99,19 @@ export async function getStripeConnectAccountBalance(id: string | null | undefin
 	return stripeBalance
 }
 
-export async function getStripeSession(account: string | null | undefined) {
-	if (!account) return null
-	let accountSession: Stripe.Response<Stripe.AccountSession> | null = null
+export async function getStripeSession(scripter: Scripter) {
+	if (scripter.id == scripter.stripe) return null
+	let session: Stripe.Response<Stripe.AccountSession> | null = null
 
 	try {
-		accountSession = await stripe.accountSessions.create({
-			account: account,
+		session = await stripe.accountSessions.create({
+			account: scripter.stripe,
 			components: {
 				payments: {
 					enabled: true,
-					features: {
-						refund_management: true,
-						dispute_management: true,
-						capture_payments: true
-					}
+					features: { refund_management: true, dispute_management: true, capture_payments: true }
 				},
-				payouts: {
-					enabled: true
-				},
+				payouts: { enabled: true },
 				payment_details: {
 					enabled: true,
 					features: { refund_management: true, capture_payments: true, dispute_management: true }
@@ -130,7 +122,7 @@ export async function getStripeSession(account: string | null | undefined) {
 		console.error("An error occurred when calling the Stripe API to create an account session", error)
 	}
 
-	return accountSession?.client_secret ?? null
+	return session?.client_secret ?? null
 }
 
 export async function createStripeCustomer(id: string, email: string, discord: string, username: string) {
@@ -157,39 +149,45 @@ export async function createStripeConnectAccount(
 	supabase: SupabaseClient,
 	baseURL: string,
 	scripter: Scripter,
-	email: string | undefined,
+	email: string,
 	country: string
 ) {
 	let account: Stripe.Response<Stripe.Account>
 	let accountLink: Stripe.Response<Stripe.AccountLink>
 
-	try {
-		account = await stripe.accounts.create({
-			type: "custom",
-			country: country,
-			email: email,
-			business_type: "individual",
-			individual: { full_name_aliases: [scripter.id, scripter.profiles.username] },
-			capabilities: {
-				card_payments: { requested: true },
-				link_payments: { requested: true },
-				transfers: { requested: true }
-			},
-			business_profile: {
-				mcc: "5734",
-				name: scripter.profiles.username,
-				support_url: "https://waspscripts.dev/scripters/" + scripter.url,
-				url: "https://waspscripts.dev/scripters/" + scripter.url,
-				support_email: "support@waspscripts.com"
-			},
-			metadata: { id: scripter.id, username: scripter.profiles.username },
-			settings: {
-				payouts: {
-					schedule: { interval: "monthly", delay_days: 15, monthly_anchor: 31 },
-					statement_descriptor: "waspscripts.dev"
-				}
+	const profile = scripter.profiles
+	const requested = { requested: true }
+	const params: Stripe.AccountCreateParams = {
+		controller: {
+			fees: { payer: "application" },
+			losses: { payments: "application" },
+			stripe_dashboard: { type: "express" },
+			requirement_collection: "stripe"
+		},
+		email: email,
+		country: country,
+		business_type: "individual",
+		business_profile: {
+			mcc: "5734",
+			name: profile.username,
+			url: "https://waspscripts.dev/",
+			support_url: "https://waspscripts.dev/",
+			support_email: "support@waspscripts.com"
+		},
+		individual: { full_name_aliases: [profile.username, scripter.id, profile.discord] },
+		capabilities: { card_payments: requested, link_payments: requested, transfers: requested },
+		settings: {
+			payouts: {
+				schedule: { interval: "monthly", delay_days: 15, monthly_anchor: 31 },
+				statement_descriptor: "waspscripts.dev",
+				debit_negative_balances: false
 			}
-		})
+		},
+		metadata: { id: scripter.id, discord: profile.discord, email: email }
+	}
+
+	try {
+		account = await stripe.accounts.create(params)
 	} catch (err) {
 		console.error(err)
 		return
@@ -261,8 +259,6 @@ export async function updateStripeProduct(id: string, name: string) {
 		console.error(err)
 	}
 }
-
-type Interval = "week" | "month" | "year"
 
 async function createStripePriceEx(product: string, amount: number, interval: Interval) {
 	if (amount === 0) return

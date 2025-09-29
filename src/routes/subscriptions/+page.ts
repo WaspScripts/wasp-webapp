@@ -1,4 +1,4 @@
-import type { ProductData, ScriptSimple } from "$lib/types/collection"
+import type { ScriptSimple } from "$lib/types/collection"
 import { formatError } from "$lib/utils"
 import { error } from "@sveltejs/kit"
 

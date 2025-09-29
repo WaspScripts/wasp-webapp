@@ -15,7 +15,7 @@ import { zod } from "sveltekit-superforms/adapters"
 
 export const load = async ({ params: { slug }, parent }) => {
 	const { scripts, scripter, products, prices, data } = await parent()
-	if (!scripter.stripe)
+	if (scripter.stripe == scripter.id)
 		error(
 			403,
 			"To use this section of the dashboard you need to go through and finish the stripe on-boarding."
@@ -116,7 +116,7 @@ export const actions = {
 
 		const scripter = await getScripter(supabaseServer, slug)
 
-		if (!scripter.stripe) return setError(form, "", "Stripe account is not setup!")
+		if (scripter.stripe == scripter.id) return setError(form, "", "Stripe account is not setup!")
 
 		const productID = searchParams.get("product")
 		if (!productID) {
@@ -218,7 +218,7 @@ export const actions = {
 
 		const scripter = await getScripter(supabaseServer, slug)
 
-		if (!scripter.stripe) return setError(form, "", "Stripe account is not setup!")
+		if (scripter.stripe == scripter.id) return setError(form, "", "Stripe account is not setup!")
 
 		const { data: prodData, error: err } = await supabaseServer
 			.schema("stripe")

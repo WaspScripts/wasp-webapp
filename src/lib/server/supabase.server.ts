@@ -30,11 +30,6 @@ export async function doLogin(supabase: SupabaseClient, origin: string, searchPa
 	redirect(303, data.url)
 }
 
-export async function updateScriptFile(file: File) {
-	let fileString = await file.text()
-	return new File([fileString], file.name, { type: "text/plain" })
-}
-
 export async function uploadFile(supabase: SupabaseClient, bucket: string, path: string, file: File) {
 	const contentType = path.endsWith(".jpg") || path.endsWith(".jpeg") ? "image/jpeg" : undefined
 

@@ -38,29 +38,32 @@
 	onMount(async () => {
 		if (browser && document) {
 			const connectJS = await import("@stripe/connect-js")
+			const session = await stripeSession
 
-			async function fetchClientSecret() {
-				invalidate("dashboard:stripe_session")
-				return (await stripeSession) ?? ""
-			}
+			if (session) {
+				async function fetchClientSecret() {
+					invalidate("dashboard:stripe_session")
+					return await stripeSession
+				}
 
-			const stripeConnectInstance = connectJS.loadConnectAndInitialize({
-				publishableKey: PUBLIC_STRIPE_PUBLISHABLE_KEY,
-				fetchClientSecret
-			})
+				const stripeConnectInstance = connectJS.loadConnectAndInitialize({
+					publishableKey: PUBLIC_STRIPE_PUBLISHABLE_KEY,
+					fetchClientSecret
+				})
 
-			if (stripeConnectInstance) {
-				let paymentContainer = document.getElementById("paymentContainer")
-				if (paymentContainer) paymentContainer.appendChild(stripeConnectInstance.create("payments"))
-				let payoutContainer = document.getElementById("payoutContainer")
-				if (payoutContainer) payoutContainer.appendChild(stripeConnectInstance.create("payouts"))
+				if (stripeConnectInstance) {
+					let paymentContainer = document.getElementById("paymentContainer")
+					if (paymentContainer) paymentContainer.appendChild(stripeConnectInstance.create("payments"))
+					let payoutContainer = document.getElementById("payoutContainer")
+					if (payoutContainer) payoutContainer.appendChild(stripeConnectInstance.create("payouts"))
+				}
 			}
 		}
 	})
 </script>
 
 <main class="m-4 min-h-96">
-	{#if !scripter.stripe}
+	{#if scripter.stripe == scripter.id}
 		<form method="POST" action="?/createStripe" class="my-32 grid place-items-center" use:countryEnhance>
 			<h3>Stripe Account</h3>
 

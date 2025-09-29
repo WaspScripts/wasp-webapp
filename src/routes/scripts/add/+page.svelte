@@ -34,7 +34,7 @@
 
 	let show: boolean[] = $state([false, false, false])
 
-	let publicData: ScriptPublic = $state({
+	let publicData: ScriptPublic = $derived({
 		id: "SCRIPT_ID_UNDEFINED",
 		title: $form.title,
 		description: $form.description,
@@ -43,45 +43,17 @@
 		url: ""
 	})
 
-	let metaData: ScriptMetaData = $state({
+	let metaData: ScriptMetaData = $derived({
 		status: $form.status ? "official" : "community",
 		type: $form.type ? "premium" : "free",
 		categories: $form.categories
 	})
 
-	let limitsData: ScriptLimits = $state({
+	let limitsData: ScriptLimits = $derived({
 		xp_min: $form.xp_min,
 		xp_max: $form.xp_max,
 		gp_min: $form.gp_min,
 		gp_max: $form.gp_max
-	})
-
-	$effect(() => {
-		publicData = {
-			id: "SCRIPT_ID_UNDEFINED",
-			title: $form.title,
-			description: $form.description,
-			content: $form.description,
-			published: $form.published,
-			url: ""
-		}
-	})
-
-	$effect(() => {
-		metaData = {
-			status: $form.status ? "official" : "community",
-			type: $form.type ? "premium" : "free",
-			categories: $form.categories
-		}
-	})
-
-	$effect(() => {
-		limitsData = {
-			xp_min: $form.xp_min,
-			xp_max: $form.xp_max,
-			gp_min: $form.gp_min,
-			gp_max: $form.gp_max
-		}
 	})
 </script>
 

@@ -6,7 +6,6 @@
 	import { FileCode, Landmark, Package, Settings } from "svelte-lucide"
 	const { data, children } = $props()
 
-	const profile = $derived(data.profile!)
 	let tab = $derived(page.url.pathname.split("/").pop())
 </script>
 

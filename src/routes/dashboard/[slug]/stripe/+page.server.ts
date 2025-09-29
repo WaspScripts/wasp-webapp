@@ -21,8 +21,8 @@ export const load = async ({ locals: { supabaseServer }, params: { slug }, depen
 	const promises = await Promise.all([
 		superValidate(zod(countryCodeSchema)),
 		superValidate(zod(dbaSchema)),
-		getStripeConnectAccount(scripter.stripe),
-		getStripeConnectAccountBalance(scripter.stripe)
+		getStripeConnectAccount(scripter),
+		getStripeConnectAccountBalance(scripter)
 	])
 
 	promises[1].data.dba = promises[2]?.business_profile?.name ?? ""
@@ -32,7 +32,7 @@ export const load = async ({ locals: { supabaseServer }, params: { slug }, depen
 		dbaForm: promises[1],
 		stripeAccount: promises[2],
 		stripeBalance: promises[3],
-		stripeSession: getStripeSession(scripter.stripe)
+		stripeSession: getStripeSession(scripter)
 	}
 }
 
@@ -55,14 +55,14 @@ export const actions = {
 			return setError(form, "", "You cannot access another scripter dashboard.")
 
 		const scripter = await getScripter(supabaseServer, slug)
-		if (scripter.stripe) return setError(form, "", "Stripe account is already created!")
+		if (scripter.stripe != scripter.id) return setError(form, "", "Stripe account is already created!")
 		if (!form.valid) return setError(form, "", "The country code form is not valid!")
 
 		const link = await createStripeConnectAccount(
 			supabaseServer,
 			origin,
 			scripter,
-			user.email,
+			user.email!,
 			form.data.code
 		)
 		if (link) redirect(303, link)
@@ -83,7 +83,7 @@ export const actions = {
 			error(403, "You cannot access another scripter dashboard.")
 
 		const scripter = await getScripter(supabaseServer, slug)
-		if (!scripter.stripe) error(403, "You need a linked stripe account to edit it.")
+		if (scripter.stripe == scripter.id) error(403, "You need a linked stripe account to edit it.")
 
 		const link = await finishStripeConnectAccountSetup(origin, scripter.stripe)
 		if (link) redirect(303, link)
@@ -108,7 +108,7 @@ export const actions = {
 			error(403, "You cannot access another scripter dashboard.")
 
 		const scripter = await getScripter(supabaseServer, slug)
-		if (!scripter.stripe) return setError(form, "", "The user is missing a stripe profile!")
+		if (scripter.stripe == scripter.id) return setError(form, "", "The user is missing a stripe profile!")
 		if (!form.valid) return setError(form, "", "The name you set is not valid!")
 
 		const success = await updateStripeConnectAccount(scripter.stripe, form.data.dba)
