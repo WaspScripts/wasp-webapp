@@ -1,10 +1,12 @@
-import { STRIPE_KEY } from "$env/static/private"
+import { FIXER_API_KEY, STRIPE_KEY } from "$env/static/private"
 import type { BundleSchema, NewScriptSchema, PriceSchema } from "$lib/client/schemas"
 import type { Interval, Price, Scripter } from "$lib/types/collection"
 import type { Database } from "$lib/types/supabase"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import Stripe from "stripe"
 
+//@ts-ignore
+export const stripe = new Stripe(STRIPE_KEY, { apiVersion: "2025-08-27.basil", typescript: true })
 
 export async function createCustomer(id: string, email: string, discord: string, username: string) {
 	let customer: Stripe.Customer
@@ -141,22 +143,23 @@ export async function createAccount(
 		return
 	}
 
-	const { error: err } = await supabase
-		.schema("profiles")
-		.from("scripters")
-		.update({ stripe: account.id })
-		.eq("id", scripter.id)
+	const promises = await Promise.all([
+		supabase.schema("profiles").from("scripters").update({ stripe: account.id }).eq("id", scripter.id),
+		supabase.schema("profiles").from("balances").update({ stripe: account.id }).eq("id", scripter.id)
+	])
 
-	if (err) {
-		console.error(err)
-		return
+	for (let i = 0; i < promises.length; i++) {
+		if (promises[i].error) {
+			console.error(promises[i].error)
+			return
+		}
 	}
 
 	try {
 		accountLink = await stripe.accountLinks.create({
 			account: account.id,
-			refresh_url: baseURL + "/api/stripe/connect/reauth",
-			return_url: baseURL + "/api/stripe/connect/return",
+			refresh_url: baseURL + "/dashboard/",
+			return_url: baseURL + "/dashboard/",
 			type: "account_onboarding"
 		})
 	} catch (err) {
@@ -350,3 +353,5 @@ export async function createScriptProduct(script: NewScriptSchema, name: string,
 
 	await Promise.all(stripePromises)
 }
+
+export async function convertCurrency(from: string, to: string, amount: number) {}
