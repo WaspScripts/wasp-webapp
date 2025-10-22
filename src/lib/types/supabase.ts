@@ -140,17 +140,17 @@ export type Database = {
         Row: {
           balance: number
           id: string
-          stripe: string | null
+          stripe: string
         }
         Insert: {
           balance?: number
           id?: string
-          stripe?: string | null
+          stripe: string
         }
         Update: {
           balance?: number
           id?: string
-          stripe?: string | null
+          stripe?: string
         }
         Relationships: [
           {

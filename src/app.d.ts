@@ -9,7 +9,6 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			supabaseServer: SupabaseClient<Database>
-			launcherSupabase: SupabaseClient<Database>
 			safeGetSession: () => Promise<{ session: Session | null; user: User | null }>
 			session: Session | null
 			user: User | null
