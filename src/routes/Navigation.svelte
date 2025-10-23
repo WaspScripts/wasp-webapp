@@ -77,8 +77,9 @@
 			<li class="h-12">
 				<a
 					href="/"
-					class="flex h-full place-content-center place-items-center hover:text-primary-600-400"
-					class:text-primary-600-400={"Home" === currentPage}
+					class="flex h-full place-content-center place-items-center hover:text-primary-700-300"
+					class:text-primary-700={"Home" === currentPage}
+					class:dark:text-primary-500={"Home" === currentPage}
 					aria-label="Navigate to home page"
 				>
 					<Logo selected={false} />
@@ -89,8 +90,9 @@
 					<li class="h-12">
 						<a
 							href={getLink(route)}
-							class="flex h-full place-content-center place-items-center hover:text-primary-600-400"
-							class:text-primary-600-400={route === currentPage}
+							class="flex h-full place-content-center place-items-center hover:text-primary-700-300"
+							class:text-primary-700={route === currentPage}
+							class:dark:text-primary-500={route === currentPage}
 							aria-label="Navigate to {route.toLowerCase()} page"
 						>
 							{route}
@@ -247,6 +249,9 @@
 		{/if}
 	</form>
 </nav>
-<a href="https://waspscripts.com" class="bg-surface-300-700 py-2 text-center">
+<a
+	href="https://waspscripts.com"
+	class="bg-surface-300-700/70 py-2 text-center backdrop-blur-lg hover:text-secondary-900-100"
+>
 	This website is for <b>Simba 2000</b>. Click here to visit the legacy version of the website.
 </a>

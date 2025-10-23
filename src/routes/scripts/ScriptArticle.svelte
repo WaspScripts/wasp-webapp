@@ -4,7 +4,7 @@
 	let { content = "" } = $props()
 </script>
 
-<header class="my-8 text-center text-secondary-500">
+<header class="my-8 text-center text-primary-700 dark:text-primary-500">
 	<span class="text-2xl">Description:</span>
 </header>
 

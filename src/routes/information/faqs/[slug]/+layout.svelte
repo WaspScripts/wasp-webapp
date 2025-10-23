@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { page } from "$app/state"
 	import { replaceQuery } from "$lib/client/utils"
+	import GitHubButton from "$lib/components/GitHubButton.svelte"
 	import ChevronsDownUp from "svelte-lucide/ChevronsDownUp.svelte"
 	import ChevronsUpDown from "svelte-lucide/ChevronsUpDown.svelte"
-	import GitHubButton from "../../GitHubButton.svelte"
 
 	const { data, children } = $props()
 	const { faqs, meta } = $derived(data)

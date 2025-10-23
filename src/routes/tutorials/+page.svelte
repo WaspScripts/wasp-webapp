@@ -4,6 +4,7 @@
 	import Paginator from "$lib/components/Paginator.svelte"
 	import { replaceQuery } from "$lib/client/utils"
 	import Head from "$lib/components/Head.svelte"
+	import GitHubButton from "$lib/components/GitHubButton.svelte"
 
 	const { data } = $props()
 	const { tutorials, count } = $derived(data)
@@ -101,12 +102,7 @@
 			</div>
 		</div>
 		<div class="my-8 grid place-items-center">
-			<a
-				href="https://github.com/WaspScripts/wasp-info/new/main/tutorials"
-				class="btn preset-filled-secondary-200-800 ring-2 ring-secondary-500"
-			>
-				Add a tutorial through GitHub!
-			</a>
+			<GitHubButton link="new/main/tutorials" text="Add a tutorial on GitHub!"></GitHubButton>
 		</div>
 	</div>
 

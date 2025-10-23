@@ -15,7 +15,7 @@
 			</h1>
 			<a
 				href="https://github.com/WaspScripts/wasp-launcher/releases/latest/download/wasp-launcher.msi"
-				class="my-32 btn preset-filled-secondary-500 font-bold"
+				class="my-32 btn preset-filled-primary-500 font-bold"
 			>
 				Wasp Launcher
 			</a>

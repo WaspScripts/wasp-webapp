@@ -534,10 +534,10 @@
 
 				<div class="flex justify-between">
 					<a href="./">
-						<button class="btn preset-filled-secondary-500">Back</button>
+						<button class="btn preset-filled-primary-500 font-bold">Back</button>
 					</a>
 
-					<button type="submit" class="btn preset-filled-secondary-500">Submit</button>
+					<button type="submit" class="btn preset-filled-primary-500 font-bold">Submit</button>
 				</div>
 			</form>
 		</article>

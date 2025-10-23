@@ -23,16 +23,16 @@
 
 	<header class="text-lg sm:text-xl md:text-2xl">
 		<h2 class="mx-6 mt-6 text-center font-bold whitespace-nowrap">
-			Total Experience Earned: {formatNumber(totals.experience)}
+			Total Experience Earned: {formatNumber(totals.experience!)}
 		</h2>
 		<h2 class="mx-6 text-center font-bold whitespace-nowrap">
-			Total Gold Earned: {formatNumber(totals.gold)}
+			Total Gold Earned: {formatNumber(totals.gold!)}
 		</h2>
 		<h2 class="mx-6 text-center font-bold whitespace-nowrap">
-			Total Levels Earned: {formatNumber(totals.levels)}
+			Total Levels Earned: {formatNumber(totals.levels!)}
 		</h2>
 		<h2 class="mx-6 mb-4 text-center font-bold whitespace-nowrap">
-			Total Runtime: {formatTime(totals.runtime)}
+			Total Runtime: {formatTime(totals.runtime!)}
 		</h2>
 	</header>
 

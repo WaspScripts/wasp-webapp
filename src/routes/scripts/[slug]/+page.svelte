@@ -94,21 +94,19 @@
 							</div>
 							{#if canEdit(profile?.id, profile?.role, script.protected.author)}
 								<div class="my-8 grid place-items-center">
-									<a href="{page.url.pathname}/edit" class="btn preset-filled-secondary-500">Edit</a>
+									<a href="{page.url.pathname}/edit" class="btn preset-filled-primary-500 font-bold">Edit</a>
 								</div>
 							{/if}
 						</div>
 					{:else}
 						<div class="my-8 rounded-md preset-outlined-surface-500 p-4">
 							<h4 class="py-2">
-								This is a <span class="text-secondary-500">premium</span>
+								This is a <span class="text-primary-500">premium</span>
 								script that you don't have access to.
 							</h4>
 							<h5>
 								To be able to download this script buy a
-								<a href="/subscriptions" class="font-semibold text-secondary-500 hover:underline">
-									subscription
-								</a>
+								<a href="/subscriptions" class="anchor font-semibold"> subscription </a>
 								that gives you access to it! You can buy it with the following products
 							</h5>
 
@@ -152,7 +150,7 @@
 
 													<td class="text-center">
 														<button
-															class="btn preset-filled-secondary-500"
+															class="btn preset-filled-primary-500"
 															formaction="?/checkout&product={bundle.id}&price={bundle.prices.find(
 																(p) => p.active
 															)?.id}"
@@ -199,7 +197,7 @@
 
 													<td class="text-center">
 														<button
-															class="btn preset-filled-secondary-500"
+															class="btn preset-filled-primary-500"
 															formaction="?/checkout&product={script.id}&price={script.prices.find(
 																(p) => p.active
 															)?.id}"

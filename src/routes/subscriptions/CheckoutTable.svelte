@@ -248,7 +248,7 @@
 
 							<td>
 								<button
-									class="btn preset-filled-secondary-500"
+									class="btn preset-filled-primary-500 font-bold"
 									formaction="?/checkout&product={bundleArray[i].id}&code={code}"
 								>
 									Checkout
@@ -277,7 +277,7 @@
 							<td class="text-center">
 								<a
 									href="/scripts/{scriptArray[i].url}"
-									class="btn hover:cursor-pointer hover:text-primary-500"
+									class="btn hover:cursor-pointer hover:text-primary-400-600"
 								>
 									<ExternalLink size="16" />
 									<span>Script</span>
@@ -309,7 +309,7 @@
 
 							<td>
 								<button
-									class="btn preset-filled-secondary-500"
+									class="btn preset-filled-primary-500 font-bold"
 									formaction="?/checkout&product={scriptArray[i].id}&code={code}"
 								>
 									Checkout

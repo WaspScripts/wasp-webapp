@@ -17,7 +17,7 @@
 			<div class="grid grid-cols-2 gap-8 sm:grid-cols-3 sm:gap-4">
 				<nav>
 					<span class="mb-6 text-sm font-semibold uppercase">Resources</span>
-					<ul>
+					<ul class="*:hover:text-primary-500">
 						<li><a href="/setup">Setup</a></li>
 						<li><a href="https://github.com/Villavu/Simba" target="_blank">Simba repo</a></li>
 						<li>
@@ -36,7 +36,7 @@
 				</nav>
 				<nav>
 					<span class="mb-6 text-sm font-semibold uppercase">Special thanks:</span>
-					<ul>
+					<ul class="*:hover:text-primary-500">
 						{#await WaspScripters.getRandomScripters(page.data.supabaseClient)}
 							{#each { length: 5 }}
 								<li>Loading...</li>
@@ -51,7 +51,7 @@
 				</nav>
 				<nav>
 					<span class="mb-6 text-sm font-semibold uppercase">Legal</span>
-					<ul>
+					<ul class="*:hover:text-primary-500">
 						<li><a href="/legal/privacy_policy">Privacy Policy</a></li>
 						<li><a href="/legal/user_tos">User Terms &amp; Conditions</a></li>
 						<li><a href="/legal/scripter_tos">Scripter Terms &amp; Conditions</a></li>
@@ -62,25 +62,16 @@
 		<footer class="my-8 flex flex-col sm:flex-row">
 			<span class="mx-auto my-auto text-sm sm:text-center">
 				This webapp is open source! Checkout
-				<a class="permalink text-secondary-500" href="https://github.com/torwent/wasp-webapp" target="_blank">
+				<a class="anchor" href="https://github.com/torwent/wasp-webapp" target="_blank">
 					WaspScripts source code
 				</a>
 				!
 			</span>
 			<div class="mx-auto my-auto flex space-x-6 sm:mt-0 sm:justify-center">
-				<a
-					href="https://github.com/torwent"
-					target="_blank"
-					aria-label="Navigate to GitHub"
-					class="permalink text-secondary-500"
-				>
+				<a href="https://github.com/torwent" target="_blank" aria-label="Navigate to GitHub" class="anchor">
 					<Github />
 				</a>
-				<a
-					href="https://waspscripts.dev"
-					aria-label="Navigate to main site"
-					class="permalink text-secondary-500"
-				>
+				<a href="https://waspscripts.dev" aria-label="Navigate to main site" class="anchor">
 					<Globe />
 				</a>
 			</div>

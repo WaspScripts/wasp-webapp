@@ -1,4 +1,5 @@
 <script lang="ts">
+	import GitHubButton from "$lib/components/GitHubButton.svelte"
 	import Head from "$lib/components/Head.svelte"
 	import { Avatar } from "@skeletonlabs/skeleton-svelte"
 
@@ -33,13 +34,7 @@
 
 <main class="container mx-auto my-6 max-w-4xl flex-grow">
 	<div class="my-8 grid place-items-center">
-		<a
-			href="https://github.com/Torwent/wasp-info/edit/main/tutorials/{meta.order}.md"
-			class="btn flex flex-col preset-filled-tertiary-500 md:flex-row"
-		>
-			<span>Found something wrong?</span>
-			<span> Edit on GitHub! </span>
-		</a>
+		<GitHubButton link="edit/main/tutorials/{meta.order}.md" text="Edit on GitHub!"></GitHubButton>
 	</div>
 	<h2 class="my-4 text-center text-3xl font-bold">{meta.title}</h2>
 	<h3 class="my-4 text-center leading-normal font-semibold">{meta.description}</h3>

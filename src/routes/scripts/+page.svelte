@@ -161,8 +161,8 @@
 
 	<main class="h-full w-full">
 		{#if profile && profile.role && ["scripter", "moderator", "administrator"].includes(profile?.role)}
-			<a href="/scripts/add" class="mx-auto my-4 block w-fit">
-				<button class="btn preset-filled-secondary-500">Add Script</button>
+			<a href="/scripts/add" class="mx-auto my-4 btn block w-fit preset-filled-primary-500 font-bold">
+				Add Script
 			</a>
 		{/if}
 

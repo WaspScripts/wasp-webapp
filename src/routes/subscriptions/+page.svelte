@@ -35,23 +35,20 @@
 		{/await}
 
 		<form method="POST" action="?/portal" class="my-8 mt-8 grid place-items-center">
-			<button class="btn preset-filled-secondary-500">Customer portal</button>
+			<button class="btn preset-filled-primary-500">Customer portal</button>
 		</form>
 	{/if}
 
 	<CheckoutTable data={data.checkoutForm} {bundles} {scripts} />
 </main>
 
-<!-- <h5 class="my-8 text-center">
+<h5 class="my-8 text-center">
 	By making any purchase you automatically accept the
 	<a href="/legal/user_tos">user terms or service</a>
 	.
 </h5>
 <p class="mx-auto my-8 text-center">
-	If you have any issues please contact <a
-		href="mailto: support@waspscripts.com"
-		class="font-semibold hover:underline"
-	>
-		support@waspscripts.com
+	If you have any issues please contact <a href="mailto: support@waspscripts.dev" class="anchor">
+		support@waspscripts.dev
 	</a>
-</p> -->
+</p>

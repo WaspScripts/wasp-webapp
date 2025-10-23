@@ -1,7 +1,7 @@
 <script lang="ts">
+	import GitHubButton from "$lib/components/GitHubButton.svelte"
 	import { Avatar } from "@skeletonlabs/skeleton-svelte"
 	import { ChevronsDownUp } from "svelte-lucide"
-	import GitHubButton from "../../GitHubButton.svelte"
 
 	const { data } = $props()
 	const { content, meta, supabaseClient } = $derived(data)
