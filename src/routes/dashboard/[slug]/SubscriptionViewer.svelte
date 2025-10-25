@@ -91,7 +91,7 @@
 <Modal
 	{open}
 	onOpenChange={(e) => (open = e.open)}
-	triggerBase="btn preset-filled-secondary-500 font-bold"
+	triggerBase="btn preset-filled-primary-500 font-bold"
 	contentBase="card bg-surface-100-900 p-4 space-y-4 shadow-xl w-[95%] max-w-fit max-h-[95%] overflow-y-auto"
 	backdropClasses="backdrop-blur-sm"
 >

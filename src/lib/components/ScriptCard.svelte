@@ -38,12 +38,9 @@
 			<span class="font-semibold whitespace-break-spaces text-primary-600 dark:text-primary-500">
 				{script.title}
 			</span>
-			<span class="text-xs text-primary-600 drop-shadow dark:text-secondary-500">
+			<span class="text-xs text-primary-700-300 drop-shadow">
 				by
-				<a
-					href="/scripters/{encodeSEO(script.protected.username.replaceAll(' ', '-'))}"
-					class="hover:preset-tonal-secondary"
-				>
+				<a href="/scripters/{encodeSEO(script.protected.username.replaceAll(' ', '-'))}" class="anchor">
 					{script.protected.username}
 				</a>
 				{#if !script.published}<small class="text-error-500">Unpublished</small>{/if}

@@ -70,7 +70,7 @@
 			{:else}
 				<Menu class="mx-2 my-auto text-surface-900-100" />
 			{/if}
-			<Logo selected={true} />
+			<Logo selected={false} />
 		</button>
 
 		<ul class="my-auto hidden w-9/12 justify-evenly lg:flex lg:text-xs xl:w-7/12 xl:text-base">
@@ -78,7 +78,7 @@
 				<a
 					href="/"
 					class="flex h-full place-content-center place-items-center hover:text-primary-700-300"
-					class:text-primary-700={"Home" === currentPage}
+					class:text-primary-800={"Home" === currentPage}
 					class:dark:text-primary-500={"Home" === currentPage}
 					aria-label="Navigate to home page"
 				>
@@ -91,7 +91,7 @@
 						<a
 							href={getLink(route)}
 							class="flex h-full place-content-center place-items-center hover:text-primary-700-300"
-							class:text-primary-700={route === currentPage}
+							class:text-primary-800={route === currentPage}
 							class:dark:text-primary-500={route === currentPage}
 							aria-label="Navigate to {route.toLowerCase()} page"
 						>
@@ -147,9 +147,9 @@
 			<li class="h-12">
 				<a
 					href={getLink(route)}
-					class="flex h-full place-content-center place-items-center hover:text-primary-400 dark:hover:text-primary-100"
-					class:text-primary-500={route === currentPage}
-					class:dark:text-primary-400={route === currentPage}
+					class="flex h-full place-content-center place-items-center hover:text-primary-700-300"
+					class:text-primary-800={route === currentPage}
+					class:dark:text-primary-500={route === currentPage}
 					aria-label="Navigate to {route.toLowerCase()} page"
 					onclick={() => (showMenu = !showMenu)}
 				>
@@ -185,7 +185,7 @@
 
 					<a
 						href="/user/{profile.id}"
-						class="mx-auto my-2 btn flex preset-filled-secondary-500"
+						class="mx-auto my-2 btn flex preset-filled-primary-500"
 						aria-label="Open profile page"
 						onclick={() => (showProfile = false)}
 					>
@@ -196,7 +196,7 @@
 					{#if profile.role == "administrator"}
 						<a
 							href="/auth"
-							class="mx-auto btn flex preset-filled-secondary-500"
+							class="mx-auto btn flex preset-filled-primary-500"
 							aria-label="Login as a different user"
 							onclick={() => (showProfile = false)}
 						>
@@ -217,7 +217,7 @@
 				<button
 					name="Logout"
 					aria-label="Logout"
-					class="mx-auto btn preset-filled-secondary-500"
+					class="mx-auto btn preset-filled-primary-500"
 					formaction="/auth?/logout"
 				>
 					<LogOut />
@@ -251,7 +251,7 @@
 </nav>
 <a
 	href="https://waspscripts.com"
-	class="bg-surface-300-700/70 py-2 text-center backdrop-blur-lg hover:text-secondary-900-100"
+	class="bg-surface-300-700/70 py-2 text-center backdrop-blur-lg hover:text-primary-900-100"
 >
 	This website is for <b>Simba 2000</b>. Click here to visit the legacy version of the website.
 </a>

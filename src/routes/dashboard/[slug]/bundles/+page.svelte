@@ -49,7 +49,7 @@
 <main class="m-4">
 	<h1 class="my-24 text-center">
 		By making premium scripts you automatically accept the
-		<a href="/legal/scripter_tos" class="text-tertiary-500"> scripter terms or service</a>
+		<a href="/legal/scripter_tos" class="anchor"> scripter terms or service</a>
 		.
 	</h1>
 
@@ -71,7 +71,7 @@
 				<tr>
 					{#each headers as header (header)}
 						<th>
-							<span class="flex justify-center text-center text-secondary-950-50">{header}</span>
+							<span class="flex justify-center text-center text-primary-950-50">{header}</span>
 						</th>
 					{/each}
 				</tr>
@@ -165,7 +165,7 @@
 							<button
 								id="button-{$bundlesForm.bundles[i].id}"
 								type="submit"
-								class="btn preset-filled-secondary-500 font-bold"
+								class="btn preset-filled-primary-500 font-bold"
 								formaction="?/bundleEdit&product={$bundlesForm.bundles[i].id}"
 							>
 								Save

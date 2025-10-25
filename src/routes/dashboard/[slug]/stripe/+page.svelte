@@ -104,7 +104,7 @@
 					{/each}
 				</div>
 			{/if}
-			<button disabled={$countryForm.code === ""} class="btn preset-filled-secondary-500">
+			<button disabled={$countryForm.code === ""} class="btn preset-filled-primary-500">
 				Create stripe connected account
 			</button>
 		</form>
@@ -114,20 +114,18 @@
 				<label for="dba">Invoice display name:</label>
 				<input class="my-2 input" name="dba" id="dba" bind:value={$dbaForm.dba} />
 				{#if $dbaErrors.dba}
-					<div
-						class="max-h-24 overflow-x-hidden overflow-y-scroll rounded-md bg-surface-700 text-error-500"
-					>
+					<div class="max-h-24 overflow-x-hidden overflow-y-scroll rounded-md bg-surface-700 text-error-500">
 						{#each $dbaErrors.dba as err (err)}
 							{err}
 						{/each}
 					</div>
 				{/if}
 			</div>
-			<button class="mx-4 mt-6 btn h-10 preset-filled-secondary-500">Update</button>
+			<button class="mx-4 mt-6 btn h-10 preset-filled-primary-500">Update</button>
 		</form>
 
 		<form method="POST" action="?/onboardStripe" class="flex justify-center">
-			<button class="my-2 btn h-10 preset-filled-secondary-500"> Update stripe connected account </button>
+			<button class="my-2 btn h-10 preset-filled-primary-500"> Update stripe connected account </button>
 		</form>
 
 		{#if account}
@@ -149,7 +147,7 @@
 			{/if}
 
 			<form method="POST" action="?/stripeDashboard" class="flex justify-center">
-				<button class="my-2 btn h-10 preset-filled-secondary-500"> Stripe Dashboard </button>
+				<button class="my-2 btn h-10 preset-filled-primary-500"> Stripe Dashboard </button>
 			</form>
 		{/if}
 	{/if}

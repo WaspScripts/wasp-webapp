@@ -65,7 +65,7 @@
 					{#each scripters as scripter (scripter.id)}
 						<a
 							href="/dashboard/{scripter.id}/general"
-							class="m-2 mx-auto btn flex w-full justify-around preset-outlined-tertiary-300-700 font-bold hover:border-secondary-500"
+							class="m-2 mx-auto btn flex w-full justify-around preset-outlined-tertiary-300-700 font-bold hover:border-primary-500"
 						>
 							<Avatar
 								src={scripter.profiles.avatar}

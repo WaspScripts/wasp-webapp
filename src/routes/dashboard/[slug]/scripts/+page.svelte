@@ -47,7 +47,7 @@
 <main class="m-4">
 	<h1 class="my-24 text-center">
 		By making premium scripts you automatically accept the
-		<a href="/legal/scripter_tos" class="text-tertiary-500"> scripter terms or service</a>
+		<a href="/legal/scripter_tos" class="anchor"> scripter terms or service</a>
 		.
 	</h1>
 	<div class="my-12 text-center">
