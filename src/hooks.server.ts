@@ -2,7 +2,6 @@ import { type Handle, redirect } from "@sveltejs/kit"
 import { createServerClient } from "@supabase/ssr"
 import { sequence } from "@sveltejs/kit/hooks"
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from "$env/static/public"
-import type { Database } from "$lib/types/supabase"
 
 const redirects: Handle = async ({ event, resolve }) => {
 	if (event.url.pathname.startsWith("/refresh_token")) {
@@ -21,7 +20,7 @@ const redirects: Handle = async ({ event, resolve }) => {
 }
 
 const supabase: Handle = async ({ event, resolve }) => {
-	event.locals.supabaseServer = createServerClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+	event.locals.supabaseServer = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 		cookies: {
 			getAll: () => event.cookies.getAll(),
 			setAll: (cookiesToSet) => {
@@ -35,39 +34,39 @@ const supabase: Handle = async ({ event, resolve }) => {
 	event.locals.safeGetSession = async () => {
 		let start = performance.now()
 
-		const {
-			data: { session }
-		} = await event.locals.supabaseServer.auth.getSession()
+		const { supabaseServer } = event.locals
 
-		if (!session) return { session: null, user: null, getProfile: null }
-		console.log(`└📜 session took ${(performance.now() - start).toFixed(2)} ms to check!`)
+		const promises = await Promise.all([supabaseServer.auth.getSession(), supabaseServer.auth.getUser()])
 
-		start = performance.now()
+		const session = promises[0].data.session
+		const user = promises[1].data.user
+		console.log(`└🔥 session and user took ${(performance.now() - start).toFixed(2)} ms to check!`)
 
-		const {
-			data: { user },
-			error: err
-		} = await event.locals.supabaseServer.auth.getUser()
+		if (!session || !user || promises[0].error || promises[1].error)
+			return { session: null, user: null, getProfile: null }
 
-		if (err) return { session: null, user: null, getProfile: null }
-
-		console.log(`└🔥 user took ${(performance.now() - start).toFixed(2)} ms to check!`)
-
-		if (!user) return { session: null, user: null, getProfile: null }
+		let ip: string
 
 		try {
-			console.log(`└😄 user ${user.id} accessing from ${event.getClientAddress()}`)
+			ip = event.getClientAddress()
 		} catch {
-			console.log(`└😄 user ${user.id} accessing from NO IP`)
+			ip = "NO IP"
 		}
 
-		// @ts-expect-error workaround supabase ssr session user weirdness
-		delete session.user
+		console.log(`└😄 user ${user.id} accessing from ${ip}`)
 
-		return {
-			session: Object.assign({}, session, { user }),
-			user
+		const remadeSession = {
+			access_token: session.access_token,
+			refresh_token: session.refresh_token,
+			expires_at: session.expires_at,
+			expires_in: session.expires_in,
+			provider_token: session.provider_token,
+			provider_refresh_token: session.provider_refresh_token,
+			token_type: session.token_type,
+			user: user
 		}
+
+		return { session: remadeSession, user }
 	}
 
 	return resolve(event, {

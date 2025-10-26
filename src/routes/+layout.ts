@@ -1,15 +1,15 @@
 import { createBrowserClient, createServerClient, isBrowser } from "@supabase/ssr"
 import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from "$env/static/public"
-import type { Database } from "$lib/types/supabase"
+import type { Session, User } from "@supabase/supabase-js"
 
 export const load = async ({ data, depends, fetch }) => {
 	depends("supabase:auth")
 
 	const supabaseClient = isBrowser()
-		? createBrowserClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+		? createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 				global: { fetch }
 			})
-		: createServerClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+		: createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 				global: { fetch },
 				cookies: {
 					getAll() {
@@ -18,13 +18,16 @@ export const load = async ({ data, depends, fetch }) => {
 				}
 			})
 
-	const {
-		data: { session }
-	} = await supabaseClient.auth.getSession()
-
-	const {
-		data: { user }
-	} = await supabaseClient.auth.getUser()
+	let session: Session | null
+	let user: User | null
+	if (isBrowser()) {
+		const promises = await Promise.all([supabaseClient.auth.getSession(), supabaseClient.auth.getUser()])
+		session = promises[0].data.session
+		user = promises[1].data.user
+	} else {
+		session = data.session
+		user = data.user
+	}
 
 	const getProfile = async () => {
 		if (!user) return null

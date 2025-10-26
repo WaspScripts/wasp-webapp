@@ -88,7 +88,7 @@ export function canEdit(id: string | null | undefined, role: ProfileRole, author
 	return id === author
 }
 
-export async function getScripter(supabase: SupabaseClient, slug: string) {
+export async function getScripter(supabase: SupabaseClient<Database>, slug: string) {
 	const { data, error: err } = await supabase
 		.schema("profiles")
 		.from("scripters")
@@ -177,7 +177,11 @@ export async function fetchScriptByID(supabase: SupabaseClient<Database>, id: st
 	return data
 }
 
-export async function scriptExists(supabase: SupabaseClient, slug: string, isUUID: boolean | null = null) {
+export async function scriptExists(
+	supabase: SupabaseClient<Database>,
+	slug: string,
+	isUUID: boolean | null = null
+) {
 	if (scripts.has(slug)) return true
 
 	console.log("💥 Fetching script " + slug)
@@ -198,7 +202,11 @@ export async function scriptExists(supabase: SupabaseClient, slug: string, isUUI
 	return true
 }
 
-export async function canDownload(supabase: SupabaseClient, role: ProfileRole, script_id: string | null) {
+export async function canDownload(
+	supabase: SupabaseClient<Database>,
+	role: ProfileRole,
+	script_id: string | null
+) {
 	if (!script_id) return false
 	if (role && ["administrator", "moderator", "tester"].includes(role)) return true
 
@@ -210,7 +218,12 @@ export async function canDownload(supabase: SupabaseClient, role: ProfileRole, s
 	return data ?? false
 }
 
-export async function getSignedURL(supabase: SupabaseClient, bucket: string, path: string, file: string) {
+export async function getSignedURL(
+	supabase: SupabaseClient<Database>,
+	bucket: string,
+	path: string,
+	file: string
+) {
 	path += "/" + file
 
 	const { data, error: err } = await supabase.storage.from(bucket).createSignedUrl(path, 10)

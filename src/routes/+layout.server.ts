@@ -2,12 +2,13 @@ export const load = async ({ locals: { safeGetSession }, cookies }) => {
 	const darkMode = cookies.get("darkMode") === "true"
 	const theme = cookies.get("theme") ?? "wasp"
 
-	const { session } = await safeGetSession()
+	const { session, user } = await safeGetSession()
 
 	return {
 		darkMode,
 		theme,
 		session,
+		user,
 		cookies: cookies.getAll()
 	}
 }

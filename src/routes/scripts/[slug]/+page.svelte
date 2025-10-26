@@ -73,7 +73,7 @@
 		/>
 	</ScriptHeader>
 
-	<div class="container mx-auto mb-6 max-w-lg flex-grow md:max-w-5xl">
+	<div class="container mx-auto mb-6 max-w-lg grow md:max-w-5xl">
 		{#if canEdit(profile?.id, profile?.role, script.protected.author)}
 			<ScriptData id={script.id} />
 		{/if}
