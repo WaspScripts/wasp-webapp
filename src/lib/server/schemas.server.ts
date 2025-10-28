@@ -1,6 +1,7 @@
-import { bannerImage, baseScriptSchema, coverImage, scriptFile } from "$lib/client/schemas"
+import { bannerImage, scriptInfoSchema, coverImage, scriptFile } from "$lib/client/schemas"
 import sharp from "sharp"
 import { supabaseAdmin } from "./supabase.server"
+import z from "zod"
 
 async function checkServerImageDimensions(file: File, width: number, height: number): Promise<boolean> {
 	if (file == null) return false
@@ -14,23 +15,22 @@ async function checkServerImageDimensions(file: File, width: number, height: num
 	}
 }
 
-export const addScriptServerSchema = baseScriptSchema
+export const addScriptServerSchema = scriptInfoSchema
 	.extend({
-		cover: coverImage.refine(
-			async (file) => await checkServerImageDimensions(file, 300, 200),
-			"The image must be 300 by 200 pixels."
-		),
-		banner: bannerImage.refine(
-			async (file) => await checkServerImageDimensions(file, 1920, 768),
-			"The image must be 1920 by 768 pixels."
-		),
-		script: scriptFile
+		simba: z
+			.string()
+			.length(10, "Simba versions must be exactly 10 characters long")
+			.regex(/^[a-fA-F0-9]+$/, "Must be a valid hexadecimal string"),
+		wasplib: z
+			.string()
+			.regex(/^\d{4}\.\d{2}\.\d{2}-[a-fA-F0-9]{7}$/, "Must match format YYYY.MM.DD-HEX with valid hex"),
+		cover: coverImage,
+		banner: bannerImage,
+		script: z.array(scriptFile),
+		main: z.string()
 	})
-	.refine(
-		(schema) => schema.xp_min <= schema.xp_max,
-		"Minimum experience cannot exceed the maximum experience."
-	)
-	.refine((schema) => schema.gp_min <= schema.gp_max, "Minimum gold cannot exceed the maximum gold.")
+	.refine(async (schema) => await checkServerImageDimensions(schema.cover, 300, 200))
+	.refine(async (schema) => await checkServerImageDimensions(schema.banner, 1920, 768))
 	.refine(async (schema) => {
 		const { count, error } = await supabaseAdmin
 			.schema("scripts")
@@ -54,27 +54,20 @@ export const addScriptServerSchema = baseScriptSchema
 		return true
 	}, "Invalid WaspLib version.")
 
-export const updateScriptServerSchema = baseScriptSchema
-	.extend({
-		cover: coverImage
-			.refine(
-				async (file) => await checkServerImageDimensions(file, 300, 200),
-				"The image must be 300 by 200 pixels."
-			)
-			.optional(),
-		banner: bannerImage
-			.refine(
-				async (file) => await checkServerImageDimensions(file, 1920, 768),
-				"The image must be 1920 by 768 pixels."
-			)
-			.optional(),
-		script: scriptFile.optional()
+export const scriptFilesServerSchema = z
+	.object({
+		simba: z
+			.string()
+			.length(10, "Simba versions must be exactly 10 characters long")
+			.regex(/^[a-fA-F0-9]+$/, "Must be a valid hexadecimal string"),
+		wasplib: z
+			.string()
+			.regex(/^\d{4}\.\d{2}\.\d{2}-[a-fA-F0-9]{7}$/, "Must match format YYYY.MM.DD-HEX with valid hex"),
+		cover: coverImage.optional(),
+		banner: bannerImage.optional(),
+		script: scriptFile.array().optional(),
+		main: z.string().nonempty().optional()
 	})
-	.refine(
-		(schema) => schema.xp_min <= schema.xp_max,
-		"Minimum experience cannot exceed the maximum experience."
-	)
-	.refine((schema) => schema.gp_min <= schema.gp_max, "Minimum gold cannot exceed the maximum gold.")
 	.refine(async (schema) => {
 		const { count, error } = await supabaseAdmin
 			.schema("scripts")

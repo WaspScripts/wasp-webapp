@@ -32,7 +32,6 @@ export async function doLogin(supabase: SupabaseClient, origin: string, searchPa
 
 export async function uploadFile(supabase: SupabaseClient, bucket: string, path: string, file: File) {
 	const contentType = path.endsWith(".jpg") || path.endsWith(".jpeg") ? "image/jpeg" : undefined
-
 	const { error: err } = await supabase.storage.from(bucket).upload(path, file, { upsert: true, contentType })
 
 	if (err) {

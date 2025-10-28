@@ -62,20 +62,17 @@ export const load = async ({ locals: { supabaseServer, user, session } }) => {
 			.order("created_at", { ascending: false })
 	])
 
-	for (let i = 0; i < promises.length; i++) {
-		const { error: err } = promises[i]
-		if (err) error(500, formatError(err))
-	}
+	const { data: versions, error: errVersions } = promises[0]
+	if (errVersions) error(500, formatError(errVersions))
+	const { data: wasplib, error: errWasplib } = promises[1]
+	if (errWasplib) error(500, formatError(errWasplib))
 
 	return {
 		form: await superValidate(
 			{
 				content: scriptDefaultContent,
-				simba: promises[0].data![0].version,
-				wasplib: promises[1].data![0].version,
-				trackers: [],
-				minima: [],
-				maxima: []
+				simba: versions[0].version,
+				wasplib: wasplib[0].version
 			},
 			zod(addScriptServerSchema),
 			{
@@ -83,8 +80,8 @@ export const load = async ({ locals: { supabaseServer, user, session } }) => {
 				errors: false
 			}
 		),
-		simbaVersions: promises[0].data!.map((v) => ({ label: v.version, value: v.version })),
-		wlVersions: promises[1].data!.map((v) => ({ label: v.version, value: v.version }))
+		simbaVersions: versions.map((v) => ({ label: v.version, value: v.version })),
+		wlVersions: wasplib.map((v) => ({ label: v.version, value: v.version }))
 	}
 }
 
@@ -153,48 +150,35 @@ export const actions = {
 			categories: form.data.categories
 		}
 
-		const limits = {
-			xp_min: form.data.xp_min,
-			xp_max: form.data.xp_max,
-			gp_min: form.data.gp_min,
-			gp_max: form.data.gp_max
-		}
-
-		const limits_custom = {
-			trackers: form.data.trackers,
-			minima: form.data.minima,
-			maxima: form.data.maxima
-		}
-
-		const versions = { revision: 1, simba: form.data.simba, wasplib: form.data.wasplib }
-
-		const inserts = [
-			supabaseServer.schema("scripts").from("metadata").update(metadata).eq("id", data.id),
-			supabaseServer.schema("stats").from("limits").update(limits).eq("id", data.id),
-			supabaseServer.schema("stats").from("limits_custom").update(limits_custom).eq("id", data.id),
-			supabaseServer.schema("scripts").from("versions").update(versions).eq("id", data.id)
-		]
-
-		const awaitedInserts = await Promise.all(inserts)
-
-		const { error: errData } = awaitedInserts[0]
-		const { error: errLimits } = awaitedInserts[1]
+		const { error: errData } = await supabaseServer
+			.schema("scripts")
+			.from("metadata")
+			.update(metadata)
+			.eq("id", data.id)
 
 		if (errData) {
 			return setError(form, "", "UPDATE scripts.metadata failed!\n\n" + JSON.stringify(errData))
 		}
-		if (errLimits) {
-			return setError(form, "", "UPDATE stats.limits failed!\n\n" + JSON.stringify(errLimits))
+
+		const path = data.id + "/" + pad(1, 9) + "/"
+
+		const filePromises = []
+		const fileNames = []
+
+		for (let i = 0; i < form.data.script.length; i++) {
+			const fileName = form.data.script[i].name == form.data.main ? "script.simba" : form.data.script[i].name
+			fileNames.push(fileName)
+			filePromises.push(uploadFile(supabaseServer, "scripts", path + fileName, form.data.script[i]))
 		}
 
-		//rename all scripts to script so we can always fetch them later regardless of name changes.
-		const path = data.id + "/" + pad(1, 9) + "/script.simba"
-
-		const awaitedFiles = await Promise.all([
-			uploadFile(supabaseServer, "scripts", path, form.data.script),
-			uploadFile(supabaseServer, "imgs", "scripts/" + data.id + "/cover.jpg", form.data.cover),
+		filePromises.push(
+			uploadFile(supabaseServer, "imgs", "scripts/" + data.id + "/cover.jpg", form.data.cover)
+		)
+		filePromises.push(
 			uploadFile(supabaseServer, "imgs", "scripts/" + data.id + "/banner.jpg", form.data.banner)
-		])
+		)
+
+		const awaitedFiles = await Promise.all(filePromises)
 
 		let fileErrors: string | undefined
 		for (let i = 0; i < awaitedFiles.length; i++) {
@@ -203,8 +187,19 @@ export const actions = {
 			}
 		}
 
-		//FINISH!
 		if (fileErrors) return setError(form, "", fileErrors)
+
+		const versions = { revision: 1, simba: form.data.simba, wasplib: form.data.wasplib, files: fileNames }
+
+		const { error: err } = await supabaseServer
+			.schema("scripts")
+			.from("versions")
+			.update(versions)
+			.eq("id", data.id)
+
+		if (err) {
+			return setError(form, "", formatError(err))
+		}
 
 		await updateScript(data.id)
 

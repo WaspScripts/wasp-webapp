@@ -7,10 +7,11 @@
 	import ScriptHeader from "../ScriptHeader.svelte"
 	import ScriptArticle from "../ScriptArticle.svelte"
 	import { addScriptClientSchema } from "$lib/client/schemas"
-	import { Combobox, FileUpload, Switch } from "@skeletonlabs/skeleton-svelte"
+	import { Combobox, FileUpload, Switch, TagsInput } from "@skeletonlabs/skeleton-svelte"
 	import AdvancedButton from "../AdvancedButton.svelte"
 	import NewScriptCard from "$lib/components/NewScriptCard.svelte"
 	import type { ScriptLimits, ScriptMetaData, ScriptPublic } from "$lib/types/collection"
+	import { preventDefault } from "svelte/legacy"
 
 	const { data } = $props()
 	let profile = $derived(data.profile!)
@@ -49,12 +50,7 @@
 		categories: $form.categories
 	})
 
-	let limitsData: ScriptLimits = $derived({
-		xp_min: $form.xp_min,
-		xp_max: $form.xp_max,
-		gp_min: $form.gp_min,
-		gp_max: $form.gp_max
-	})
+	let simbaFiles: string[] = $state([])
 </script>
 
 <main>
@@ -69,7 +65,7 @@
 				<img class="rounded-md" src={bannerURL} alt="Script banner" loading="lazy" />
 			</ScriptHeader>
 
-			<div class="container mx-auto mb-6 max-w-lg flex-grow md:max-w-5xl">
+			<div class="container mx-auto mb-6 max-w-lg grow md:max-w-5xl">
 				{#if profile}
 					<div class="text-center">
 						<div class="grid justify-center justify-items-center gap-8 py-12">
@@ -84,7 +80,18 @@
 					</div>
 				{/if}
 
-				<ScriptArticle content={getScriptContent(publicData, limitsData, profile.username ?? "")} />
+				<ScriptArticle
+					content={getScriptContent(
+						publicData,
+						{
+							xp_min: 0,
+							xp_max: 0,
+							gp_min: 0,
+							gp_max: 0
+						},
+						profile.username ?? ""
+					)}
+				/>
 			</div>
 		</main>
 	{/if}
@@ -99,7 +106,7 @@
 
 	{#if show[2]}
 		<div class="max-w-2x m-8">
-			<div class="mx-auto w-[36rem] rounded-md bg-zinc-200 p-8 text-left dark:bg-zinc-900">
+			<div class="mx-auto w-xl rounded-md bg-zinc-200 p-8 text-left dark:bg-zinc-900">
 				<div class="flex">
 					<div
 						class="my-auto mr-3 grid h-8 w-8 content-center justify-center overflow-clip rounded-full bg-white"
@@ -116,7 +123,7 @@
 					<p>{cropString("RuneScape OSRS Color Bot - " + $form.description, 160)}</p>
 				</div>
 			</div>
-			<div class="mx-auto my-8 w-[40rem]">
+			<div class="mx-auto my-8 w-160">
 				* this is not a real search result, just an example of what you might expect to see in
 				google/bing/duckduckgo
 			</div>
@@ -419,8 +426,8 @@
 					<FileUpload
 						name="script"
 						label="Simba script"
-						accept=".simba"
-						maxFiles={1}
+						accept={[".simba", ".png", ".txt", ".ini", ".json", ".zip", ".bin", ".obj", ".mtl", ".graph"]}
+						maxFiles={20}
 						maxFileSize={1024 * 1024 * 50}
 						subtext={$errors.script == null ? "Must be a simba script file." : $errors.script.toString()}
 						interfaceIcon={scriptStyle === 0 ? "" : scriptStyle === 1 ? "text-success-500" : "text-error-500"}
@@ -435,102 +442,47 @@
 						interfaceBase="preset-filled-surface-100-900 text-center hover:preset-filled-surface-200-800"
 						allowDrop
 						onFileChange={async (details) => {
-							scriptStyle = 0
+							scriptStyle = details.rejectedFiles.length > 0 ? 2 : 0
+
 							if (details.acceptedFiles.length === 0) {
-								if (details.rejectedFiles.length > 0) scriptStyle = 2
+								$form.main = ""
 								return
 							}
 
-							$form.script = details.acceptedFiles[0]
-							scriptStyle = 2
-							const invalid = await validate("script")
+							$form.script = details.acceptedFiles
+							simbaFiles = details.acceptedFiles
+								.map((file) => file.name)
+								.filter((file) => file.endsWith(".simba"))
 
-							if (invalid) {
-								console.error(invalid)
-								return
-							}
 							scriptStyle = 1
+							if (!$form.main) {
+								$form.main = $form.script[0].name
+							}
 						}}
 					>
-						{#snippet iconInterface()}<FileCode class="mx-auto" />{/snippet}
+						{#snippet iconInterface()}
+							<FileCode class="mx-auto" />
+						{/snippet}
 					</FileUpload>
 				</div>
 
 				<div class="my-8 rounded-md preset-filled-surface-100-900 p-8">
-					<h5 class="my-8 text-center">Stats limits (every 5 minutes)</h5>
-					<div class="flex flex-col justify-between gap-4 md:flex-row">
-						<div class="flex w-full flex-col gap-4 lg:flex-row">
-							<div class="w-full">
-								<label class="label">
-									<span class="label-text">Minimum Experience:</span>
-									<input
-										type="number"
-										id="xp_min"
-										name="xp_min"
-										class="input"
-										class:ring-error-500={$errors.xp_min != null}
-										bind:value={$form.xp_min}
-									/>
-								</label>
-								{#if $errors.xp_min}
-									<small class="text-error-500">{$errors.xp_min}</small>
-								{/if}
-							</div>
-
-							<div class="w-full">
-								<label class="label">
-									<span class="label-text">Maximum Experience:</span>
-									<input
-										type="number"
-										id="xp_max"
-										name="xp_max"
-										class="input"
-										class:ring-error-500={$errors.xp_max}
-										bind:value={$form.xp_max}
-									/>
-								</label>
-								{#if $errors.xp_max}
-									<small class="text-error-500">{$errors.xp_max}</small>
-								{/if}
-							</div>
-						</div>
-
-						<div class="flex w-full flex-col gap-4 lg:flex-row">
-							<div class="w-full">
-								<label class="label">
-									<span class="label-text">Minimum Gold:</span>
-									<input
-										type="number"
-										id="gp_min"
-										name="gp_min"
-										class="input"
-										class:ring-error-500={$errors.gp_min != null}
-										bind:value={$form.gp_min}
-									/>
-								</label>
-								{#if $errors.gp_min}
-									<small class="text-error-500">{$errors.gp_min}</small>
-								{/if}
-							</div>
-
-							<div class="w-full">
-								<label class="label">
-									<span class="label-text">Maximum Gold:</span>
-									<input
-										type="number"
-										id="gp_max"
-										name="gp_max"
-										class="input"
-										class:ring-error-500={$errors.gp_max}
-										bind:value={$form.gp_max}
-									/>
-								</label>
-								{#if $errors.gp_max}
-									<small class="text-error-500">{$errors.gp_max}</small>
-								{/if}
-							</div>
-						</div>
-					</div>
+					<label class="label">
+						<span class="label-text">Main file:</span>
+						<select
+							id="main"
+							name="main"
+							class="select overflow-y-scroll"
+							class:ring-error-500={$errors.main != null}
+							bind:value={$form.main}
+						>
+							{#each simbaFiles as file (file)}
+								<option value={file} class="selection:bg-primary-500">
+									{file}
+								</option>
+							{/each}
+						</select>
+					</label>
 				</div>
 
 				{#if $errors._errors && $errors._errors.length > 0}

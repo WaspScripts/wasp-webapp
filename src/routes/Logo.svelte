@@ -5,7 +5,7 @@
 
 <!-- Website Logo -->
 <div
-	class="flex fill-current transition duration-300 hover:text-primary-700-300"
+	class="mx-auto flex justify-center fill-current transition duration-300 hover:text-primary-700-300"
 	class:text-primary-800-200={selected}
 >
 	<svg
@@ -13,7 +13,7 @@
 		version="1.1"
 		id="wasp"
 		xmlns="http://www.w3.org/2000/svg"
-		class="mr-3 mb-3 h-12"
+		class="mr-3 mb-3 block h-12"
 	>
 		<path
 			style="clip-rule:evenodd;fill-rule:evenodd;stroke-width:1.46248"

@@ -16,48 +16,53 @@ const description = z
 
 const content = z
 	.string()
-	.refine((str) => str === null || str === "" || str.length >= 10, {
+	.refine((str) => str === "" || str.length >= 10, {
 		message: "Must be at least 10 characters long"
 	})
-	.refine((str) => str === null || str === "" || str.includes(" "), {
+	.refine((str) => str === "" || str.includes(" "), {
 		message: "You have no spaces, this is supposed to be at least a couple of words, ideally a few sentences."
 	})
 
 const categoryKeys = Object.keys(scriptCategories) as TScriptCategories
 const ScriptCategoryEnum = z.enum(categoryKeys as [TScriptCategories[number], ...TScriptCategories])
 
-export const baseScriptSchema = z.object({
+export const scriptInfoSchema = z.object({
 	title: title,
 	description: description,
 	content: content,
 	status: z.boolean().default(false),
 	type: z.boolean().default(false),
 	categories: z.array(ScriptCategoryEnum).min(1, "You should have at least 1 category."),
-	published: z.boolean().default(true),
-	simba: z
-		.string()
-		.length(10, "Simba versions must be exactly 10 characters long")
-		.regex(/^[a-fA-F0-9]+$/, "Must be a valid hexadecimal string"),
-	wasplib: z
-		.string()
-		.regex(/^\d{4}\.\d{2}\.\d{2}-[a-fA-F0-9]{7}$/, "Must match format YYYY.MM.DD-HEX with valid hex"),
-	xp_min: z
-		.number()
-		.int("Only whole numbers are allowed.")
-		.gte(0, "There's no way to lose experience in OSRS."),
-	xp_max: z.number().int("Only whole numbers are allowed.").max(60000, "That exceeds the reasonable limit."),
-	gp_min: z
-		.number()
-		.int("Only whole numbers are allowed.")
-		.gte(-200000, "That exceeds the reasonable loss limit."),
-	gp_max: z
-		.number()
-		.int("Only whole numbers are allowed.")
-		.max(600000, "That exceeds the reasonable profit limit."),
-	trackers: z.string().array().min(0),
-	minima: z.number().int("Only whole numbers are allowed.").array().min(0),
-	maxima: z.number().int("Only whole numbers are allowed.").array().min(0)
+	published: z.boolean().default(true)
 })
+
+export const scriptStatsSchema = z
+	.object({
+		xp_min: z
+			.number()
+			.int("Only whole numbers are allowed.")
+			.gte(0, "There's no way to lose experience in OSRS."),
+		xp_max: z
+			.number()
+			.int("Only whole numbers are allowed.")
+			.max(60000, "That exceeds the reasonable limit."),
+		gp_min: z
+			.number()
+			.int("Only whole numbers are allowed.")
+			.gte(-200000, "That exceeds the reasonable loss limit."),
+		gp_max: z
+			.number()
+			.int("Only whole numbers are allowed.")
+			.max(600000, "That exceeds the reasonable profit limit."),
+		trackers: z.array(z.string()),
+		minima: z.array(z.number().int("Only whole numbers are allowed.")),
+		maxima: z.array(z.number().int("Only whole numbers are allowed."))
+	})
+	.refine(
+		(schema) => schema.xp_min <= schema.xp_max,
+		"Minimum experience cannot exceed the maximum experience."
+	)
+	.refine((schema) => schema.gp_min <= schema.gp_max, "Minimum gold cannot exceed the maximum gold.")
 
 export const coverImage = z
 	.instanceof(File, { message: "Please upload a file." })
@@ -72,51 +77,69 @@ export const bannerImage = z
 export const scriptFile = z
 	.instanceof(File, { message: "Please upload a file." })
 	.refine((file) => file.size <= 5 * MB_SIZE, "Max script size is 5MB.")
-	.refine((file) => file.name.endsWith(".simba"), "Only .simba files are allowed.")
-
-export const addScriptClientSchema = baseScriptSchema
-	.extend({
-		cover: coverImage.refine(
-			async (file) => await checkClientImageDimensions(file, 300, 200),
-			"The image must be 300 by 200 pixels."
-		),
-		banner: bannerImage.refine(
-			async (file) => await checkClientImageDimensions(file, 1920, 768),
-			"The image must be 1920 by 768 pixels."
-		),
-		script: scriptFile
-	})
 	.refine(
-		(schema) => schema.xp_min <= schema.xp_max,
-		"Minimum experience cannot exceed the maximum experience."
+		(file) =>
+			file.name.endsWith(".simba") ||
+			file.name.endsWith(".png") ||
+			file.name.endsWith(".bmp") ||
+			file.name.endsWith(".txt") ||
+			file.name.endsWith(".ini") ||
+			file.name.endsWith(".json") ||
+			file.name.endsWith(".zip") ||
+			file.name.endsWith(".bin") ||
+			file.name.endsWith(".graph") ||
+			file.name.endsWith(".obj") ||
+			file.name.endsWith(".mtl"),
+		"This file type is not allowed."
 	)
-	.refine((schema) => schema.gp_min <= schema.gp_max, "Minimum gold cannot exceed the maximum gold.")
+
+export const addScriptClientSchema = scriptInfoSchema.extend({
+	simba: z
+		.string()
+		.length(10, "Simba versions must be exactly 10 characters long")
+		.regex(/^[a-fA-F0-9]+$/, "Must be a valid hexadecimal string"),
+	wasplib: z
+		.string()
+		.regex(/^\d{4}\.\d{2}\.\d{2}-[a-fA-F0-9]{7}$/, "Must match format YYYY.MM.DD-HEX with valid hex"),
+	cover: coverImage.refine(
+		async (file) => await checkClientImageDimensions(file, 300, 200),
+		"The image must be 300 by 200 pixels."
+	),
+	banner: bannerImage.refine(
+		async (file) => await checkClientImageDimensions(file, 1920, 768),
+		"The image must be 1920 by 768 pixels."
+	),
+	script: scriptFile.array(),
+	main: z.string().nonempty()
+})
 
 export type AddScriptSchema = z.infer<typeof addScriptClientSchema>
 
-export const updateScriptClientSchema = baseScriptSchema
-	.extend({
-		cover: coverImage
-			.refine(
-				async (file) => await checkClientImageDimensions(file, 300, 200),
-				"The image must be 300 by 200 pixels."
-			)
-			.optional(),
-		banner: bannerImage
-			.refine(
-				async (file) => await checkClientImageDimensions(file, 1920, 768),
-				"The image must be 1920 by 768 pixels."
-			)
-			.optional(),
-		script: scriptFile.optional()
-	})
-	.refine(
-		(schema) => schema.xp_min <= schema.xp_max,
-		"Minimum experience cannot exceed the maximum experience."
-	)
-	.refine((schema) => schema.gp_min <= schema.gp_max, "Minimum gold cannot exceed the maximum gold.")
+export const scriptFilesSchema = z.object({
+	simba: z
+		.string()
+		.length(10, "Simba versions must be exactly 10 characters long")
+		.regex(/^[a-fA-F0-9]+$/, "Must be a valid hexadecimal string"),
+	wasplib: z
+		.string()
+		.regex(/^\d{4}\.\d{2}\.\d{2}-[a-fA-F0-9]{7}$/, "Must match format YYYY.MM.DD-HEX with valid hex"),
+	cover: coverImage
+		.refine(
+			async (file) => await checkClientImageDimensions(file, 300, 200),
+			"The image must be 300 by 200 pixels."
+		)
+		.optional(),
+	banner: bannerImage
+		.refine(
+			async (file) => await checkClientImageDimensions(file, 1920, 768),
+			"The image must be 1920 by 768 pixels."
+		)
+		.optional(),
+	script: z.array(scriptFile).min(1).optional(),
+	main: z.string().optional()
+})
 
-export type UpdateScriptSchema = z.infer<typeof updateScriptClientSchema>
+export type UpdateScriptSchema = z.infer<typeof scriptFilesSchema>
 
 export const postSchema = z.object({
 	title: title,
