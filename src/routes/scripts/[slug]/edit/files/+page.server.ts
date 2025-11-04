@@ -108,7 +108,7 @@ export const actions = {
 		if (form.data.script && form.data.script.length > 0) {
 			revision = revision + 1
 			console.log("Updating script revision to ", revision)
-			const path = script.id + "/" + pad(revision, 9) + "/script.simba"
+			const path = script.id + "/" + pad(revision, 9) + "/"
 			for (let i = 0; i < form.data.script.length; i++) {
 				const fileName =
 					form.data.script[i].name == form.data.main ? "script.simba" : form.data.script[i].name

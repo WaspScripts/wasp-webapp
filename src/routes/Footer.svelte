@@ -11,6 +11,7 @@
 	import Superforms from "./logos/Superforms.svelte"
 	import Zod from "./logos/Zod.svelte"
 	import Supabase from "./logos/Supabase.svelte"
+	import Svelte from "./logos/Svelte.svelte"
 </script>
 
 <footer class="z-40 my-auto h-fit preset-filled-surface-100-900">
@@ -23,6 +24,9 @@
 			<div class="flex flex-col gap-8 fill-black text-black lg:flex-row dark:fill-black dark:text-white">
 				<a href="https://coolify.io/" aria-label="Navigate to coolify" class="mx-auto flex">
 					<Coolify />
+				</a>
+				<a href="https://svelte.dev/" aria-label="Navigate to svelte" class="mx-auto flex">
+					<Svelte />
 				</a>
 				<a href="https://svelte.dev/" aria-label="Navigate to svelte" class="mx-auto flex">
 					<Sveltekit />
@@ -45,9 +49,9 @@
 			</div>
 		</div>
 
-		<div class="flex flex-col justify-around gap-8 md:flex-row">
-			<nav class="mx-auto">
-				<span class="mb-6 text-sm font-semibold uppercase">Resources</span>
+		<div class="flex flex-col justify-around gap-16 md:flex-row">
+			<nav class="mx-auto text-center md:text-left">
+				<span class="text-md mb-6 font-semibold uppercase">Resources</span>
 				<ul class="*:hover:text-primary-500">
 					<li><a href="/setup">Setup</a></li>
 					<li><a href="https://github.com/Villavu/Simba" target="_blank">Simba repo</a></li>
@@ -65,8 +69,8 @@
 					</li>
 				</ul>
 			</nav>
-			<nav class="mx-auto">
-				<span class="mb-6 text-sm font-semibold uppercase">Special thanks:</span>
+			<nav class="mx-auto text-center md:text-left">
+				<span class="text-md mb-6 font-semibold uppercase">Special thanks:</span>
 				<ul class="*:hover:text-primary-500">
 					{#await WaspScripters.getRandomScripters(page.data.supabaseClient)}
 						{#each { length: 5 }}
@@ -80,8 +84,8 @@
 					{/await}
 				</ul>
 			</nav>
-			<nav class="mx-auto">
-				<span class="mb-6 text-sm font-semibold uppercase">Legal</span>
+			<nav class="mx-auto text-center md:text-left">
+				<span class="text-md mb-6 font-semibold uppercase">Legal</span>
 				<ul class="*:hover:text-primary-500">
 					<li><a href="/legal/privacy_policy">Privacy Policy</a></li>
 					<li><a href="/legal/user_tos">User Terms &amp; Conditions</a></li>
@@ -92,11 +96,10 @@
 
 		<footer class="my-8 flex flex-col sm:flex-row">
 			<span class="mx-auto my-auto text-sm sm:text-center">
-				This webapp is open source! Checkout
+				This webapp is open source, checkout
 				<a class="anchor" href="https://github.com/torwent/wasp-webapp" target="_blank">
 					WaspScripts source code
 				</a>
-				!
 			</span>
 			<div class="mx-auto my-auto flex space-x-6 sm:mt-0 sm:justify-center">
 				<a href="https://github.com/torwent" target="_blank" aria-label="Navigate to GitHub" class="anchor">
