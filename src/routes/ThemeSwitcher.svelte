@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { enhance } from "$app/forms"
 	import { page } from "$app/state"
-	import { Popover } from "@skeletonlabs/skeleton-svelte"
-	import { ChevronDown, Palette, X } from "svelte-lucide"
+	import { Popover, Portal } from "@skeletonlabs/skeleton-svelte"
+
+	import ChevronDown from "@lucide/svelte/icons/chevron-down"
+	import Palette from "@lucide/svelte/icons/palette"
+	import X from "@lucide/svelte/icons/x"
 
 	const themesData = [
 		{ label: "Cerberus", value: "cerberus" },
@@ -16,40 +19,38 @@
 </script>
 
 <div class="my-auto input-group flex hover:preset-tonal">
-	<Popover
-		{open}
-		onOpenChange={(e) => (open = e.open)}
-		positioning={{ placement: "bottom" }}
-		triggerBase="btn hover:preset-tonal h-full"
-		contentBase="card bg-surface-200-800 p-4 space-y-4 max-w-[320px]"
-		zIndex="50"
-	>
-		{#snippet trigger()}
+	<Popover>
+		<Popover.Trigger class="btn h-full hover:preset-tonal">
 			<Palette size="16" />
 			<span class="mx-4 my-auto flex lg:hidden xl:flex">{theme}</span>
-			<ChevronDown size="16" />{/snippet}
-		{#snippet content()}
-			<form class="w-52 card" id="theme-form" method="POST" action="/?/setTheme" use:enhance>
-				<header class="flex justify-between">
-					<p class="text-xl font-bold">Themes</p>
-					<button class="btn-icon hover:preset-tonal" onclick={() => (open = false)}><X /></button>
-				</header>
-				<div class="my-4 flex flex-col">
-					{#each themesData as entry (entry.value)}
-						<button
-							type="submit"
-							class="my-2 btn preset-outlined-surface-500 hover:border-primary-500"
-							formaction="/?/setTheme={entry.value}"
-							onclick={() => {
-								theme = entry.value
-								document.body.setAttribute("data-theme", theme)
-							}}
-						>
-							{entry.label}
-						</button>
-					{/each}
-				</div>
-			</form>
-		{/snippet}
+			<ChevronDown size="16" />
+		</Popover.Trigger>
+		<Portal>
+			<Popover.Positioner>
+				<Popover.Content class="max-w-md space-y-2 card bg-surface-100-900 p-4 shadow-xl">
+					<form class="w-52 card" id="theme-form" method="POST" action="/?/setTheme" use:enhance>
+						<header class="flex justify-between">
+							<p class="text-xl font-bold">Themes</p>
+							<button class="btn-icon hover:preset-tonal" onclick={() => (open = false)}><X /></button>
+						</header>
+						<div class="my-4 flex flex-col">
+							{#each themesData as entry (entry.value)}
+								<button
+									type="submit"
+									class="my-2 btn preset-outlined-surface-500 hover:border-primary-500"
+									formaction="/?/setTheme={entry.value}"
+									onclick={() => {
+										theme = entry.value
+										document.body.setAttribute("data-theme", theme)
+									}}
+								>
+									{entry.label}
+								</button>
+							{/each}
+						</div>
+					</form>
+				</Popover.Content>
+			</Popover.Positioner>
+		</Portal>
 	</Popover>
 </div>

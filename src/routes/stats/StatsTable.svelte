@@ -3,10 +3,10 @@
 	import { replaceQuery } from "$lib/client/utils"
 	import Paginator from "$lib/components/Paginator.svelte"
 	import type { Stats } from "$lib/types/collection"
-	import ChevronUp from "svelte-lucide/ChevronUp.svelte"
-	import ChevronDown from "svelte-lucide/ChevronDown.svelte"
+	import ChevronUp from "@lucide/svelte/icons/chevron-up"
+	import ChevronDown from "@lucide/svelte/icons/chevron-down"
 
-	let { pageSize = $bindable(), count = 0, data, children } = $props()
+	let { pageSize = $bindable(), count = 0, children } = $props()
 
 	const pageStr = page.url.searchParams.get("page") || "-1"
 	let currentPage = $state(Number(pageStr) < 0 || Number.isNaN(Number(pageStr)) ? 1 : Number(pageStr))
@@ -64,4 +64,4 @@
 	</table>
 </div>
 
-<Paginator {data} {currentPage} bind:pageSize {count} />
+<Paginator {currentPage} bind:pageSize {count} />

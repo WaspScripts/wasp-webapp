@@ -1,46 +1,45 @@
 <script lang="ts">
-	import { Modal } from "@skeletonlabs/skeleton-svelte"
-	import { PanelBottomOpen, PanelTopOpen } from "svelte-lucide"
+	import { Dialog, Portal } from "@skeletonlabs/skeleton-svelte"
+	import PanelBottomOpen from "@lucide/svelte/icons/panel-bottom-open"
+	import PanelTopOpen from "@lucide/svelte/icons/panel-top-open"
 
 	let { children } = $props()
 	let open = $state(false)
 </script>
 
-<Modal
-	{open}
-	onOpenChange={(e) => (open = e.open)}
-	triggerBase="btn preset-tonal"
-	contentBase="card bg-surface-100-900 p-4 space-y-4 shadow-xl w-[95%] max-w-fit max-h-[95%] overflow-y-auto"
-	backdropClasses="backdrop-blur-sm"
->
-	{#snippet trigger()}
+<Dialog {open} onOpenChange={(e) => (open = e.open)}>
+	<Dialog.Trigger class="mx-auto btn preset-tonal">
 		{#if open}
 			<PanelBottomOpen size="16" />
 		{:else}
 			<PanelTopOpen size="16" />
 		{/if}
 		<span>Edit Scripts</span>
-	{/snippet}
-	{#snippet content()}
-		<header class="flex justify-between">
-			<h5 class="my-4 flex flex-col gap-4 text-lg lg:flex-row lg:h4">
-				Choose the scripts you want on this bundle:
-			</h5>
-		</header>
-		<article class="my-12 max-h-[28rem] table-wrap w-full">
-			<table class="table">
-				<tbody class="[&>tr]:hover:preset-tonal">
-					{@render children()}
-				</tbody>
-			</table>
-		</article>
-		<small class="mb-12 hidden justify-center md:flex">
-			On Desktop you can also use your keyboard:
-			<kbd class="kbd">Tab, Shift + Tab and Space</kbd>
-		</small>
-
-		<footer class="my-4 flex gap-4">
-			<button type="button" class="mx-auto btn preset-tonal" onclick={() => (open = false)}>Confirm</button>
-		</footer>
-	{/snippet}
-</Modal>
+	</Dialog.Trigger>
+	<Portal>
+		<Dialog.Backdrop class="fixed inset-0 z-50 bg-surface-50-950/50 backdrop-blur-sm" />
+		<Dialog.Positioner class="fixed inset-0 z-50 flex items-center justify-center">
+			<Dialog.Content
+				class="max-h-[95%] w-[95%] max-w-fit space-y-4 overflow-y-auto card bg-surface-100-900 p-4 shadow-xl"
+			>
+				<Dialog.Title class="flex justify-between text-2xl font-bold">
+					Choose the scripts you want on this bundle:
+				</Dialog.Title>
+				<Dialog.Description>
+					<article class="my-12 max-h-112 table-wrap w-full">
+						<table class="table">
+							<tbody class="[&>tr]:hover:preset-tonal">
+								{@render children()}
+							</tbody>
+						</table>
+					</article>
+					<small class="mb-12 hidden justify-center md:flex">
+						On Desktop you can also use your keyboard:
+						<kbd class="kbd">Tab, Shift + Tab and Space</kbd>
+					</small>
+				</Dialog.Description>
+				<Dialog.CloseTrigger class="btn preset-tonal">Confirm</Dialog.CloseTrigger>
+			</Dialog.Content>
+		</Dialog.Positioner>
+	</Portal>
+</Dialog>

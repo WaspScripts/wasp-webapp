@@ -1,7 +1,7 @@
 <script lang="ts">
 	import GitHubButton from "$lib/components/GitHubButton.svelte"
 	import { Avatar } from "@skeletonlabs/skeleton-svelte"
-	import { ChevronsDownUp } from "svelte-lucide"
+	import ChevronsDownUp from "@lucide/svelte/icons/chevrons-down-up"
 
 	const { data } = $props()
 	const { content, meta, supabaseClient } = $derived(data)
@@ -47,7 +47,10 @@
 						Loading...
 					{:then author}
 						<span class="my-auto">{author.username}</span>
-						<Avatar src={author.avatar} name={author.username ?? "Error"} classes="mx-1 w-8 h-8" />
+						<Avatar class="mx-1 h-8 w-8">
+							<Avatar.Image src={author.avatar} alt={author.username} />
+							<Avatar.Fallback>{author.username ?? "Error"}</Avatar.Fallback>
+						</Avatar>
 					{/await}
 				</span>
 			</div>
@@ -62,7 +65,10 @@
 							{:then author}
 								<span class="mx-2 flex">
 									<span class="my-auto">{author.username}</span>
-									<Avatar src={author.avatar} name={author.username ?? "Error"} classes="mx-1 w-6 h-6" />
+									<Avatar class="mx-1 h-6 w-6">
+										<Avatar.Image src={author.avatar} alt={author.username} />
+										<Avatar.Fallback>{author.username ?? "Error"}</Avatar.Fallback>
+									</Avatar>
 								</span>
 							{/await}
 						{/each}

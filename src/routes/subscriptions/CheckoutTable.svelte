@@ -4,7 +4,7 @@
 	import { checkoutSchema } from "$lib/client/schemas"
 	import type { BundleProduct, Price, ScriptProduct } from "$lib/types/collection"
 	import { getCurrentPrice, getPriceIntervalEx, setPriceInterval } from "$lib/utils"
-	import ExternalLink from "svelte-lucide/ExternalLink.svelte"
+	import ExternalLink from "@lucide/svelte/icons/external-link"
 	import ScriptLinks from "./ScriptLinks.svelte"
 	import { zodClient } from "sveltekit-superforms/adapters"
 

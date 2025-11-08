@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from "$app/forms"
 	import { page } from "$app/state"
-	import SunMoon from "svelte-lucide/SunMoon.svelte"
+	import SunMoon from "@lucide/svelte/icons/sun-moon"
 
 	let dark = $state(page.data.darkMode)
 </script>

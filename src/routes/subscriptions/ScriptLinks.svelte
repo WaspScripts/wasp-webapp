@@ -1,60 +1,63 @@
 <script lang="ts">
 	import { goto } from "$app/navigation"
 	import type { BundleProduct } from "$lib/types/collection"
-	import { Modal } from "@skeletonlabs/skeleton-svelte"
-	import { PanelBottomOpen, PanelTopOpen } from "svelte-lucide"
-	import ExternalLink from "svelte-lucide/ExternalLink.svelte"
+	import { Dialog, Portal } from "@skeletonlabs/skeleton-svelte"
+	import PanelBottomOpen from "@lucide/svelte/icons/panel-bottom-open"
+	import PanelTopOpen from "@lucide/svelte/icons/panel-top-open"
+	import ExternalLink from "@lucide/svelte/icons/external-link"
 
 	let { bundle }: { bundle: BundleProduct } = $props()
 	let open = $state(false)
 </script>
 
-<Modal
-	{open}
-	onOpenChange={(e) => (open = e.open)}
-	triggerBase="btn preset-tonal"
-	contentBase="card bg-surface-100-900 p-4 space-y-4 shadow-xl w-[95%] max-w-fit max-h-[95%] overflow-y-auto"
-	backdropClasses="backdrop-blur-sm"
->
-	{#snippet trigger()}
+<Dialog {open} onOpenChange={(e) => (open = e.open)}>
+	<Dialog.Trigger class="btn preset-tonal">
 		{#if open}
 			<PanelBottomOpen size="16" />
 		{:else}
 			<PanelTopOpen size="16" />
 		{/if}
 		Bundle
-	{/snippet}
-	{#snippet content()}
-		<header class="flex justify-between">
-			<h5 class="flex flex-col gap-4 h5 lg:flex-row lg:h4">
-				<span>{bundle.name}</span>
-				<span>
-					{#await bundle.username}
-						by Loading...
-					{:then username}
-						by {username}
-					{/await}
-				</span>
-			</h5>
-		</header>
-		<article class="table-wrap">
-			<table class="table">
-				<tbody class="[&>tr]:hover:preset-tonal">
-					{#each bundle.scripts as script (script.id)}
-						<tr class="flex h-full w-full cursor-pointer" onclick={() => goto("/scripts/" + script.url)}>
-							<td class="text-xs">
-								<div class="align-items-center ml-3 flex">
-									<ExternalLink size="16" class="mr-4" />
-									{script.title}
-								</div>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</article>
-		<footer class="flex justify-end gap-4">
-			<button type="button" class="btn preset-tonal" onclick={() => (open = false)}>Confirm</button>
-		</footer>
-	{/snippet}
-</Modal>
+	</Dialog.Trigger>
+	<Portal>
+		<Dialog.Backdrop class="fixed inset-0 z-50 bg-surface-50-950/50 backdrop-blur-sm" />
+		<Dialog.Positioner class="fixed inset-0 z-50 flex items-center justify-center">
+			<Dialog.Content
+				class="max-h-[95%] w-[95%] max-w-fit space-y-4 overflow-y-auto card bg-surface-100-900 p-4 shadow-xl"
+			>
+				<Dialog.Title class="text-2xl font-bold">
+					<span>{bundle.name}</span>
+					<span>
+						{#await bundle.username}
+							by Loading...
+						{:then username}
+							by {username}
+						{/await}
+					</span>
+				</Dialog.Title>
+				<Dialog.Description>
+					<article class="table-wrap">
+						<table class="table">
+							<tbody class="[&>tr]:hover:preset-tonal">
+								{#each bundle.scripts as script (script.id)}
+									<tr
+										class="flex h-full w-full cursor-pointer"
+										onclick={() => goto("/scripts/" + script.url)}
+									>
+										<td class="text-xs">
+											<div class="align-items-center ml-3 flex">
+												<ExternalLink size="16" class="mr-4" />
+												{script.title}
+											</div>
+										</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					</article>
+				</Dialog.Description>
+				<Dialog.CloseTrigger class="mx-auto btn flex preset-tonal">Close</Dialog.CloseTrigger>
+			</Dialog.Content>
+		</Dialog.Positioner>
+	</Portal>
+</Dialog>

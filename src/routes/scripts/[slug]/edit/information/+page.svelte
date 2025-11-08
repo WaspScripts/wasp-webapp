@@ -8,7 +8,7 @@
 	const { data } = $props()
 	let profile = $derived(data.profile!)
 
-	const { form, errors, enhance, validate } = superForm(data.form!, {
+	const { form, errors, enhance } = superForm(data.form!, {
 		dataType: "json",
 		multipleSubmits: "prevent",
 		taintedMessage: "Are you sure you want to leave?",
@@ -25,44 +25,59 @@
 	</header>
 	<form method="POST" enctype="multipart/form-data" use:enhance>
 		<div class="mx-auto my-8 flex flex-col justify-evenly md:flex-row">
-			<label class="mx-auto my-4 label flex w-fit place-items-center">
-				<Switch
-					name="published"
-					checked={$form.published}
-					onCheckedChange={(e) => ($form.published = e.checked)}
-				/>
-				<span class="mx-2 label-text text-center">
+			<Switch
+				name="published"
+				checked={$form.published}
+				onCheckedChange={(e) => ($form.published = e.checked)}
+				class="mx-auto"
+			>
+				<Switch.Control class="data-[state=checked]:preset-filled-success-500">
+					<Switch.Thumb />
+				</Switch.Control>
+				<Switch.Label>
 					{#if $form.published}Public{:else}Hidden{/if}
-				</span>
-			</label>
+				</Switch.Label>
+				<Switch.HiddenInput />
+			</Switch>
 
-			<label class="mx-auto my-4 label flex w-fit place-items-center">
-				<Switch
-					name="status"
-					checked={$form.status}
-					onCheckedChange={(e) => ($form.status = e.checked)}
-					disabled={profile.role != "administrator"}
-					classes={profile.role == "administrator" ? "" : "disabled"}
-				/>
-				<span class="mx-2 label-text text-center">
+			<Switch
+				name="status"
+				checked={$form.status}
+				onCheckedChange={(e) => ($form.status = e.checked)}
+				disabled={profile.role != "administrator"}
+				class="mx-auto"
+			>
+				<Switch.Control class="data-[state=checked]:preset-filled-success-500">
+					<Switch.Thumb />
+				</Switch.Control>
+				<Switch.Label>
 					{#if $form.status}
 						{scriptStatus.official.icon}{scriptStatus.official.name}
 					{:else}
 						{scriptStatus.community.icon}{scriptStatus.community.name}
 					{/if}
-				</span>
-			</label>
+				</Switch.Label>
+				<Switch.HiddenInput />
+			</Switch>
 
-			<label class="mx-auto my-4 label flex w-fit place-items-center">
-				<Switch name="type" checked={$form.type} onCheckedChange={(e) => ($form.type = e.checked)} />
-				<span class="mx-2 label-text text-center">
+			<Switch
+				name="type"
+				checked={$form.type}
+				onCheckedChange={(e) => ($form.type = e.checked)}
+				class="mx-auto"
+			>
+				<Switch.Control class="data-[state=checked]:preset-filled-success-500">
+					<Switch.Thumb />
+				</Switch.Control>
+				<Switch.Label>
 					{#if $form.type}
 						{scriptTypes.premium.icon}{scriptTypes.premium.name}
 					{:else}
 						{scriptTypes.free.icon}{scriptTypes.free.name}
 					{/if}
-				</span>
-			</label>
+				</Switch.Label>
+				<Switch.HiddenInput />
+			</Switch>
 		</div>
 		<div class="my-8 flex flex-col justify-evenly">
 			<label class="label">

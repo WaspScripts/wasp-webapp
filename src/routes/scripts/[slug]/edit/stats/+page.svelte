@@ -1,14 +1,7 @@
 <script lang="ts">
 	import { superForm } from "sveltekit-superforms"
 	import { zodClient } from "sveltekit-superforms/adapters"
-	import { cropString, scriptCategories, scriptStatus, scriptTypes } from "$lib/utils"
-	import { replaceScriptContent } from "$lib/client/utils"
-	import { FileCode, ImagePlus } from "svelte-lucide"
-	import ScriptCard from "$lib/components/ScriptCard.svelte"
 	import { scriptStatsSchema } from "$lib/client/schemas"
-	import { Combobox, FileUpload, Switch } from "@skeletonlabs/skeleton-svelte"
-	import { PUBLIC_SUPABASE_URL } from "$env/static/public"
-
 	const { data } = $props()
 
 	const { form, errors, enhance } = superForm(data.form!, {

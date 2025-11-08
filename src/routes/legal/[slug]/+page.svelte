@@ -3,6 +3,8 @@
 	import Head from "$lib/components/Head.svelte"
 	import AdvancedButton from "./AdvancedButton.svelte"
 
+	import DOMPurify from "isomorphic-dompurify"
+
 	let { data } = $props()
 	let { policies } = $derived(data)
 	let index = $state(0)
@@ -18,7 +20,7 @@
 	keywords="Privacy, Policy, Terms, Conditions"
 />
 
-<main class="container mx-auto my-6 max-w-4xl flex-grow">
+<main class="container mx-auto my-6 max-w-4xl grow">
 	<div class="mx-auto grid max-w-4xl">
 		<a href={page.url.pathname + "/add"} class="mx-auto btn preset-filled-secondary-500">Add</a>
 		<div class="mx-auto my-6 flex">
@@ -41,6 +43,6 @@
 		{/if}
 	</div>
 	<article class="mx-auto prose max-w-md py-6 md:max-w-4xl dark:prose-invert">
-		{@html currentPolicy.content}
+		{@html DOMPurify.sanitize(currentPolicy.content)}
 	</article>
 </main>

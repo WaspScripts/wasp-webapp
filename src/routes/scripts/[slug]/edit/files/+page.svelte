@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { superForm } from "sveltekit-superforms"
 	import { zodClient } from "sveltekit-superforms/adapters"
-	import { FileCode, ImagePlus } from "svelte-lucide"
+	import FileCode from "@lucide/svelte/icons/file-code"
+	import ImagePlus from "@lucide/svelte/icons/image-plus"
 	import { scriptFilesSchema } from "$lib/client/schemas"
-	import { Combobox, FileUpload } from "@skeletonlabs/skeleton-svelte"
+	import { Combobox, FileUpload, Portal } from "@skeletonlabs/skeleton-svelte"
 
 	const { data } = $props()
 
@@ -15,9 +16,9 @@
 		scrollToError: true
 	})
 
-	let coverStyle: 0 | 1 | 2 = $state(0)
-	let bannerStyle: 0 | 1 | 2 = $state(0)
-	let scriptStyle: 0 | 1 | 2 = $state(0)
+	let cStyle: 0 | 1 | 2 = $state(0)
+	let bStyle: 0 | 1 | 2 = $state(0)
+	let sStyle: 0 | 1 | 2 = $state(0)
 
 	let simbaFiles: string[] = $state([])
 </script>
@@ -32,15 +33,32 @@
 			<div class="flex w-full flex-col gap-4 lg:flex-row">
 				<div class="w-full">
 					<Combobox
-						data={data.simbaVersions}
 						value={[$form.simba]}
 						onValueChange={(e) => ($form.simba = e.value[0])}
-						label="Simba:"
+						class="w-full max-w-md"
+						placeholder="Simba version"
 						ids={{ input: "simba" }}
 						allowCustomValue={true}
 						defaultInputValue={$form.simba}
-						zIndex="1"
-					></Combobox>
+					>
+						<Combobox.Label>Simba:</Combobox.Label>
+						<Combobox.Control>
+							<Combobox.Input />
+							<Combobox.Trigger />
+						</Combobox.Control>
+						<Portal>
+							<Combobox.Positioner class="z-1!">
+								<Combobox.Content>
+									{#each data.simbaVersions as version (version.version)}
+										<Combobox.Item item={version.version}>
+											<Combobox.ItemText>{version.version}</Combobox.ItemText>
+											<Combobox.ItemIndicator />
+										</Combobox.Item>
+									{/each}
+								</Combobox.Content>
+							</Combobox.Positioner>
+						</Portal>
+					</Combobox>
 					{#if $errors.simba}
 						<small class="text-error-500">{$errors.simba}</small>
 					{/if}
@@ -48,15 +66,32 @@
 
 				<div class="w-full">
 					<Combobox
-						data={data.wlVersions}
 						value={[$form.wasplib]}
 						onValueChange={(e) => ($form.wasplib = e.value[0])}
-						label="WaspLib:"
+						class="w-full max-w-md"
+						placeholder="WaspLib version"
 						ids={{ input: "wasplib" }}
 						allowCustomValue={true}
 						defaultInputValue={$form.wasplib}
-						zIndex="1"
-					></Combobox>
+					>
+						<Combobox.Label>WaspLib:</Combobox.Label>
+						<Combobox.Control>
+							<Combobox.Input />
+							<Combobox.Trigger />
+						</Combobox.Control>
+						<Portal>
+							<Combobox.Positioner class="z-1!">
+								<Combobox.Content>
+									{#each data.wlVersions as version (version.version)}
+										<Combobox.Item item={version.version}>
+											<Combobox.ItemText>{version.version}</Combobox.ItemText>
+											<Combobox.ItemIndicator />
+										</Combobox.Item>
+									{/each}
+								</Combobox.Content>
+							</Combobox.Positioner>
+						</Portal>
+					</Combobox>
 
 					{#if $errors.wasplib}
 						<small class="text-error-500">{$errors.wasplib}</small>
@@ -69,84 +104,100 @@
 		<div class="flex flex-col justify-between gap-4 2xl:flex-row">
 			<FileUpload
 				name="cover"
-				label="Cover image"
 				accept="image/jpeg"
 				maxFiles={1}
 				maxFileSize={1024 * 1024 * 50}
-				subtext={$errors.cover == null
-					? "Must be exactly 300x200 pixels and JPG format."
-					: $errors.cover.toString()}
 				onFileReject={console.error}
-				interfaceIcon={coverStyle === 0 ? "" : coverStyle === 1 ? "text-success-500" : "text-error-500"}
-				interfaceText={coverStyle === 0 ? "" : coverStyle === 1 ? "text-success-500" : "text-error-500"}
-				interfaceSubtext="type-scale-1 opacity-60 {coverStyle === 0
-					? ''
-					: coverStyle === 1
-						? 'text-success-500'
-						: 'text-error-500'}"
-				classes="w-full"
-				interfaceBase="preset-filled-surface-100-900 text-center hover:preset-filled-surface-200-800"
+				class="w-full {cStyle === 0 ? '' : cStyle === 1 ? 'text-success-500' : 'text-error-500'}"
 				allowDrop
 				onFileChange={async (details) => {
-					coverStyle = details.rejectedFiles.length > 0 ? 2 : 0
+					cStyle = details.rejectedFiles.length > 0 ? 2 : 0
 					if (details.acceptedFiles.length === 0) return
 					$form.cover = details.acceptedFiles[0]
-					coverStyle = 1
+					cStyle = 1
 				}}
 			>
-				{#snippet iconInterface()}<ImagePlus class="mx-auto" />{/snippet}
+				<FileUpload.Dropzone
+					class="preset-filled-surface-100-900 text-center hover:preset-filled-surface-200-800"
+				>
+					<ImagePlus class="mx-auto " />
+					<span class="my-2">Cover Image</span>
+					<span class="text-xs opacity-60">
+						{$errors.cover == null
+							? "Must be exactly 300x200 pixels and JPG format."
+							: $errors.cover.toString()}</span
+					>
+					<FileUpload.HiddenInput />
+				</FileUpload.Dropzone>
+
+				<FileUpload.ItemGroup>
+					<FileUpload.Context>
+						{#snippet children(fileUpload)}
+							{#each fileUpload().acceptedFiles as file (file.name)}
+								<FileUpload.Item {file}>
+									<FileUpload.ItemName>{file.name}</FileUpload.ItemName>
+									<FileUpload.ItemSizeText>{file.size} bytes</FileUpload.ItemSizeText>
+									<FileUpload.ItemDeleteTrigger />
+								</FileUpload.Item>
+							{/each}
+						{/snippet}
+					</FileUpload.Context>
+				</FileUpload.ItemGroup>
 			</FileUpload>
 
 			<FileUpload
 				name="banner"
-				label="Banner image"
 				accept="image/jpeg"
 				maxFiles={1}
 				maxFileSize={1024 * 1024 * 50}
-				subtext={$errors.banner == null
-					? "Must be exactly 1920x768 pixels and JPG format."
-					: $errors.banner.toString()}
-				interfaceIcon={bannerStyle === 0 ? "" : bannerStyle === 1 ? "text-success-500" : "text-error-500"}
-				interfaceText={bannerStyle === 0 ? "" : bannerStyle === 1 ? "text-success-500" : "text-error-500"}
-				interfaceSubtext="type-scale-1 opacity-60 {bannerStyle === 0
-					? ''
-					: bannerStyle === 1
-						? 'text-success-500'
-						: 'text-error-500'}"
 				onFileReject={console.error}
-				classes="w-full"
-				interfaceBase="preset-filled-surface-100-900 text-center hover:preset-filled-surface-200-800"
+				class="w-full {bStyle === 0 ? '' : bStyle === 1 ? 'text-success-500' : 'text-error-500'}"
 				allowDrop
 				onFileChange={async (details) => {
-					bannerStyle = details.rejectedFiles.length > 0 ? 2 : 0
+					bStyle = details.rejectedFiles.length > 0 ? 2 : 0
 					if (details.acceptedFiles.length === 0) return
 					$form.banner = details.acceptedFiles[0]
-					bannerStyle = 1
+					bStyle = 1
 				}}
 			>
-				{#snippet iconInterface()}<ImagePlus class="mx-auto" />{/snippet}
+				<FileUpload.Dropzone
+					class="preset-filled-surface-100-900 text-center hover:preset-filled-surface-200-800"
+				>
+					<ImagePlus class="mx-auto " />
+					<span class="my-2">Banner Image</span>
+					<span class="text-xs opacity-60">
+						{$errors.banner == null
+							? "Must be exactly 1920x768 pixels and JPG format."
+							: $errors.banner.toString()}</span
+					>
+					<FileUpload.HiddenInput />
+				</FileUpload.Dropzone>
+
+				<FileUpload.ItemGroup>
+					<FileUpload.Context>
+						{#snippet children(fileUpload)}
+							{#each fileUpload().acceptedFiles as file (file.name)}
+								<FileUpload.Item {file}>
+									<FileUpload.ItemName>{file.name}</FileUpload.ItemName>
+									<FileUpload.ItemSizeText>{file.size} bytes</FileUpload.ItemSizeText>
+									<FileUpload.ItemDeleteTrigger />
+								</FileUpload.Item>
+							{/each}
+						{/snippet}
+					</FileUpload.Context>
+				</FileUpload.ItemGroup>
 			</FileUpload>
 
 			<FileUpload
 				name="script"
-				label="Simba script"
 				accept={[".simba", ".png", ".txt", ".ini", ".json", ".zip", ".bin", ".obj", ".mtl", ".graph"]}
 				maxFiles={20}
 				maxFileSize={1024 * 1024 * 50}
-				subtext={$errors.script == null ? "Must be a simba script file." : $errors.script.toString()}
-				interfaceIcon={scriptStyle === 0 ? "" : scriptStyle === 1 ? "text-success-500" : "text-error-500"}
-				interfaceText={scriptStyle === 0 ? "" : scriptStyle === 1 ? "text-success-500" : "text-error-500"}
-				interfaceSubtext="type-scale-1 opacity-60 {scriptStyle === 0
-					? ''
-					: scriptStyle === 1
-						? 'text-success-500'
-						: 'text-error-500'}"
 				onFileReject={console.error}
-				classes="w-full"
-				interfaceBase="preset-filled-surface-100-900 text-center hover:preset-filled-surface-200-800"
+				class="w-full {sStyle === 0 ? '' : sStyle === 1 ? 'text-success-500' : 'text-error-500'}"
 				allowDrop
 				onFileChange={async (details) => {
-					scriptStyle = details.rejectedFiles.length > 0 ? 2 : 0
+					sStyle = details.rejectedFiles.length > 0 ? 2 : 0
 
 					if (details.acceptedFiles.length === 0) {
 						$form.main = undefined
@@ -154,17 +205,43 @@
 					}
 
 					$form.script = details.acceptedFiles
-					simbaFiles = details.acceptedFiles
-						.map((file) => file.name)
-						.filter((file) => file.endsWith(".simba"))
+					simbaFiles = []
+					for (const file of details.acceptedFiles) {
+						if (file.name.endsWith(".simba")) simbaFiles.push(file.name)
+					}
 
-					scriptStyle = 1
-					if (!$form.main) {
-						$form.main = $form.script[0].name
+					sStyle = 1
+					if (!$form.main && simbaFiles.length > 0) {
+						$form.main = simbaFiles[0]
 					}
 				}}
 			>
-				{#snippet iconInterface()}<FileCode class="mx-auto" />{/snippet}
+				<FileUpload.Dropzone
+					class="preset-filled-surface-100-900 text-center hover:preset-filled-surface-200-800"
+				>
+					<FileCode class="mx-auto" />
+					<span class="my-2">Script Files</span>
+					<span class="text-xs opacity-60">
+						{$errors.script == null
+							? "Must be exactly 1920x768 pixels and JPG format."
+							: $errors.script.toString()}</span
+					>
+					<FileUpload.HiddenInput />
+				</FileUpload.Dropzone>
+
+				<FileUpload.ItemGroup>
+					<FileUpload.Context>
+						{#snippet children(fileUpload)}
+							{#each fileUpload().acceptedFiles as file (file.name)}
+								<FileUpload.Item {file}>
+									<FileUpload.ItemName>{file.name}</FileUpload.ItemName>
+									<FileUpload.ItemSizeText>{file.size} bytes</FileUpload.ItemSizeText>
+									<FileUpload.ItemDeleteTrigger />
+								</FileUpload.Item>
+							{/each}
+						{/snippet}
+					</FileUpload.Context>
+				</FileUpload.ItemGroup>
 			</FileUpload>
 		</div>
 

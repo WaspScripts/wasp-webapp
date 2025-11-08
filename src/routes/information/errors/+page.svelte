@@ -2,8 +2,8 @@
 	import { page } from "$app/state"
 	import { replaceQuery } from "$lib/client/utils"
 	import GitHubButton from "$lib/components/GitHubButton.svelte"
-	import ChevronsDownUp from "svelte-lucide/ChevronsDownUp.svelte"
-	import ChevronsUpDown from "svelte-lucide/ChevronsUpDown.svelte"
+	import ChevronsDownUp from "@lucide/svelte/icons/chevrons-down-up"
+	import ChevronsUpDown from "@lucide/svelte/icons/chevrons-up-down"
 
 	const { data } = $props()
 	const { errors } = $derived(data)

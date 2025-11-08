@@ -3,7 +3,7 @@
 	import { replaceQuery } from "$lib/client/utils"
 	import { scriptCategories, scriptStatus, scriptTypes } from "$lib/utils"
 	import { onMount } from "svelte"
-	import { ArrowRight } from "svelte-lucide"
+	import ArrowRight from "@lucide/svelte/icons/arrow-right"
 	import CarouselEntry from "./CarouselEntry.svelte"
 	import { goto, invalidate } from "$app/navigation"
 	import ScriptCard from "$lib/components/ScriptCard.svelte"
@@ -245,7 +245,7 @@
 				{/each}
 			</div>
 			<div class="mx-auto md:mx-8">
-				<Paginator data={scripts} {currentPage} bind:pageSize={amount} {count} />
+				<Paginator {currentPage} bind:pageSize={amount} {count} />
 			</div>
 		</main>
 	</main>

@@ -3,7 +3,11 @@
 	import { page } from "$app/state"
 	import Head from "$lib/components/Head.svelte"
 	import { Avatar, Tabs } from "@skeletonlabs/skeleton-svelte"
-	import { FileCode, Landmark, Package, Settings } from "svelte-lucide"
+	import FileCode from "@lucide/svelte/icons/file-code"
+	import Landmark from "@lucide/svelte/icons/landmark"
+	import Package from "@lucide/svelte/icons/package"
+	import Settings from "@lucide/svelte/icons/settings"
+
 	const { data, children } = $props()
 
 	let tab = $derived(page.url.pathname.split("/").pop())
@@ -14,11 +18,11 @@
 <main class="">
 	<h3 class="my-4 flex justify-center gap-2">
 		<span class="my-auto"> Viewing user: </span>
-		<Avatar
-			src={data.scripter.profiles.avatar}
-			name={data.scripter.profiles.username}
-			classes="border-surface-300-700 m-2 flex border-2"
-		/>
+		<Avatar class="m-2 flex border-2 border-surface-300-700">
+			<Avatar.Image src={data.scripter.profiles.avatar} alt={data.scripter.profiles.username} />
+			<Avatar.Fallback>{data.scripter.profiles.username}</Avatar.Fallback>
+		</Avatar>
+
 		<span class="my-auto">
 			{data.scripter.profiles.username}
 		</span>
@@ -31,21 +35,14 @@
 		</a>
 	</div>
 
-	<Tabs
-		value={tab}
-		onValueChange={(e) => goto(e.value)}
-		listJustify="justify-center flex flex-col sm:flex-row"
-	>
-		{#snippet list()}
-			<Tabs.Control value="general">
-				{#snippet lead()}<Settings />{/snippet} General
-			</Tabs.Control>
-			<Tabs.Control value="stripe">{#snippet lead()}<Landmark />{/snippet} Stripe</Tabs.Control>
-			<Tabs.Control value="bundles">{#snippet lead()}<Package />{/snippet} Bundles</Tabs.Control>
-			<Tabs.Control value="scripts">{#snippet lead()}<FileCode />{/snippet} Scripts</Tabs.Control>
-		{/snippet}
-		{#snippet content()}
-			{@render children()}
-		{/snippet}
+	<Tabs value={tab} onValueChange={(e) => goto(e.value)}>
+		<Tabs.List class="flex flex-col justify-center sm:flex-row">
+			<Tabs.Trigger value="general"><Settings /> General</Tabs.Trigger>
+			<Tabs.Trigger value="stripe"><Landmark />Stripe</Tabs.Trigger>
+			<Tabs.Trigger value="bundles"><Package /> Bundles</Tabs.Trigger>
+			<Tabs.Trigger value="scripts"><FileCode /> Scripts</Tabs.Trigger>
+			<Tabs.Indicator />
+		</Tabs.List>
 	</Tabs>
+	{@render children()}
 </main>

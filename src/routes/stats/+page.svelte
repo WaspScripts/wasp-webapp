@@ -38,7 +38,7 @@
 
 <Head title="Stats" description="WaspScripts usage stats." keywords="Stats, Scores" />
 
-<main class="mx-4 my-8 h-fit flex-grow md:mx-16 lg:mx-24">
+<main class="mx-4 my-8 h-fit grow md:mx-16 lg:mx-24">
 	<header class="my-4 flex-col text-center text-sm lg:text-lg">
 		<h5 class="md:whitespace-nowrap">
 			Total experience: <wbr />
@@ -63,7 +63,7 @@
 		/>
 	</div>
 
-	<StatsTable data={stats} bind:pageSize={amount} {count}>
+	<StatsTable bind:pageSize={amount} {count}>
 		{#each stats, i}
 			<tr>
 				<th scope="row" class="text-surface-900-50-token px-4 font-medium md:whitespace-nowrap">

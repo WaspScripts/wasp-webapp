@@ -2,10 +2,6 @@
 	import { enhance } from "$app/forms"
 	import { page } from "$app/state"
 	import { Avatar } from "@skeletonlabs/skeleton-svelte"
-	import Menu from "svelte-lucide/Menu.svelte"
-	import X from "svelte-lucide/X.svelte"
-	import LogOut from "svelte-lucide/LogOut.svelte"
-	import UserRound from "svelte-lucide/UserRound.svelte"
 	import Logo from "./Logo.svelte"
 	import Lightswitch from "./Lightswitch.svelte"
 	import ThemeSwitcher from "./ThemeSwitcher.svelte"
@@ -13,7 +9,11 @@
 	import Discord from "./Discord.svelte"
 	import GitHub from "./GitHub.svelte"
 	import YouTube from "./YouTube.svelte"
-	import UserCog from "svelte-lucide/UserCog.svelte"
+	import UserCog from "@lucide/svelte/icons/user-cog"
+	import Menu from "@lucide/svelte/icons/menu"
+	import X from "@lucide/svelte/icons/x"
+	import LogOut from "@lucide/svelte/icons/log-out"
+	import UserRound from "@lucide/svelte/icons/user-round"
 
 	let showMenu = $state(false)
 	let showProfile = $state(false)
@@ -118,14 +118,10 @@
 					</span>
 				{/if}
 
-				<Avatar
-					{src}
-					name={avatarName}
-					classes="xl:mx-1 mx-2 w-11 md:w-12 h-11 md:h-11"
-					border="border-2 group-hover:preset-tonal {showProfile
-						? 'border-primary-500'
-						: 'border-surface-500'}"
-				/>
+				<Avatar class="mx-2 h-11 w-11 md:h-11 md:w-12 xl:mx-1">
+					<Avatar.Image {src} alt={avatarName} />
+					<Avatar.Fallback>{avatarName}</Avatar.Fallback>
+				</Avatar>
 			</button>
 
 			<div class="hidden gap-1 lg:flex">

@@ -1,21 +1,18 @@
 <script lang="ts">
 	import { page } from "$app/state"
 	import { Pagination } from "@skeletonlabs/skeleton-svelte"
-	import ArrowLeft from "svelte-lucide/ArrowLeft.svelte"
-	import ArrowRight from "svelte-lucide/ArrowRight.svelte"
-	import Ellipsis from "svelte-lucide/Ellipsis.svelte"
-	import ChevronLeft from "svelte-lucide/ChevronLeft.svelte"
-	import ChevronRight from "svelte-lucide/ChevronRight.svelte"
+	import ArrowLeft from "@lucide/svelte/icons/arrow-left"
+	import ArrowRight from "@lucide/svelte/icons/arrow-right"
+	import ChevronLeft from "@lucide/svelte/icons/chevron-left"
+	import ChevronRight from "@lucide/svelte/icons/chevron-right"
 	import { replaceQuery } from "$lib/client/utils"
 
 	let {
-		data,
 		currentPage,
 		count,
 		pageSize = $bindable(),
 		amounts = $bindable([Math.round(pageSize / 2), pageSize, pageSize * 2])
 	}: {
-		data: unknown[]
 		currentPage: number
 		count: number
 		pageSize: number
@@ -38,24 +35,41 @@
 		</select>
 
 		<Pagination
-			{data}
 			{count}
-			page={currentPage}
 			{pageSize}
-			siblingCount={1}
+			page={currentPage}
 			onPageChange={(e) => {
 				currentPage = e.page
 				replaceQuery(page.url, { page: e.page.toString() }, false)
 			}}
 			onPageSizeChange={(e) => (pageSize = e.pageSize)}
-			classes="w-fit mx-auto md:mx-0"
-			buttonClasses="text-xs md:text-base px-2 md:px-3"
+			class="mx-auto w-fit md:mx-0"
 		>
-			{#snippet labelEllipsis()}<Ellipsis class="size-4" />{/snippet}
-			{#snippet labelNext()}<ArrowRight class="size-4" />{/snippet}
-			{#snippet labelPrevious()}<ArrowLeft class="size-4" />{/snippet}
-			{#snippet labelFirst()}<ChevronLeft class="size-4" />{/snippet}
-			{#snippet labelLast()}<ChevronRight class="size-4" />{/snippet}
+			<Pagination.FirstTrigger>
+				<ChevronLeft class="size-4" />
+			</Pagination.FirstTrigger>
+			<Pagination.PrevTrigger>
+				<ArrowLeft class="size-4" />
+			</Pagination.PrevTrigger>
+			<Pagination.Context>
+				{#snippet children(pagination)}
+					{#each pagination().pages as page, index (page)}
+						{#if page.type === "page"}
+							<Pagination.Item {...page}>
+								{page.value}
+							</Pagination.Item>
+						{:else}
+							<Pagination.Ellipsis {index}>&#8230;</Pagination.Ellipsis>
+						{/if}
+					{/each}
+				{/snippet}
+			</Pagination.Context>
+			<Pagination.NextTrigger>
+				<ArrowRight class="size-4" />
+			</Pagination.NextTrigger>
+			<Pagination.LastTrigger>
+				<ChevronRight class="size-4" />
+			</Pagination.LastTrigger>
 		</Pagination>
 	</footer>
 {/if}

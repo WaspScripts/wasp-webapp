@@ -9,7 +9,7 @@
 	description="Need help botting osrs? See if what you are looking for is in this list."
 />
 
-<main class="container mx-auto my-16 max-w-2xl flex-grow">
+<main class="container mx-auto my-16 max-w-2xl grow">
 	<header class="py-12 text-center">
 		<h2>Welcome to the Frequently Asked Questions and Common Errors section.</h2>
 	</header>

@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { ExternalLink } from "svelte-lucide"
+	import ExternalLink from "@lucide/svelte/icons/external-link"
 	import ScriptHeader from "../ScriptHeader.svelte"
 	import { canDownload, canEdit, getProducts } from "$lib/client/supabase"
 	import ScriptData from "./ScriptData.svelte"
-	import AdvancedButton from "../AdvancedButton.svelte"
 	import { page } from "$app/state"
 	import TableHeader from "$lib/components/TableHeader.svelte"
 	import { getCurrentPrice, getPriceIntervalEx, setPriceInterval } from "$lib/utils"
@@ -80,17 +79,11 @@
 
 		{#if profile}
 			<div class="text-center">
-				{#await canDownloadScript()}
-					<div class="grid animate-pulse justify-center justify-items-center gap-8 py-12">
-						<div class="my-8 flex flex-col gap-8 lg:flex-row">
-							<AdvancedButton id={script.id} title={script.title} rev={script.protected.revision} />
-						</div>
-					</div>
-				{:then has_access}
+				{#await canDownloadScript() then has_access}
 					{#if has_access}
 						<div class="grid justify-center justify-items-center gap-8 py-12">
-							<div class="my-8 flex flex-col gap-8 lg:flex-row">
-								<AdvancedButton id={script.id} title={script.title} rev={script.protected.revision} />
+							<div class="my-8 flex flex-col gap-2 lg:flex-row">
+								You can download and run the script via the <a href="/setup" class="anchor">wasp-launcher</a>
 							</div>
 							{#if canEdit(profile?.id, profile?.role, script.protected.author)}
 								<div class="my-8 grid place-items-center">

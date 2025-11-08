@@ -5,6 +5,14 @@
 	const { data } = $props()
 	const { supabaseClient, profile, stats, subscriptions } = $derived(data)
 
+	interface Scripter {
+		id: string
+		profiles: {
+			username: string
+			avatar: string
+		}
+	}
+
 	async function fetchcripters() {
 		const start = performance.now()
 		const { data, error: err } = await supabaseClient
@@ -12,6 +20,7 @@
 			.from("scripters")
 			.select(`id, profiles!left (username, avatar)`)
 			.limit(1, { foreignTable: "profiles" })
+			.overrideTypes<Scripter[]>()
 
 		console.log(`└──💻 fetch all scripters loaded in ${(performance.now() - start).toFixed(2)} ms!`)
 		if (err) {
@@ -19,16 +28,7 @@
 			return []
 		}
 
-		return data.toSorted((a, b) => {
-			const usernameA = a?.profiles?.username
-			const usernameB = b?.profiles?.username
-
-			if (usernameA == null && usernameB == null) return 0
-			if (usernameA == null) return 1
-			if (usernameB == null) return -1
-
-			return usernameA.localeCompare(usernameB)
-		})
+		return data.toSorted((a, b) => a.profiles.username.localeCompare(b.profiles.username))
 	}
 </script>
 
@@ -65,13 +65,13 @@
 					{#each scripters as scripter (scripter.id)}
 						<a
 							href="/dashboard/{scripter.id}/general"
-							class="m-2 mx-auto btn flex w-full justify-around preset-outlined-tertiary-300-700 font-bold hover:border-primary-500"
+							class="m-2 mx-auto btn flex w-full justify-around preset-outlined-tertiary-300-700 p-4 font-bold hover:border-primary-500"
 						>
-							<Avatar
-								src={scripter.profiles.avatar}
-								name={scripter.profiles.username}
-								classes="border-surface-300-700 m-2 flex border-2"
-							/>
+							<Avatar class="mx-2 h-11 w-11 md:h-11 md:w-12 xl:mx-1">
+								<Avatar.Image src={scripter.profiles.avatar} alt={scripter.profiles.username} />
+								<Avatar.Fallback>{scripter.profiles.username}</Avatar.Fallback>
+							</Avatar>
+
 							<span>
 								{scripter.profiles.username}
 							</span>

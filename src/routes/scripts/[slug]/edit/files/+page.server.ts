@@ -53,8 +53,8 @@ export const load = async ({ locals: { supabaseServer, user, session }, parent }
 
 	return {
 		form,
-		simbaVersions: promises[0].data!.map((v) => ({ label: v.version, value: v.version })),
-		wlVersions: promises[1].data!.map((v) => ({ label: v.version, value: v.version }))
+		simbaVersions: promises[0].data ?? [],
+		wlVersions: promises[1].data ?? []
 	}
 }
 

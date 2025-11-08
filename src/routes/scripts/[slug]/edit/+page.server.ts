@@ -1,5 +1,5 @@
 import { doLogin } from "$lib/server/supabase.server"
-import { error, redirect } from "@sveltejs/kit"
+import { redirect } from "@sveltejs/kit"
 
 export const load = async ({ parent, params: { slug }, locals: { supabaseServer } }) => {
 	const { user, session } = await parent()

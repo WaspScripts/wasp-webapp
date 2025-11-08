@@ -5,10 +5,11 @@
 	import { Switch } from "@skeletonlabs/skeleton-svelte"
 	import type { BundleProduct, Price, ScriptProduct, Subscription } from "$lib/types/collection"
 	import { getPriceAmount, getPriceIntervalEx } from "$lib/utils"
-	import ExternalLink from "svelte-lucide/ExternalLink.svelte"
 	import ScriptLinks from "./ScriptLinks.svelte"
-	import { RotateCw } from "svelte-lucide"
+	import ExternalLink from "@lucide/svelte/icons/external-link"
+	import RotateCw from "@lucide/svelte/icons/rotate-cw"
 	import RefundModal from "./RefundModal.svelte"
+	import { SvelteDate } from "svelte/reactivity"
 
 	let {
 		data,
@@ -56,8 +57,8 @@
 	}
 
 	function getStartDate(date_end: string, interval: string | undefined) {
-		const endDate = new Date(date_end)
-		const startDate = new Date(endDate)
+		const endDate = new SvelteDate(date_end)
+		const startDate = new SvelteDate(endDate)
 
 		switch (interval) {
 			case "week":
@@ -179,9 +180,6 @@
 						<td class="text-center">
 							<Switch
 								name="{id}-slider"
-								controlInactive="bg-error-500"
-								controlActive="bg-success-700"
-								controlDisabled="disabled"
 								checked={!$form.subscriptions[i].cancel}
 								form="subsform"
 								{disabled}
@@ -191,7 +189,14 @@
 									formElement.setAttribute("action", "?/toggleSubscription&id=" + id)
 									formElement.requestSubmit()
 								}}
-							/>
+							>
+								<Switch.Control
+									class="data-[disabled]:disabled preset-filled-error-500 data-[state=checked]:preset-filled-success-500"
+								>
+									<Switch.Thumb class="" />
+								</Switch.Control>
+								<Switch.HiddenInput />
+							</Switch>
 						</td>
 						<td class="text-center">
 							{#if inEarlyWindow(date_end, priceEx?.interval)}

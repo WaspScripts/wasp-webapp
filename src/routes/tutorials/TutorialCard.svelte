@@ -7,16 +7,18 @@
 	const link = $derived(
 		"/tutorials/" + (tutorial ? encodeSEO(tutorial.title + " by " + tutorial.username) : "")
 	)
+
+	const style =
+		tutorial.level === 0
+			? "ring-sky-400 dark:ring-sky-500"
+			: tutorial.level === 1
+				? "ring-orange-400 dark:ring-orange-500"
+				: "ring-red-400 dark:ring-red-500"
 </script>
 
 <a
 	href={link}
-	class="m-4 block max-w-[40rem] rounded-md preset-filled-surface-100-900 ring-2 hover:preset-tonal-surface {tutorial.level ===
-	0
-		? 'ring-sky-400 dark:ring-sky-500'
-		: tutorial.level === 1
-			? 'ring-orange-400 dark:ring-orange-500'
-			: 'ring-red-400 dark:ring-red-500'}"
+	class="m-4 block max-w-160 rounded-md preset-filled-surface-100-900 ring-2 hover:preset-tonal-surface {style}"
 >
 	<div>
 		<div class="flex flex-col p-3">

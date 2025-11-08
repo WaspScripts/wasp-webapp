@@ -33,5 +33,18 @@ export default ts.config(
 				svelteConfig
 			}
 		}
+	},
+	{
+		rules: {
+			"svelte/no-navigation-without-resolve": [
+				"error",
+				{
+					ignoreGoto: true,
+					ignoreLinks: true,
+					ignorePushState: false,
+					ignoreReplaceState: false
+				}
+			]
+		}
 	}
 )

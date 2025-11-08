@@ -27,7 +27,7 @@ export const POST = async ({ request }) => {
 
 	console.log(dispute)
 
-	let { balance_transactions: transactions, charge: chargeID } = dispute
+	const { balance_transactions: transactions, charge: chargeID } = dispute
 
 	const charge = await stripe.charges.retrieve(chargeID as string)
 	if (!charge.on_behalf_of) return json({ success: "true" })
@@ -63,7 +63,7 @@ export const POST = async ({ request }) => {
 	currencies += [...symbols].join(",")
 	const url = urlBase + currencies + urlTail
 
-	let requestData: any
+	let requestData
 
 	try {
 		const response = await fetch(url)

@@ -4,10 +4,12 @@
 	import { PUBLIC_SUPABASE_URL } from "$env/static/public"
 	import Head from "$lib/components/Head.svelte"
 	import { Tabs } from "@skeletonlabs/skeleton-svelte"
-	import { ChartBar, FileCode, Info } from "svelte-lucide"
+	import ChartBar from "@lucide/svelte/icons/chart-bar"
+	import FileCode from "@lucide/svelte/icons/file-code"
+	import Info from "@lucide/svelte/icons/info"
+
 	import ScriptHeader from "../../ScriptHeader.svelte"
 	import ScriptCard from "$lib/components/ScriptCard.svelte"
-	import AdvancedButton from "../../AdvancedButton.svelte"
 	import ScriptArticle from "../../ScriptArticle.svelte"
 	import { replaceScriptContent } from "$lib/client/utils"
 	import { cropString } from "$lib/utils"
@@ -49,10 +51,9 @@
 			<div class="container mx-auto mb-6 max-w-lg grow md:max-w-5xl">
 				{#if profile}
 					<div class="text-center">
-						<div class="grid justify-center justify-items-center gap-8 py-12">
-							<AdvancedButton title={script.title} rev={1} />
+						<div class="my-8 flex flex-col gap-2 lg:flex-row">
+							You can download and run the script via the <a href="/setup" class="anchor">wasp-launcher</a>
 						</div>
-
 						<h4 class="pt-4">
 							You should move this script to
 							<b class="text-primary-500">/Simba/Scripts/</b>
@@ -122,22 +123,16 @@
 
 		<div class="max-w-2x container mx-auto my-8 mb-6 flex flex-col">
 			<article class="xs:w-full mx-auto my-8 rounded-md preset-outlined-surface-500 p-8 md:w-6/7 lg:w-3/4">
-				<Tabs
-					value={tab}
-					onValueChange={(e) => goto(e.value)}
-					listJustify="justify-center flex flex-col sm:flex-row"
-				>
-					{#snippet list()}
-						<Tabs.Control value="information">
-							{#snippet lead()}<Info />{/snippet} Information
-						</Tabs.Control>
-						<Tabs.Control value="files">{#snippet lead()}<FileCode />{/snippet} Files</Tabs.Control>
-						<Tabs.Control value="stats">{#snippet lead()}<ChartBar />{/snippet} Stats</Tabs.Control>
-					{/snippet}
-					{#snippet content()}
-						{@render children()}
-					{/snippet}
+				<Tabs value={tab} onValueChange={(e) => goto(e.value)}>
+					<Tabs.List class="flex flex-col justify-center sm:flex-row">
+						<Tabs.Trigger value="information"><Info /> Information</Tabs.Trigger>
+						<Tabs.Trigger value="files"><FileCode />Files</Tabs.Trigger>
+						<Tabs.Trigger value="stats"><ChartBar /> Stats</Tabs.Trigger>
+						<Tabs.Indicator />
+					</Tabs.List>
 				</Tabs>
+
+				{@render children()}
 			</article>
 		</div>
 	</div>

@@ -1,5 +1,5 @@
 <script>
-	import ChevronsUpDown from "svelte-lucide/ChevronsUpDown.svelte"
+	import ChevronsUpDown from "@lucide/svelte/icons/chevrons-up-down"
 </script>
 
 <a

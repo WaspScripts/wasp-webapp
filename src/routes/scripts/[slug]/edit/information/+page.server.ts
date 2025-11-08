@@ -90,7 +90,7 @@ export const actions = {
 		]
 
 		const awaitedUpdates = await Promise.all(updates)
-		const { data, error: errScript } = awaitedUpdates[0]
+		const { error: errScript } = awaitedUpdates[0]
 		if (errScript) return setError(form, "", "UPDATE scripts.scripts failed\n\n" + JSON.stringify(errScript))
 		const { error: errMetadata } = awaitedUpdates[1]
 		if (errMetadata)

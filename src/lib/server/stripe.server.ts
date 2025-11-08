@@ -1,11 +1,10 @@
-import { FIXER_API_KEY, STRIPE_KEY } from "$env/static/private"
+import { STRIPE_KEY } from "$env/static/private"
 import type { BundleSchema, NewScriptSchema, PriceSchema } from "$lib/client/schemas"
 import type { Interval, Price, Scripter } from "$lib/types/collection"
 import type { Database } from "$lib/types/supabase"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import Stripe from "stripe"
 
-//@ts-ignore
 export const stripe = new Stripe(STRIPE_KEY, { apiVersion: "2025-08-27.basil", typescript: true })
 
 export async function createCustomer(id: string, email: string, discord: string, username: string) {
@@ -353,5 +352,3 @@ export async function createScriptProduct(script: NewScriptSchema, name: string,
 
 	await Promise.all(stripePromises)
 }
-
-export async function convertCurrency(from: string, to: string, amount: number) {}

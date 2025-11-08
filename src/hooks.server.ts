@@ -32,7 +32,7 @@ const supabase: Handle = async ({ event, resolve }) => {
 	})
 
 	event.locals.safeGetSession = async () => {
-		let start = performance.now()
+		const start = performance.now()
 
 		const { supabaseServer } = event.locals
 
@@ -113,7 +113,7 @@ const authGuard: Handle = async ({ event, resolve }) => {
 			.schema("profiles")
 			.from("free_access")
 			.select("id, product, date_start, date_end")
-			.eq("id", user.id)
+			.eq("user_id", user.id)
 
 		if (err) return []
 		return data

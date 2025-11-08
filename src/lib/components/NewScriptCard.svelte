@@ -2,7 +2,7 @@
 	import { page } from "$app/state"
 	import type { ScriptMetaData, ScriptPublic } from "$lib/types/collection"
 	import { cropString, encodeSEO, scriptCategories, scriptStatus, scriptTypes } from "$lib/utils"
-	import { Tooltip } from "@skeletonlabs/skeleton-svelte"
+	import { Portal, Tooltip } from "@skeletonlabs/skeleton-svelte"
 
 	let {
 		script,
@@ -45,34 +45,59 @@
 	<footer class="m-2 flex justify-between">
 		<div class="flex">
 			<Tooltip
+				positioning={{ placement: "top" }}
+				openDelay={200}
 				open={status}
-				positioning={{ placement: "top" }}
-				contentBase="card preset-filled p-4"
-				openDelay={200}
+				onOpenChange={(e) => (status = e.open)}
 			>
-				{#snippet trigger()}{scriptStatus[metadata.status].icon}{/snippet}
-				{#snippet content()}{scriptStatus[metadata.status].name}{/snippet}
+				<Tooltip.Trigger class="cursor-default">
+					{scriptStatus[metadata.status].icon}
+				</Tooltip.Trigger>
+				<Portal>
+					<Tooltip.Positioner>
+						<Tooltip.Content class="card preset-filled p-4">
+							{scriptStatus[metadata.status].name}
+						</Tooltip.Content>
+					</Tooltip.Positioner>
+				</Portal>
 			</Tooltip>
+
 			<Tooltip
-				open={type}
 				positioning={{ placement: "top" }}
-				contentBase="card preset-filled p-4"
 				openDelay={200}
+				open={type}
+				onOpenChange={(e) => (type = e.open)}
 			>
-				{#snippet trigger()}{scriptTypes[metadata.type].icon}{/snippet}
-				{#snippet content()}{scriptTypes[metadata.type].name}{/snippet}
+				<Tooltip.Trigger class="cursor-default">
+					{scriptTypes[metadata.type].icon}
+				</Tooltip.Trigger>
+				<Portal>
+					<Tooltip.Positioner>
+						<Tooltip.Content class="card preset-filled p-4">
+							{scriptTypes[metadata.type].name}
+						</Tooltip.Content>
+					</Tooltip.Positioner>
+				</Portal>
 			</Tooltip>
 		</div>
 		<div class="flex">
 			{#each metadata.categories as category, i (category)}
 				<Tooltip
-					open={categoriesTooltip[i]}
 					positioning={{ placement: "top" }}
-					contentBase="card preset-filled p-4"
 					openDelay={200}
+					open={categoriesTooltip[i]}
+					onOpenChange={(e) => (categoriesTooltip[i] = e.open)}
 				>
-					{#snippet trigger()}{scriptCategories[category].icon}{/snippet}
-					{#snippet content()}{scriptCategories[category].name}{/snippet}
+					<Tooltip.Trigger class="cursor-default">
+						{scriptCategories[category].icon}
+					</Tooltip.Trigger>
+					<Portal>
+						<Tooltip.Positioner>
+							<Tooltip.Content class="card preset-filled p-4">
+								{scriptCategories[category].name}
+							</Tooltip.Content>
+						</Tooltip.Positioner>
+					</Portal>
 				</Tooltip>
 			{/each}
 		</div>

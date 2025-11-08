@@ -1,6 +1,4 @@
 <script lang="ts">
-	import Github from "svelte-lucide/Github.svelte"
-	import Globe from "svelte-lucide/Globe.svelte"
 	import Logo from "./Logo.svelte"
 	import { page } from "$app/state"
 	import { WaspScripters } from "$lib/client/supabase"
@@ -12,6 +10,8 @@
 	import Zod from "./logos/Zod.svelte"
 	import Supabase from "./logos/Supabase.svelte"
 	import Svelte from "./logos/Svelte.svelte"
+	import Github from "@lucide/svelte/icons/github"
+	import Globe from "@lucide/svelte/icons/globe"
 </script>
 
 <footer class="z-40 my-auto h-fit preset-filled-surface-100-900">

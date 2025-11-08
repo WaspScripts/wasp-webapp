@@ -6,6 +6,11 @@
 	const { data } = $props()
 	const { meta, content, supabaseClient } = $derived(data)
 
+	interface Profile {
+		username: string
+		avatar: string
+	}
+
 	async function getUsername(id: string) {
 		const { data, error: err } = await supabaseClient
 			.schema("profiles")
@@ -13,6 +18,7 @@
 			.select("username, avatar")
 			.eq("id", id)
 			.single()
+			.overrideTypes<Profile>()
 
 		if (err) {
 			console.error(err)
@@ -32,7 +38,7 @@
 	author={meta.username}
 />
 
-<main class="container mx-auto my-6 max-w-4xl flex-grow">
+<main class="container mx-auto my-6 max-w-4xl grow">
 	<div class="my-8 grid place-items-center">
 		<GitHubButton link="edit/main/tutorials/{meta.order}.md" text="Edit on GitHub!"></GitHubButton>
 	</div>
@@ -45,7 +51,10 @@
 				Loading...
 			{:then author}
 				<span class="my-auto">{author.username}</span>
-				<Avatar src={author.avatar} name={author.username ?? "Error"} classes="mx-1 w-8 h-8" />
+				<Avatar class="mx-1 h-8 w-8">
+					<Avatar.Image src={author.avatar} alt={author.username} />
+					<Avatar.Fallback>{author.username}</Avatar.Fallback>
+				</Avatar>
 			{/await}
 		</span>
 	</h4>
@@ -59,7 +68,10 @@
 					{:then author}
 						<span class="mx-2 flex">
 							<span class="my-auto">{author.username}</span>
-							<Avatar src={author.avatar} name={author.username ?? "Error"} classes="mx-1 w-6 h-6" />
+							<Avatar class="mx-1 h-6 w-6">
+								<Avatar.Image src={author.avatar} alt={author.username} />
+								<Avatar.Fallback>{author.username}</Avatar.Fallback>
+							</Avatar>
 						</span>
 					{/await}
 				{/each}

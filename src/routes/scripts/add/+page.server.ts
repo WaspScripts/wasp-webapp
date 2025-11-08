@@ -80,8 +80,8 @@ export const load = async ({ locals: { supabaseServer, user, session } }) => {
 				errors: false
 			}
 		),
-		simbaVersions: versions.map((v) => ({ label: v.version, value: v.version })),
-		wlVersions: wasplib.map((v) => ({ label: v.version, value: v.version }))
+		simbaVersions: versions ?? [],
+		wlVersions: wasplib ?? []
 	}
 }
 

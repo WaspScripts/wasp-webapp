@@ -39,7 +39,7 @@
 
 		<div class="my-4 flex flex-col gap-2 lg:flex-row">
 			<a
-				href="https://waspscripts.github.io/WaspLib/"
+				href="https://docs.waspscripts.dev/"
 				class="mx-auto btn preset-filled-primary-200-800 ring-2 ring-primary-500"
 			>
 				WaspLib Documentation
@@ -112,5 +112,5 @@
 		{/each}
 	</div>
 
-	<Paginator data={tutorials} {currentPage} bind:pageSize={amount} {count} />
+	<Paginator {currentPage} bind:pageSize={amount} {count} />
 </main>

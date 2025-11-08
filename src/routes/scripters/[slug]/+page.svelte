@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Head from "$lib/components/Head.svelte"
-	import { Github } from "svelte-lucide"
+	import Github from "@lucide/svelte/icons/github"
 	import PayPal from "./PayPal.svelte"
 	import { page } from "$app/state"
 	import { Tabs } from "@skeletonlabs/skeleton-svelte"
@@ -10,6 +10,7 @@
 	import { superForm } from "sveltekit-superforms/client"
 	import { zodClient } from "sveltekit-superforms/adapters"
 	import { scripterSchema } from "$lib/client/schemas"
+	import DOMPurify from "isomorphic-dompurify"
 
 	const { data } = $props()
 	const { profile, count, scripts, scripter } = $derived(data)
@@ -74,114 +75,113 @@
 		{/if}
 	</div>
 
-	<Tabs value={tab} onValueChange={(e) => (tab = e.value)} listJustify="justify-center">
-		{#snippet list()}
-			<Tabs.Control value="info">Information</Tabs.Control>
+	<Tabs value={tab} onValueChange={(e) => (tab = e.value)}>
+		<Tabs.List class="flex flex-col justify-center sm:flex-row">
+			<Tabs.Trigger value="info">Information</Tabs.Trigger>
 			{#if profile && ($form.id === profile.id || profile.role == "moderator" || profile.role == "administrator")}
-				<Tabs.Control value="edit">Edit</Tabs.Control>
+				<Tabs.Trigger value="edit">Edit</Tabs.Trigger>
 			{/if}
+			<Tabs.Trigger value="scripts">Scripts</Tabs.Trigger>
+			<Tabs.Indicator />
+		</Tabs.List>
 
-			<Tabs.Control value="scripts">Scripts</Tabs.Control>
-		{/snippet}
-		{#snippet content()}
-			<Tabs.Panel value="info">
-				<h4 class="my-24 text-center">
-					{$form.description ?? "This scripter did not add a description."}
-				</h4>
-				<article class="mx-auto my-24 prose dark:prose-invert">
-					{#if $form.content}
-						{@html $form.content}
-					{:else}
-						This scripter did not add information about him.
-					{/if}
-				</article>
+		<Tabs.Content value="info">
+			<h4 class="my-24 text-center">
+				{$form.description ?? "This scripter did not add a description."}
+			</h4>
+			<article class="mx-auto my-24 prose dark:prose-invert">
+				{#if $form.content}
+					{@html DOMPurify.sanitize($form.content)}
+				{:else}
+					This scripter did not add information about him.
+				{/if}
+			</article>
 
-				<div class="mx-auto flex justify-around">
-					<a href="./" class="btn preset-filled-secondary-500">Back</a>
+			<div class="mx-auto flex justify-around">
+				<a href="./" class="btn preset-filled-secondary-500">Back</a>
+			</div>
+		</Tabs.Content>
+		{#if profile && ($form.id === profile.id || profile.role == "moderator" || profile.role == "administrator")}
+			<Tabs.Content value="edit">
+				<form method="POST" class="mx-auto my-24 w-2/4 min-w-xs text-center" use:enhance>
+					<h1 class="my-2">All fields are optional</h1>
+					<h2 class="mb-12">
+						You can preview your changes in the "Information" tab but don't forget to save.
+					</h2>
+					<label class="my-4 label">
+						<span class="label-text">Real name:</span>
+						<input class="input" bind:value={$form.realname} />
+						{#if $errors.id}
+							{#each $errors.id as err (err)}
+								<small class="text-error-500">{err}</small>
+							{/each}
+						{/if}
+					</label>
+					<label class="my-4 label">
+						<span class="label-text">GitHub:</span>
+						<input class="input" bind:value={$form.github} />
+						{#if $errors.github}
+							{#each $errors.github as err (err)}
+								<small class="text-error-500">{err}</small>
+							{/each}
+						{/if}
+					</label>
+					<label class="my-4 label">
+						<span class="label-text">Paypal ID:</span>
+						<input class="input" bind:value={$form.paypal} />
+						{#if $errors.paypal}
+							{#each $errors.paypal as err (err)}
+								<small class="text-error-500">{err}</small>
+							{/each}
+						{/if}
+					</label>
+					<label class="my-4 label">
+						<span class="label-text">Description:</span>
+						<input class="input" bind:value={$form.description} />
+						{#if $errors.description}
+							{#each $errors.description as err (err)}
+								<small class="text-error-500">{err}</small>
+							{/each}
+						{/if}
+					</label>
+					<label class="my-4 label">
+						<span class="label-text">Content:</span>
+						<textarea class="textarea h-44" bind:value={$form.content}> </textarea>
+						{#if $errors.content}
+							{#each $errors.content as err (err)}
+								<small class="text-error-500">{err}</small>
+							{/each}
+						{/if}
+					</label>
+					<button type="submit" class="btn preset-filled-secondary-500">Save</button>
+				</form>
+			</Tabs.Content>
+		{/if}
+		<Tabs.Content value="scripts">
+			<input
+				type="text"
+				placeholder="🔍Search script by id, name, categories, author, content, ..."
+				class="mx-auto my-8 input max-w-3xl"
+				bind:value={search}
+				oninput={() =>
+					replaceQuery(page.url, {
+						page: "1",
+						search: search
+					})}
+			/>
+
+			<main class="my-4 flex h-fit flex-col">
+				<div
+					class="3xl:grid-cols-5 mx-8 my-8 grid justify-center gap-10 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"
+				>
+					{#each scripts as script (script.id)}
+						<ScriptCard {script} link={"/scripts/" + script.url} />
+					{/each}
 				</div>
-			</Tabs.Panel>
-			{#if profile && ($form.id === profile.id || profile.role == "moderator" || profile.role == "administrator")}
-				<Tabs.Panel value="edit">
-					<form method="POST" class="mx-auto my-24 w-2/4 min-w-xs text-center" use:enhance>
-						<h1 class="my-2">All fields are optional</h1>
-						<h2 class="mb-12">
-							You can preview your changes in the "Information" tab but don't forget to save.
-						</h2>
-						<label class="my-4 label">
-							<span class="label-text">Real name:</span>
-							<input class="input" bind:value={$form.realname} />
-							{#if $errors.id}
-								{#each $errors.id as err (err)}
-									<small class="text-error-500">{err}</small>
-								{/each}
-							{/if}
-						</label>
-						<label class="my-4 label">
-							<span class="label-text">GitHub:</span>
-							<input class="input" bind:value={$form.github} />
-							{#if $errors.github}
-								{#each $errors.github as err (err)}
-									<small class="text-error-500">{err}</small>
-								{/each}
-							{/if}
-						</label>
-						<label class="my-4 label">
-							<span class="label-text">Paypal ID:</span>
-							<input class="input" bind:value={$form.paypal} />
-							{#if $errors.paypal}
-								{#each $errors.paypal as err (err)}
-									<small class="text-error-500">{err}</small>
-								{/each}
-							{/if}
-						</label>
-						<label class="my-4 label">
-							<span class="label-text">Description:</span>
-							<input class="input" bind:value={$form.description} />
-							{#if $errors.description}
-								{#each $errors.description as err (err)}
-									<small class="text-error-500">{err}</small>
-								{/each}
-							{/if}
-						</label>
-						<label class="my-4 label">
-							<span class="label-text">Content:</span>
-							<textarea class="textarea h-44" bind:value={$form.content}> </textarea>
-							{#if $errors.content}
-								{#each $errors.content as err (err)}
-									<small class="text-error-500">{err}</small>
-								{/each}
-							{/if}
-						</label>
-						<button type="submit" class="btn preset-filled-secondary-500">Save</button>
-					</form>
-				</Tabs.Panel>
-			{/if}
-			<Tabs.Panel value="scripts">
-				<input
-					type="text"
-					placeholder="🔍Search script by id, name, categories, author, content, ..."
-					class="mx-auto my-8 input max-w-3xl"
-					bind:value={search}
-					oninput={() =>
-						replaceQuery(page.url, {
-							page: "1",
-							search: search
-						})}
-				/>
-
-				<main class="my-4 flex h-fit flex-col">
-					<div
-						class="3xl:grid-cols-5 mx-8 my-8 grid justify-center gap-10 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"
-					>
-						{#each scripts as script (script.id)}
-							<ScriptCard {script} link={"/scripts/" + script.url} />
-						{/each}
-					</div>
-					<div class="mx-8">
-						<Paginator data={scripts} {currentPage} bind:pageSize={amount} {count} />
-					</div>
-				</main>
-			</Tabs.Panel>
-		{/snippet}
+				<div class="mx-8">
+					<Paginator {currentPage} bind:pageSize={amount} {count} />
+				</div>
+			</main>
+		</Tabs.Content>
 	</Tabs>
 </main>

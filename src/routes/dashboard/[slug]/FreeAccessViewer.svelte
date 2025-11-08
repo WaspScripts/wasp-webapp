@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from "$app/state"
 	import TableHeader from "$lib/components/TableHeader.svelte"
-	import { Modal } from "@skeletonlabs/skeleton-svelte"
-	import { UserRoundPlus } from "svelte-lucide"
+	import { Dialog, Portal } from "@skeletonlabs/skeleton-svelte"
+	import UserRoundPlus from "@lucide/svelte/icons/user-round-plus"
 
 	let {
 		id,
@@ -43,77 +43,81 @@
 	let open = $state(false)
 </script>
 
-<Modal
-	{open}
-	onOpenChange={(e) => (open = e.open)}
-	triggerBase="btn preset-filled-primary-500 font-bold"
-	contentBase="card bg-surface-100-900 p-4 space-y-4 shadow-xl w-[95%] max-w-fit max-h-[95%] overflow-y-auto"
-	backdropClasses="backdrop-blur-sm"
->
-	{#snippet trigger()}
+<Dialog {open} onOpenChange={(e) => (open = e.open)}>
+	<Dialog.Trigger class="btn preset-filled-primary-500 font-bold">
 		<UserRoundPlus size="16" />
 		<span>{count}</span>
-	{/snippet}
-	{#snippet content()}
-		<header class="flex flex-col justify-between">
-			<h1 class="my-4 flex flex-col gap-4 text-lg lg:flex-row lg:h4">{name} subscriptions</h1>
-			<h2>Total: {count}</h2>
-		</header>
-		<div class="rounded-md preset-outlined-surface-500 p-1">
-			<form method="POST" class="max-h-[28rem] table-wrap">
-				<table class="table">
-					<TableHeader {headers} />
-					<tbody class="text-xs md:text-sm xl:text-base [&>tr]:hover:preset-tonal">
-						{#await getFreeAccess(id)}
-							<tr class="flex w-full">
-								<td class="h-full w-full p-0 text-xs"> Loading... </td>
-							</tr>
-						{:then freeAccess}
-							{#each freeAccess as row (row.id)}
-								<tr>
-									<td>{row.user_id}</td>
-									<td class="text-center">{row.username}</td>
-
-									<td class="text-center">{new Date(row.date_start).toLocaleString(userLocale)}</td>
-									<td class="text-center">{new Date(row.date_end).toLocaleString(userLocale)}</td>
-
-									<td class="text-center">
-										<button
-											type="submit"
-											class="btn preset-outlined-error-500"
-											formaction="?/cancelFree&product={id}&id={row.id}"
-										>
-											Cancel
-										</button>
-									</td>
-								</tr>
-							{/each}
-						{/await}
-					</tbody>
-				</table>
-			</form>
-		</div>
-		<form
-			method="POST"
-			class="mx-auto flex flex-col justify-around rounded-md preset-outlined-surface-500 p-8 md:flex-row"
-		>
-			<label>
-				<span class="label-text">Add user:</span>
-				<input name="userid" type="text" placeholder="User UUID" class="input" />
-			</label>
-
-			<label>
-				<span class="label-text">End date:</span>
-				<input name="enddate" type="date" class="input" />
-			</label>
-
-			<button type="submit" class="my-4 btn preset-filled-success-500" formaction="?/addFree&product={id}">
-				<UserRoundPlus /> Add user</button
+	</Dialog.Trigger>
+	<Portal>
+		<Dialog.Backdrop class="fixed inset-0 z-50 bg-surface-50-950/50 backdrop-blur-sm" />
+		<Dialog.Positioner class="fixed inset-0 z-50 flex items-center justify-center">
+			<Dialog.Content
+				class="max-h-[95%] w-[95%] max-w-fit space-y-4 overflow-y-auto card bg-surface-100-900 p-4 shadow-xl"
 			>
-		</form>
+				<Dialog.Title class="flex flex-col justify-between text-2xl font-bold">
+					<h1 class="my-4 flex flex-col gap-4 text-lg lg:flex-row lg:h4">{name} subscriptions</h1>
+					<h2>Total: {count}</h2>
+				</Dialog.Title>
+				<Dialog.Description>
+					<div class="rounded-md preset-outlined-surface-500 p-1">
+						<form method="POST" class="max-h-112 table-wrap">
+							<table class="table">
+								<TableHeader {headers} />
+								<tbody class="text-xs md:text-sm xl:text-base [&>tr]:hover:preset-tonal">
+									{#await getFreeAccess(id)}
+										<tr class="flex w-full">
+											<td class="h-full w-full p-0 text-xs"> Loading... </td>
+										</tr>
+									{:then freeAccess}
+										{#each freeAccess as row (row.id)}
+											<tr>
+												<td>{row.user_id}</td>
+												<td class="text-center">{row.username}</td>
 
-		<footer class="flex justify-end text-xs md:text-sm lg:text-base">
-			<button type="button" class="btn preset-tonal" onclick={() => (open = false)}> Close </button>
-		</footer>
-	{/snippet}
-</Modal>
+												<td class="text-center">{new Date(row.date_start).toLocaleString(userLocale)}</td>
+												<td class="text-center">{new Date(row.date_end).toLocaleString(userLocale)}</td>
+
+												<td class="text-center">
+													<button
+														type="submit"
+														class="btn preset-outlined-error-500"
+														formaction="?/cancelFree&product={id}&id={row.id}"
+													>
+														Cancel
+													</button>
+												</td>
+											</tr>
+										{/each}
+									{/await}
+								</tbody>
+							</table>
+						</form>
+					</div>
+					<form
+						method="POST"
+						class="mx-auto flex flex-col justify-around rounded-md preset-outlined-surface-500 p-8 md:flex-row"
+					>
+						<label>
+							<span class="label-text">Add user:</span>
+							<input name="userid" type="text" placeholder="User UUID" class="input" />
+						</label>
+
+						<label>
+							<span class="label-text">End date:</span>
+							<input name="enddate" type="date" class="input" />
+						</label>
+
+						<button
+							type="submit"
+							class="my-4 btn preset-filled-success-500"
+							formaction="?/addFree&product={id}"
+						>
+							<UserRoundPlus /> Add user</button
+						>
+					</form>
+				</Dialog.Description>
+				<Dialog.CloseTrigger class="btn preset-tonal">Close</Dialog.CloseTrigger>
+			</Dialog.Content>
+		</Dialog.Positioner>
+	</Portal>
+</Dialog>

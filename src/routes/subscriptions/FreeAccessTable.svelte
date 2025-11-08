@@ -1,7 +1,7 @@
 <script lang="ts">
 	import TableHeader from "$lib/components/TableHeader.svelte"
 	import type { BundleProduct, FreeAccess, ScriptProduct } from "$lib/types/collection"
-	import ExternalLink from "svelte-lucide/ExternalLink.svelte"
+	import ExternalLink from "@lucide/svelte/icons/external-link"
 	import ScriptLinks from "./ScriptLinks.svelte"
 
 	let {
