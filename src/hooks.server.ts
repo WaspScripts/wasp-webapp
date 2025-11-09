@@ -95,6 +95,8 @@ const authGuard: Handle = async ({ event, resolve }) => {
 		return data
 	}
 
+	const now = new Date().toISOString()
+
 	event.locals.getSubscriptions = async () => {
 		if (!user) return []
 		const { data, error: err } = await event.locals.supabaseServer
@@ -102,6 +104,7 @@ const authGuard: Handle = async ({ event, resolve }) => {
 			.from("subscriptions")
 			.select("id, product, price, date_start, date_end, cancel, disabled")
 			.eq("user_id", user.id)
+			.lte("date_end", now)
 
 		if (err) return []
 		return data
@@ -114,6 +117,7 @@ const authGuard: Handle = async ({ event, resolve }) => {
 			.from("free_access")
 			.select("id, product, date_start, date_end")
 			.eq("user_id", user.id)
+			.lte("date_end", now)
 
 		if (err) return []
 		return data
