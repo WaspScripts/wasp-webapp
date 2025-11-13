@@ -21,6 +21,7 @@ const redirects: Handle = async ({ event, resolve }) => {
 }
 
 const supabase: Handle = async ({ event, resolve }) => {
+	console.log("└⚡Server connecting to database: ", LOCAL_SUPABASE_URL)
 	event.locals.supabaseServer = createServerClient(LOCAL_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 		cookies: {
 			getAll: () => event.cookies.getAll(),

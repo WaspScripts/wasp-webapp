@@ -4,6 +4,7 @@ import { formatError } from "$lib/utils"
 import { type SupabaseClient, createClient, type Provider } from "@supabase/supabase-js"
 import { error, redirect } from "@sveltejs/kit"
 
+console.log("└⚡Server connecting to admin database: ", LOCAL_SUPABASE_URL)
 export const supabaseAdmin = createClient<Database>(LOCAL_SUPABASE_URL, SUPABASE_SERVICE_KEY, {
 	auth: { autoRefreshToken: true, persistSession: false }
 })

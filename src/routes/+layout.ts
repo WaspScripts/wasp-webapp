@@ -5,6 +5,7 @@ import type { Session, User } from "@supabase/supabase-js"
 export const load = async ({ data, depends, fetch }) => {
 	depends("supabase:auth")
 
+	console.log("└⚡Client connecting to database: ", PUBLIC_SUPABASE_URL)
 	const supabaseClient = isBrowser()
 		? createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 				global: { fetch }
