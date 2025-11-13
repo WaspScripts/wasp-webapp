@@ -115,7 +115,7 @@ Subscriptions for WaspScripts can be managed on the [subscriptions page](${websi
 
 ## FAQ
 
-Find the solution to your problem in our [FAQ](${website}/faq).
+Find the solution to your problem in our [information page](${website}/information).
 
 ## Tutorials
 

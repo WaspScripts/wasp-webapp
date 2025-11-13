@@ -11,7 +11,7 @@
 	description="OldSchool RuneScape Color botting at it's best. Color only and fully open-source Simba scripts for OSRS."
 />
 
-<main class="container mx-auto my-24 max-w-2xl flex-grow">
+<main class="container mx-auto my-24 max-w-2xl grow">
 	<header class="my-24 text-center">
 		<h1 class="text-xl font-bold sm:text-2xl md:text-3xl">WaspScripts</h1>
 		<h2 class="text-lg font-bold uppercase sm:text-xl md:text-2xl">
@@ -48,7 +48,9 @@
 	</p>
 	<p class="my-6 text-center">
 		For more information, help and/or questions look through the
-		<a href="/faq" class="decoration-transparent" aria-label="Open frequently asked questions page"> FAQ </a>
+		<a href="/information" class="decoration-transparent" aria-label="Open frequently asked questions page">
+			Information page
+		</a>
 		or join the discord community!
 	</p>
 </main>
