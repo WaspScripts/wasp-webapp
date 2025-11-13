@@ -1,16 +1,16 @@
 import { createBrowserClient, createServerClient, isBrowser } from "@supabase/ssr"
-import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from "$env/static/public"
+import { PUBLIC_LOCAL_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from "$env/static/public"
 import type { Session, User } from "@supabase/supabase-js"
 
 export const load = async ({ data, depends, fetch }) => {
 	depends("supabase:auth")
-
-	console.log("└⚡Client connecting to database: ", PUBLIC_SUPABASE_URL)
-	const supabaseClient = isBrowser()
+	const isbrowser = isBrowser()
+	console.log("└⚡", isbrowser ? "Client" : "Server", " connecting to database: ", PUBLIC_SUPABASE_URL)
+	const supabaseClient = isbrowser
 		? createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 				global: { fetch }
 			})
-		: createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+		: createServerClient(PUBLIC_LOCAL_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 				global: { fetch },
 				cookies: {
 					getAll() {

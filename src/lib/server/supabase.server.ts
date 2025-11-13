@@ -1,11 +1,12 @@
-import { LOCAL_SUPABASE_URL, SUPABASE_SERVICE_KEY } from "$env/static/private"
+import { SUPABASE_SERVICE_KEY } from "$env/static/private"
+import { PUBLIC_LOCAL_SUPABASE_URL } from "$env/static/public"
 import type { Database } from "$lib/types/supabase"
 import { formatError } from "$lib/utils"
 import { type SupabaseClient, createClient, type Provider } from "@supabase/supabase-js"
 import { error, redirect } from "@sveltejs/kit"
 
-console.log("└⚡Server connecting to admin database: ", LOCAL_SUPABASE_URL)
-export const supabaseAdmin = createClient<Database>(LOCAL_SUPABASE_URL, SUPABASE_SERVICE_KEY, {
+console.log("└⚡Server connecting to admin database: ", PUBLIC_LOCAL_SUPABASE_URL)
+export const supabaseAdmin = createClient<Database>(PUBLIC_LOCAL_SUPABASE_URL, SUPABASE_SERVICE_KEY, {
 	auth: { autoRefreshToken: true, persistSession: false }
 })
 

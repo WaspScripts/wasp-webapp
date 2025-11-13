@@ -13,7 +13,7 @@
 </script>
 
 <main class="min-h-screen">
-	<div class="mx-auto my-24 max-w-2xl flex-grow">
+	<div class="mx-auto my-24 max-w-2xl grow">
 		<form method="POST" action="?/loginas" use:enhance>
 			<div class="my-4 flex justify-around">
 				<label class="label">

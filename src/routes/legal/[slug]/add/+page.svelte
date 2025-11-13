@@ -22,9 +22,9 @@
 	keywords="Privacy, Policy, Terms, Conditions"
 />
 
-<div class="container mx-auto my-6 max-w-2xl flex-grow">
+<div class="container mx-auto my-6 max-w-2xl grow">
 	{#if show}
-		<div class="container mx-auto my-6 max-w-4xl flex-grow">
+		<div class="container mx-auto my-6 max-w-4xl grow">
 			<article class="mx-auto prose py-6 dark:prose-invert">
 				{$form.content}
 			</article>

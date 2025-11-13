@@ -7,7 +7,7 @@
 	description="Setup Simba and WaspScripts from scratch to bot OldSchool RuneScape. Start your road to max on osrs today!"
 />
 
-<main class="container mx-auto my-6 min-h-screen max-w-2xl flex-grow">
+<main class="container mx-auto my-6 min-h-screen max-w-2xl grow">
 	<div class="my-8 h-screen">
 		<header class="text-center">
 			<h1 class="py-16 text-center text-xl text-primary-700 md:text-3xl dark:text-primary-500">

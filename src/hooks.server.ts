@@ -1,8 +1,7 @@
 import { type Handle, redirect } from "@sveltejs/kit"
 import { createServerClient } from "@supabase/ssr"
 import { sequence } from "@sveltejs/kit/hooks"
-import { PUBLIC_SUPABASE_ANON_KEY } from "$env/static/public"
-import { LOCAL_SUPABASE_URL } from "$env/static/private"
+import { PUBLIC_LOCAL_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from "$env/static/public"
 
 const redirects: Handle = async ({ event, resolve }) => {
 	if (event.url.pathname.startsWith("/refresh_token")) {
@@ -21,8 +20,8 @@ const redirects: Handle = async ({ event, resolve }) => {
 }
 
 const supabase: Handle = async ({ event, resolve }) => {
-	console.log("└⚡Server connecting to database: ", LOCAL_SUPABASE_URL)
-	event.locals.supabaseServer = createServerClient(LOCAL_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+	console.log("└⚡Server connecting to database: ", PUBLIC_LOCAL_SUPABASE_URL)
+	event.locals.supabaseServer = createServerClient(PUBLIC_LOCAL_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 		cookies: {
 			getAll: () => event.cookies.getAll(),
 			setAll: (cookiesToSet) => {
