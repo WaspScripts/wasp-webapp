@@ -46,7 +46,9 @@
 				{#if !script.published}<small class="text-error-500">Unpublished</small>{/if}
 			</span>
 		</header>
-		<article class="my-4 h-full overflow-y-auto text-sm break-words text-surface-600 dark:text-surface-300">
+		<article
+			class="my-4 h-full overflow-y-auto text-sm wrap-break-word text-surface-600 dark:text-surface-300"
+		>
 			{cropString(script.description, 80)}
 		</article>
 	</button>

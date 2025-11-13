@@ -1,11 +1,10 @@
-import { SUPABASE_SERVICE_KEY } from "$env/static/private"
-import { PUBLIC_SUPABASE_URL } from "$env/static/public"
+import { LOCAL_SUPABASE_URL, SUPABASE_SERVICE_KEY } from "$env/static/private"
 import type { Database } from "$lib/types/supabase"
 import { formatError } from "$lib/utils"
 import { type SupabaseClient, createClient, type Provider } from "@supabase/supabase-js"
 import { error, redirect } from "@sveltejs/kit"
 
-export const supabaseAdmin = createClient<Database>(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_KEY, {
+export const supabaseAdmin = createClient<Database>(LOCAL_SUPABASE_URL, SUPABASE_SERVICE_KEY, {
 	auth: { autoRefreshToken: true, persistSession: false }
 })
 
