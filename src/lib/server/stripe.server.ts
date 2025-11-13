@@ -4,6 +4,7 @@ import type { Interval, Price, Scripter } from "$lib/types/collection"
 import type { Database } from "$lib/types/supabase"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import Stripe from "stripe"
+import { supabaseAdmin } from "./supabase.server"
 
 export const stripe = new Stripe(STRIPE_KEY, { apiVersion: "2025-08-27.basil", typescript: true })
 
@@ -94,13 +95,7 @@ export async function createCheckoutSession(
 	return session.url
 }
 
-export async function createAccount(
-	supabase: SupabaseClient,
-	baseURL: string,
-	scripter: Scripter,
-	email: string,
-	country: string
-) {
+export async function createAccount(baseURL: string, scripter: Scripter, email: string, country: string) {
 	let account: Stripe.Response<Stripe.Account>
 	let accountLink: Stripe.Response<Stripe.AccountLink>
 
@@ -142,28 +137,18 @@ export async function createAccount(
 		return
 	}
 
-	console.log("Stripe Account created: ", account, " for ", scripter.id)
+	console.log("Stripe Account created: ", account.id, " for ", scripter.id)
 
-	const { error: errScripter } = await supabase
-		.schema("profiles")
-		.from("scripters")
-		.update({ stripe: account.id })
-		.eq("id", scripter.id)
+	const promises = await Promise.all([
+		supabaseAdmin.schema("profiles").from("scripters").update({ stripe: account.id }).eq("id", scripter.id),
+		supabaseAdmin.schema("profiles").from("balances").update({ stripe: account.id }).eq("id", scripter.id)
+	])
 
-	if (errScripter) {
-		console.error(errScripter)
-		return
-	}
-
-	const { error: errBalances } = await supabase
-		.schema("profiles")
-		.from("balances")
-		.update({ stripe: account.id })
-		.eq("id", scripter.id)
-
-	if (errBalances) {
-		console.error(errBalances)
-		return
+	for (let i = 0; i < promises.length; i++) {
+		if (promises[i].error) {
+			console.error(promises[i].error)
+			return
+		}
 	}
 
 	try {

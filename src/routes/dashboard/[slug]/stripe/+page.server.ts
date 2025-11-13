@@ -52,7 +52,7 @@ export const actions = {
 		if (scripter.stripe != scripter.id) return setError(form, "", "Stripe account is already created!")
 		if (!form.valid) return setError(form, "", "The country code form is not valid!")
 
-		const link = await createAccount(supabaseServer, origin, scripter, user.email!, form.data.code)
+		const link = await createAccount(origin, scripter, user.email!, form.data.code)
 		if (link) redirect(303, link)
 		return { form }
 	},
