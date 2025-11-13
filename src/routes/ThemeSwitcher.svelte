@@ -19,7 +19,7 @@
 </script>
 
 <div class="my-auto input-group flex hover:preset-tonal">
-	<Popover>
+	<Popover {open} onOpenChange={(e) => (open = e.open)}>
 		<Popover.Trigger class="btn h-full hover:preset-tonal">
 			<Palette size="16" />
 			<span class="mx-4 my-auto flex lg:hidden xl:flex">{theme}</span>

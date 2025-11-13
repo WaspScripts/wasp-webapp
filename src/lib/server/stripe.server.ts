@@ -142,16 +142,28 @@ export async function createAccount(
 		return
 	}
 
-	const promises = await Promise.all([
-		supabase.schema("profiles").from("scripters").update({ stripe: account.id }).eq("id", scripter.id),
-		supabase.schema("profiles").from("balances").update({ stripe: account.id }).eq("id", scripter.id)
-	])
+	console.log("Stripe Account created: ", account, " for ", scripter.id)
 
-	for (let i = 0; i < promises.length; i++) {
-		if (promises[i].error) {
-			console.error(promises[i].error)
-			return
-		}
+	const { error: errScripter } = await supabase
+		.schema("profiles")
+		.from("scripters")
+		.update({ stripe: account.id })
+		.eq("id", scripter.id)
+
+	if (errScripter) {
+		console.error(errScripter)
+		return
+	}
+
+	const { error: errBalances } = await supabase
+		.schema("profiles")
+		.from("balances")
+		.update({ stripe: account.id })
+		.eq("id", scripter.id)
+
+	if (errBalances) {
+		console.error(errBalances)
+		return
 	}
 
 	try {
