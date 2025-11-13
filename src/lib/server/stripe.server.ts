@@ -97,7 +97,6 @@ export async function createCheckoutSession(
 
 export async function createAccount(baseURL: string, scripter: Scripter, email: string, country: string) {
 	let account: Stripe.Response<Stripe.Account>
-	let accountLink: Stripe.Response<Stripe.AccountLink>
 
 	const profile = scripter.profiles
 	const requested = { requested: true }
@@ -141,29 +140,31 @@ export async function createAccount(baseURL: string, scripter: Scripter, email: 
 
 	const promises = await Promise.all([
 		supabaseAdmin.schema("profiles").from("scripters").update({ stripe: account.id }).eq("id", scripter.id),
-		supabaseAdmin.schema("profiles").from("balances").update({ stripe: account.id }).eq("id", scripter.id)
+		supabaseAdmin.schema("profiles").from("balances").update({ stripe: account.id }).eq("id", scripter.id),
+		stripe.accountLinks
+			.create({
+				account: account.id,
+				refresh_url: baseURL + "/dashboard/",
+				return_url: baseURL + "/dashboard/",
+				type: "account_onboarding"
+			})
+			.catch((err) => {
+				console.error("Stripe accountLinks.create failed:", err)
+				return null
+			})
 	])
 
-	for (let i = 0; i < promises.length; i++) {
-		if (promises[i].error) {
-			console.error(promises[i].error)
-			return
-		}
-	}
-
-	try {
-		accountLink = await stripe.accountLinks.create({
-			account: account.id,
-			refresh_url: baseURL + "/dashboard/",
-			return_url: baseURL + "/dashboard/",
-			type: "account_onboarding"
-		})
-	} catch (err) {
-		console.error(err)
+	if (promises[0].error) {
+		console.error(promises[0].error)
 		return
 	}
 
-	return accountLink.url
+	if (promises[1].error) {
+		console.error(promises[1].error)
+		return
+	}
+
+	return promises[2]?.url
 }
 
 export async function getOnboardingLink(baseURL: string, scripter: Scripter) {
