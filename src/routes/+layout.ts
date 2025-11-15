@@ -1,5 +1,5 @@
 import { createBrowserClient, createServerClient, isBrowser } from "@supabase/ssr"
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, PUBLIC_LOCAL_SUPABASE_URL } from "$env/static/public"
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from "$env/static/public"
 import type { Session, User } from "@supabase/supabase-js"
 
 export const load = async ({ data, depends, fetch }) => {
@@ -8,20 +8,10 @@ export const load = async ({ data, depends, fetch }) => {
 
 	const supabaseClient = isbrowser
 		? createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
-				global: {
-					fetch: (input: string | URL | Request, init?: RequestInit) => {
-						console.log("Layout Client: ", input)
-						return fetch(input, init)
-					}
-				}
+				global: { fetch }
 			})
-		: createServerClient(PUBLIC_LOCAL_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
-				global: {
-					fetch: (input: string | URL | Request, init?: RequestInit) => {
-						console.log("Layout Server: ", input)
-						return fetch(input, init)
-					}
-				},
+		: createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+				global: { fetch },
 				cookies: {
 					getAll() {
 						return data.cookies
