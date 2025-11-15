@@ -1,17 +1,27 @@
 import { createBrowserClient, createServerClient, isBrowser } from "@supabase/ssr"
-import { PUBLIC_LOCAL_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from "$env/static/public"
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from "$env/static/public"
 import type { Session, User } from "@supabase/supabase-js"
 
 export const load = async ({ data, depends, fetch }) => {
 	depends("supabase:auth")
 	const isbrowser = isBrowser()
-	console.log("└⚡", isbrowser ? "Client" : "Server", " connecting to database: ", PUBLIC_SUPABASE_URL)
+
 	const supabaseClient = isbrowser
 		? createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
-				global: { fetch }
+				global: {
+					fetch: (input: string | URL | Request, init?: RequestInit) => {
+						console.log("Layout Client: ", input)
+						return fetch(input, init)
+					}
+				}
 			})
-		: createServerClient(PUBLIC_LOCAL_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
-				global: { fetch },
+		: createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+				global: {
+					fetch: (input: string | URL | Request, init?: RequestInit) => {
+						console.log("Layout Server: ", input)
+						return fetch(input, init)
+					}
+				},
 				cookies: {
 					getAll() {
 						return data.cookies
@@ -21,7 +31,7 @@ export const load = async ({ data, depends, fetch }) => {
 
 	let session: Session | null
 	let user: User | null
-	if (isBrowser()) {
+	if (isbrowser) {
 		const promises = await Promise.all([supabaseClient.auth.getSession(), supabaseClient.auth.getUser()])
 		session = promises[0].data.session
 		user = promises[1].data.user
