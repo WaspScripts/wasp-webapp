@@ -7,6 +7,7 @@
 	import Landmark from "@lucide/svelte/icons/landmark"
 	import Package from "@lucide/svelte/icons/package"
 	import Settings from "@lucide/svelte/icons/settings"
+	import UUID from "$lib/components/UUID.svelte"
 
 	const { data, children } = $props()
 
@@ -26,7 +27,7 @@
 		<span class="my-auto">
 			{data.scripter.profiles.username}
 		</span>
-		<small class="my-auto">{data.scripter.id}</small>
+		<small class="my-auto"><UUID uuid={data.scripter.id}></UUID></small>
 	</h3>
 
 	<div class="my-8 grid place-items-center">

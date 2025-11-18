@@ -1,4 +1,5 @@
 <script lang="ts">
+	import UUID from "$lib/components/UUID.svelte"
 	import StatsHeader from "./StatsHeader.svelte"
 
 	const data = $props()
@@ -28,7 +29,7 @@
 			{description ?? "Loading..."}
 		</h2>
 		<h3 class="my-4">
-			{id ?? "Loading..."}
+			<UUID uuid={id ?? "Loading..."}></UUID>
 		</h3>
 		<StatsHeader {id} />
 	</div>

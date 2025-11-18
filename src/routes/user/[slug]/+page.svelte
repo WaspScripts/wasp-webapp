@@ -4,6 +4,7 @@
 	import { zodClient } from "sveltekit-superforms/adapters"
 	import Head from "$lib/components/Head.svelte"
 	import { superForm } from "sveltekit-superforms"
+	import UUID from "$lib/components/UUID.svelte"
 
 	const { data, form } = $props()
 	const profile = $derived(data.profile!)
@@ -30,7 +31,7 @@
 <main class="container mx-auto my-6 flex max-w-3xl flex-col">
 	<header class="my-24 flex flex-col">
 		<h1 class="mx-auto my-2 text-3xl font-bold">Username: {profile.username}</h1>
-		<h2 class="mx-auto my-8 leading-normal font-semibold">ID: {profile.id}</h2>
+		<UUID uuid={profile.id}></UUID>
 	</header>
 
 	<RoleBadge />
