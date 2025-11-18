@@ -283,7 +283,7 @@ export const actions = {
 
 		const date_end = new Date(date_end_str).toISOString().toLocaleString()
 
-		const err = await addFreeAccess(supabaseServer, id, product, date_end)
+		const err = await addFreeAccess(id, product, date_end)
 
 		if (err) error(403, formatError(err))
 
@@ -312,7 +312,7 @@ export const actions = {
 		if (!id) error(403, "User ID not specified.")
 		if (!UUID_V4_REGEX.test(id)) error(403, "User ID is not a valid UUID.")
 
-		const err = await cancelFreeAccess(supabaseServer, id, product)
+		const err = await cancelFreeAccess(id, product)
 		if (err) error(403, formatError(err))
 
 		return

@@ -55,7 +55,7 @@
 				class="max-h-[95%] w-[95%] max-w-fit space-y-4 overflow-y-auto card bg-surface-100-900 p-4 shadow-xl"
 			>
 				<Dialog.Title class="flex flex-col justify-between text-2xl font-bold">
-					<h1 class="my-4 flex flex-col gap-4 text-lg lg:flex-row lg:h4">{name} subscriptions</h1>
+					<h1 class="my-4 flex flex-col gap-4 text-lg lg:flex-row lg:h4">{name} Free Access</h1>
 					<h2>Total: {count}</h2>
 				</Dialog.Title>
 				<Dialog.Description>

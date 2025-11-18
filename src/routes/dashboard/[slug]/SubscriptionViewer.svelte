@@ -101,7 +101,7 @@
 			>
 				<Dialog.Title class="flex flex-col justify-between text-2xl font-bold">
 					<h1 class="my-4 text-center text-lg lg:h4">
-						{name} subscriptions
+						{name} Subscriptions
 					</h1>
 					<h2 class="my-4 text-center">Total subscriptions: {count}</h2>
 					<div class="my-4 flex justify-evenly gap-2 text-sm">

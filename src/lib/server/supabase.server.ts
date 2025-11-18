@@ -87,13 +87,8 @@ export async function getPrivateProfile(id: string) {
 	return data
 }
 
-export async function addFreeAccess(
-	supabase: SupabaseClient,
-	user_id: string,
-	product: string,
-	date_end: string
-) {
-	const { error: err } = await supabase
+export async function addFreeAccess(user_id: string, product: string, date_end: string) {
+	const { error: err } = await supabaseAdmin
 		.schema("profiles")
 		.from("free_access")
 		.insert({ product, user_id, date_end })
@@ -101,8 +96,8 @@ export async function addFreeAccess(
 	return err
 }
 
-export async function cancelFreeAccess(supabase: SupabaseClient, id: string, product: string) {
-	const { error: err } = await supabase
+export async function cancelFreeAccess(id: string, product: string) {
+	const { error: err } = await supabaseAdmin
 		.schema("profiles")
 		.from("free_access")
 		.delete()
