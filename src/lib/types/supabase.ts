@@ -382,13 +382,20 @@ export type Database = {
 					  }
 				Returns: boolean
 			}
+			min_role: {
+				Args: {
+					user_id: string
+					target_role: Database["profiles"]["Enums"]["roles"]
+				}
+				Returns: boolean
+			}
 			uid: {
 				Args: Record<PropertyKey, never>
 				Returns: string
 			}
 		}
 		Enums: {
-			roles: "premium" | "vip" | "tester" | "scripter" | "moderator" | "administrator"
+			roles: "premium" | "contributor" | "tester" | "scripter" | "moderator" | "administrator"
 		}
 		CompositeTypes: {
 			[_ in never]: never
@@ -486,6 +493,21 @@ export type Database = {
 					}
 				]
 			}
+			plugins: {
+				Row: {
+					created_at: string
+					version: string
+				}
+				Insert: {
+					created_at?: string
+					version: string
+				}
+				Update: {
+					created_at?: string
+					version?: string
+				}
+				Relationships: []
+			}
 			protected: {
 				Row: {
 					author: string
@@ -567,18 +589,21 @@ export type Database = {
 			}
 			versions: {
 				Row: {
+					files: string[]
 					id: string
 					revision: number
 					simba: string
 					wasplib: string
 				}
 				Insert: {
+					files?: string[]
 					id?: string
 					revision: number
 					simba?: string
 					wasplib?: string
 				}
 				Update: {
+					files?: string[]
 					id?: string
 					revision?: number
 					simba?: string
@@ -1712,7 +1737,7 @@ export const Constants = {
 	},
 	profiles: {
 		Enums: {
-			roles: ["premium", "vip", "tester", "scripter", "moderator", "administrator"]
+			roles: ["premium", "contributor", "tester", "scripter", "moderator", "administrator"]
 		}
 	},
 	public: {
