@@ -7,9 +7,7 @@
 	import { getPriceAmount, getPriceIntervalEx } from "$lib/utils"
 	import ScriptLinks from "./ScriptLinks.svelte"
 	import ExternalLink from "@lucide/svelte/icons/external-link"
-	import RotateCw from "@lucide/svelte/icons/rotate-cw"
 	import RefundModal from "./RefundModal.svelte"
-	import { SvelteDate } from "svelte/reactivity"
 
 	let {
 		data,
@@ -54,43 +52,6 @@
 
 	function getPrice(id: string, prices: Price[]) {
 		return prices.find((price) => price.id === id)
-	}
-
-	function getStartDate(date_end: string, interval: string | undefined) {
-		const endDate = new SvelteDate(date_end)
-		const startDate = new SvelteDate(endDate)
-
-		switch (interval) {
-			case "week":
-				startDate.setDate(startDate.getDate() - 7)
-				break
-			case "month":
-				startDate.setMonth(startDate.getMonth() - 1)
-				break
-			case "year":
-				startDate.setFullYear(startDate.getFullYear() - 1)
-				break
-			default:
-				return null
-		}
-		return { startDate, endDate }
-	}
-
-	function inEarlyWindow(date_end: string, interval: string | undefined) {
-		const date = getStartDate(date_end, interval)
-		if (!date) return false
-
-		const DAY = 24 * 3600000
-
-		const { startDate, endDate } = date
-
-		const intervalMs = endDate.getTime() - startDate.getTime() // actual length
-		const tenPercentMs = intervalMs * 0.05
-		const fourteenDaysMs = 10 * DAY
-		const windowMs = Math.min(tenPercentMs, fourteenDaysMs)
-
-		const elapsedSinceStartMs = Date.now() - startDate.getTime()
-		return elapsedSinceStartMs >= DAY && elapsedSinceStartMs <= windowMs
 	}
 </script>
 
@@ -199,23 +160,17 @@
 							</Switch>
 						</td>
 						<td class="text-center">
-							{#if inEarlyWindow(date_end, priceEx?.interval)}
-								{#if bundleArray[i]}
-									<RefundModal
-										name={bundleArray[i].name}
-										username={bundleArray[i].username}
-										{id}
-										price={priceEx}
-									/>
-								{:else}
-									{@const script = getScript(product) as ScriptProduct}
-									<RefundModal name={script.name} username={script.username} {id} price={priceEx} />
-								{/if}
+							{#if bundleArray[i]}
+								<RefundModal
+									name={bundleArray[i].name}
+									username={bundleArray[i].username}
+									{id}
+									price={priceEx!}
+									{date_end}
+								/>
 							{:else}
-								<button disabled class="btn preset-tonal">
-									<RotateCw size="16" />
-									<span>Refund</span>
-								</button>
+								{@const script = getScript(product) as ScriptProduct}
+								<RefundModal name={script.name} username={script.username} {id} price={priceEx!} {date_end} />
 							{/if}
 						</td>
 					</tr>

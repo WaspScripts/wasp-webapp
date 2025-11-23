@@ -271,16 +271,42 @@ export const actions = {
 			)
 		}
 
-		const anchorDate = new Date(subscription.billing_cycle_anchor * 1000)
-		const now = Date.now()
-		const diffMs = now - anchorDate.getTime()
-
-		const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
-		if (diffDays > 0) {
+		const items = subscription.items.data
+		if (items.length != 1)
 			error(
 				500,
-				"The subscription you want to refund is outside of the refund window. Refresh the page, if this keeps happening, please contact support@waspscripts.com"
+				"Subscription has multiple items only 1 was expected! Refresh the page, if this keeps happening, please contact support@waspscripts.com"
+			)
+
+		const DAY = 24 * 3600000
+		const tenDayMS = 10 * DAY
+
+		const start_date = items[0].current_period_start * 1000
+		const end_date = items[0].current_period_end * 1000
+
+		const intervalMs = end_date - start_date
+		const tenPercentMs = intervalMs * 0.1
+		const windowMs = Math.min(tenPercentMs, tenDayMS)
+
+		const elapsedSinceStartMs = Date.now() - start_date
+
+		if (elapsedSinceStartMs < DAY && elapsedSinceStartMs <= windowMs) {
+			const endWindow = new Date(start_date + DAY + windowMs)
+			error(
+				403,
+				"You need to wait 1 day to attempt to refund this payment and you will have until" +
+					endWindow.toLocaleString() +
+					" to request it. If you think this is an error refresh the page, if this keeps happening, please contact support@waspscripts.dev"
+			)
+		}
+
+		if (elapsedSinceStartMs > windowMs) {
+			const endWindow = new Date(start_date + DAY + windowMs)
+			error(
+				403,
+				"The subscription you want to refund is outside of the refund window, you could only refund until " +
+					endWindow.toLocaleString() +
+					". If you think this is an error refresh the page, if this keeps happening, please contact support@waspscripts.dev"
 			)
 		}
 
@@ -317,7 +343,7 @@ export const actions = {
 			)
 		}
 
-		const refund = amount - Math.min(amount * 0.15, 500)
+		const refund = Math.round(amount - Math.min(amount * 0.15, 500))
 
 		try {
 			await stripe.refunds.create({
