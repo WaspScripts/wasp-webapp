@@ -3,7 +3,6 @@
 	import ClipboardCheck from "@lucide/svelte/icons/clipboard-check"
 	let { uuid }: { uuid: string } = $props()
 	let copied = $state(false)
-	console.log(uuid)
 </script>
 
 <button
