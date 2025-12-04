@@ -176,10 +176,12 @@ export const actions = {
 			)
 		}
 
-		const customer = await stripe.customers.retrieve(profile.stripe, {
-			expand: ["subscriptions"]
-		})
+		const stripePromises = await Promise.all([
+			stripe.customers.retrieve(profile.stripe),
+			stripe.subscriptions.retrieve(subscriptionID)
+		])
 
+		const customer = stripePromises[0]
 		if (customer.deleted) {
 			return setError(
 				form,
@@ -188,22 +190,9 @@ export const actions = {
 			)
 		}
 
-		if (!customer.subscriptions) {
-			return setError(form, "", "You don't have any subscription to cancel.")
-		}
+		const subscription = stripePromises[1]
 
-		const subscriptions = customer.subscriptions.data.filter((sub) => sub.status === "active")
-		if (subscriptions.length === 0) {
-			return setError(
-				form,
-				"",
-				"You don't have any subscription active. Refresh the page, if this keeps happening, please contact support@waspscripts.com"
-			)
-		}
-
-		const subscription = subscriptions.find((subscription) => subscription.id === subscriptionID)
-
-		if (!subscription) {
+		if (subscription.customer !== profile.stripe) {
 			return setError(
 				form,
 				"",
