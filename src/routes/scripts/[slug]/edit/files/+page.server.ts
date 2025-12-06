@@ -169,6 +169,9 @@ export const actions = {
 		}
 
 		await updateScript(id)
-		return message(form, "Script files data updated!")
+		return message(
+			form,
+			"Script files data updated! You may need to refresh the page to see the changes. Images may take 24h to change."
+		)
 	}
 }

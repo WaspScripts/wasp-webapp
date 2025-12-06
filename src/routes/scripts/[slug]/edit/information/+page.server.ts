@@ -97,6 +97,6 @@ export const actions = {
 			return setError(form, "", "UPDATE scripts.metadata failed\n\n" + JSON.stringify(errMetadata))
 
 		await updateScript(id)
-		return message(form, "Script information updated!")
+		return message(form, "Script information updated! You may need to refresh the page to see the changes.")
 	}
 }

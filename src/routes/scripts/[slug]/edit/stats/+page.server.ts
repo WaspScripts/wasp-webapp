@@ -117,6 +117,6 @@ export const actions = {
 			return setError(form, "", "UPDATE stats.limits_custom failed\n\n" + JSON.stringify(errCLimits))
 
 		await updateScript(id)
-		return message(form, "Script stats data updated!")
+		return message(form, "Script stats data updated! You may need to refresh the page to see the changes.")
 	}
 }
