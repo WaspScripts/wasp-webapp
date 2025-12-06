@@ -33,17 +33,15 @@
 			<div class="flex w-full flex-col gap-4 lg:flex-row">
 				<div class="w-full">
 					<Combobox
-						value={[$form.simba]}
 						onValueChange={(e) => ($form.simba = e.value[0])}
 						class="w-full max-w-md"
 						placeholder="Simba version"
 						ids={{ input: "simba" }}
 						allowCustomValue={true}
-						defaultInputValue={$form.simba}
 					>
 						<Combobox.Label>Simba:</Combobox.Label>
 						<Combobox.Control>
-							<Combobox.Input />
+							<Combobox.Input value={$form.simba} />
 							<Combobox.Trigger />
 						</Combobox.Control>
 						<Portal>
@@ -66,17 +64,15 @@
 
 				<div class="w-full">
 					<Combobox
-						value={[$form.wasplib]}
 						onValueChange={(e) => ($form.wasplib = e.value[0])}
 						class="w-full max-w-md"
 						placeholder="WaspLib version"
 						ids={{ input: "wasplib" }}
 						allowCustomValue={true}
-						defaultInputValue={$form.wasplib}
 					>
 						<Combobox.Label>WaspLib:</Combobox.Label>
 						<Combobox.Control>
-							<Combobox.Input />
+							<Combobox.Input value={$form.wasplib} />
 							<Combobox.Trigger />
 						</Combobox.Control>
 						<Portal>
@@ -282,6 +278,6 @@
 	</form>
 
 	{#if $message}
-		<div class="text-success-500">{$message}</div>
+		<div class="mx-auto my-12 flex justify-center font-bold text-success-500">{$message}</div>
 	{/if}
 </main>

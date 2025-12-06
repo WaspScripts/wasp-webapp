@@ -192,6 +192,6 @@
 	</form>
 
 	{#if $message}
-		<div class="text-success-500">{$message}</div>
+		<div class="mx-auto my-12 flex justify-center font-bold text-success-500">{$message}</div>
 	{/if}
 </main>

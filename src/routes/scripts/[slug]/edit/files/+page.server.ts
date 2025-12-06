@@ -20,13 +20,13 @@ export const load = async ({ locals: { supabaseServer, user, session }, parent }
 			.schema("scripts")
 			.from("simba")
 			.select("version")
-			.limit(20)
+			.limit(10)
 			.order("created_at", { ascending: false }),
 		supabaseServer
 			.schema("scripts")
 			.from("wasplib")
 			.select("version")
-			.limit(20)
+			.limit(10)
 			.order("created_at", { ascending: false }),
 		supabaseServer
 			.schema("scripts")
