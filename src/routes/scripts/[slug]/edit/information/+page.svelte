@@ -8,7 +8,7 @@
 	const { data } = $props()
 	let profile = $derived(data.profile!)
 
-	const { form, errors, enhance } = superForm(data.form!, {
+	const { form, errors, enhance, message } = superForm(data.form!, {
 		dataType: "json",
 		multipleSubmits: "prevent",
 		taintedMessage: "Are you sure you want to leave?",
@@ -190,4 +190,8 @@
 			<button type="submit" class="btn preset-filled-primary-500 font-bold">Submit</button>
 		</div>
 	</form>
+
+	{#if $message}
+		<div class="text-success-500">{$message}</div>
+	{/if}
 </main>
