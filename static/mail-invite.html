@@ -1,9 +1,10 @@
 <div style="text-align: center; font-family: Roboto, Arial, sans-serif">
-	<h2 style="margin-top: 2rem; margin-bottom: 2rem; font-weight: bold">Confirm Change of Email</h2>
+	<h2 style="margin-top: 2rem; margin-bottom: 2rem; font-weight: bold">WaspScripts Invitation</h2>
 	<p>
-		Follow this link to confirm the update of your email from <b>{{ .Email }}</b> to <b>{{ .NewEmail }}</b>.
+		<b>You've been invited to join WaspScripts!</b>
 	</p>
-	<p>You will also need to click the link you've received in your other email!</p>
+	<p>Click the button below to join:</p>
+
 	<a
 		href="{{ .ConfirmationURL }}"
 		style="
@@ -19,6 +20,6 @@
 			margin-bottom: 2rem;
 		"
 	>
-		Change Email
+		Join
 	</a>
 </div>
