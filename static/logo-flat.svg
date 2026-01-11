@@ -1,14 +1,13 @@
 ﻿<?xml version="1.0"?>
 <svg
-	version="1.2"
-	baseProfile="tiny"
+	width="120px"
+	height="120px"
 	xmlns="http://www.w3.org/2000/svg"
-	width="120"
-	height="120"
-	viewBox="0 0 120 120"
+	version="1.2"
+	baseProfile="tiny-ps"
 >
 	<title>waspscripts.com</title>
-
+	<desc>Logo for WaspScripts</desc>
 	<g
 		transform="translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(-0.229043 0) translate(0 -0.229043) matrix(0.632994 0 0 0.632994 -414.312 -259.85)"
 		fill="#f9c915"
