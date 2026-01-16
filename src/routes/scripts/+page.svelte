@@ -11,7 +11,7 @@
 	import Head from "$lib/components/Head.svelte"
 
 	const { data } = $props()
-	const { scripts, featured, profile } = $derived(data)
+	const { scripts, featuredPromise, profile } = $derived(data)
 
 	let { amount } = $state(data)
 	const { count } = $derived(data)
@@ -78,11 +78,17 @@
 		bind:this={carousel}
 		class="hide-scrollbar col-span-10 flex snap-x snap-mandatory overflow-x-auto scroll-smooth text-white"
 	>
-		{#each featured as feature (feature.id)}
-			<a href="/scripts/{feature.url}" class="relative w-full shrink-0 snap-center rounded-lg text-center">
-				<CarouselEntry id={feature.id} title={feature.title} username={feature.protected.username} />
-			</a>
-		{/each}
+		{#await featuredPromise}
+			<div class="relative w-full shrink-0 snap-center rounded-lg text-center">
+				<CarouselEntry />
+			</div>
+		{:then featured}
+			{#each featured as feature (feature.id)}
+				<a href="/scripts/{feature.url}" class="relative w-full shrink-0 snap-center rounded-lg text-center">
+					<CarouselEntry id={feature.id} title={feature.title} username={feature.protected.username} />
+				</a>
+			{/each}
+		{/await}
 	</div>
 
 	<!-- Button: Right -->

@@ -190,7 +190,7 @@ export const load = async ({ parent, data }) => {
 	return {
 		subscriptionsform,
 		checkoutForm,
-		pageData: await getData(),
+		pageData: getData(),
 		prices,
 		subscriptions: data.subscriptions,
 		freeAccess: data.freeAccess

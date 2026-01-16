@@ -23,38 +23,6 @@ interface CachedScripters {
 
 let statsTotal: CachedStatsTotal | null = null
 const scripts: Map<string, CachedScript> = new Map()
-export class WaspProfile {
-	static async getWarning(supabase: SupabaseClient, id: string | null | undefined) {
-		if (!id) return false
-		const { data, error: err } = await supabase
-			.schema("profiles")
-			.from("private")
-			.select("warning")
-			.eq("id", id)
-			.single<boolean>()
-		if (err) {
-			console.error(err)
-			return false
-		}
-		return data
-	}
-
-	static async updateWarning(supabase: SupabaseClient, id: string) {
-		const { error: err } = await supabase
-			.schema("profiles")
-			.from("private")
-			.update({ warning: true })
-			.eq("id", id)
-
-		if (err)
-			error(
-				500,
-				"Server error, this is probably not an issue on your end!\n" +
-					"UPDATE profiles.private failed!\n\n" +
-					formatError(err)
-			)
-	}
-}
 
 export async function getStatsTotal(supabase: SupabaseClient) {
 	const now = Date.now()

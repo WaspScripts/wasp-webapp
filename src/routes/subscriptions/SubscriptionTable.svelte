@@ -26,7 +26,7 @@
 	let formElement: HTMLFormElement
 
 	const { form, errors, enhance } = superForm(data, {
-		id: "subscriptions",
+		id: bundles.length === 0 && scripts.length === 0 ? "subscriptions-loading" : "subscriptions",
 		dataType: "json",
 		multipleSubmits: "prevent",
 		clearOnSubmit: "errors",

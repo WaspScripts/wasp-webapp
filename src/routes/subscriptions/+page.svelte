@@ -5,13 +5,7 @@
 	import SubscriptionsTable from "./SubscriptionTable.svelte"
 
 	const { data } = $props()
-	let {
-		profile,
-		pageData: { bundles, scripts },
-		prices,
-		subscriptions,
-		freeAccess
-	} = $derived(data)
+	let { profile, pageData, prices, subscriptions, freeAccess } = $derived(data)
 </script>
 
 <Head
@@ -24,13 +18,17 @@
 	{#if profile}
 		{#await subscriptions then subscriptions}
 			{#if subscriptions.length > 0}
-				<SubscriptionsTable data={data.subscriptionsform} {bundles} {scripts} {subscriptions} {prices} />
+				{#await pageData then { bundles, scripts }}
+					<SubscriptionsTable data={data.subscriptionsform} {bundles} {scripts} {subscriptions} {prices} />
+				{/await}
 			{/if}
 		{/await}
 
 		{#await freeAccess then freeAccess}
 			{#if freeAccess.length > 0}
-				<FreeAccessTable {freeAccess} {bundles} {scripts} />
+				{#await pageData then { bundles, scripts }}
+					<FreeAccessTable {freeAccess} {bundles} {scripts} />
+				{/await}
 			{/if}
 		{/await}
 
@@ -39,7 +37,11 @@
 		</form>
 	{/if}
 
-	<CheckoutTable data={data.checkoutForm} {bundles} {scripts} />
+	{#await pageData}
+		<CheckoutTable data={data.checkoutForm} bundles={[]} scripts={[]} />
+	{:then { bundles, scripts }}
+		<CheckoutTable data={data.checkoutForm} {bundles} {scripts} />
+	{/await}
 </main>
 
 <h5 class="my-8 text-center">

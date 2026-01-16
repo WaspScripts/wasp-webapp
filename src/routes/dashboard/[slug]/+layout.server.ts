@@ -68,15 +68,20 @@ export const load = async ({
 	}
 
 	async function getData(products: string[]) {
-		const {
-			data,
-			count,
-			error: err
-		} = await supabaseServer
-			.schema("profiles")
-			.from("subscriptions")
-			.select("user_id, product, price, cancel", { count: "estimated" })
-			.in("product", products)
+		const promises = await Promise.all([
+			supabaseServer
+				.schema("profiles")
+				.from("subscriptions")
+				.select("user_id, product, price, cancel", { count: "exact" })
+				.in("product", products),
+			supabaseServer
+				.schema("profiles")
+				.from("free_access")
+				.select("id, product", { count: "exact" })
+				.in("product", products)
+		])
+
+		const { data, count, error: err } = promises[0]
 
 		if (err) {
 			error(
@@ -87,20 +92,7 @@ export const load = async ({
 			)
 		}
 
-		let cancelling = 0
-		data.forEach((sub) => {
-			if (sub.cancel) cancelling += 1
-		})
-
-		const {
-			data: freeData,
-			count: freeCount,
-			error: freeErr
-		} = await supabaseServer
-			.schema("profiles")
-			.from("free_access")
-			.select("id, product", { count: "estimated" })
-			.in("product", products)
+		const { data: freeData, count: freeCount, error: freeErr } = promises[1]
 
 		if (freeErr) {
 			error(
@@ -110,6 +102,8 @@ export const load = async ({
 					formatError(freeErr)
 			)
 		}
+
+		const cancelling = data.reduce((n, { cancel }) => n + +cancel, 0)
 
 		return { data, freeData, count: count ?? 0, cancelling, freeCount: freeCount ?? 0 }
 	}

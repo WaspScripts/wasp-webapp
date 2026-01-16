@@ -1,50 +1,20 @@
 <script lang="ts">
 	import { page } from "$app/state"
+
 	const role = $derived(page.data.profile?.role)
+
+	const roles: Record<string, { label: string; class: string }> = {
+		premium: { label: "Premium", class: "bg-yellow-500" },
+		contributor: { label: "Contributor", class: "bg-blue-500" },
+		tester: { label: "Tester", class: "bg-green-500" },
+		scripter: { label: "Scripter", class: "bg-teal-500" },
+		moderator: { label: "Moderator", class: "bg-purple-500" },
+		administrator: { label: "Administrator", class: "bg-orange-500" }
+	}
+
+	const roleInfo = $derived(roles[role ?? ""] ?? { label: "OSRS Botter", class: "bg-stone-500" })
 </script>
 
-<div class="flex w-full flex-col justify-evenly gap-2 sm:flex-row">
-	{#if role == "premium"}
-		<span
-			class="inline-block rounded-full bg-yellow-500 px-2.5 py-1 text-center align-baseline text-xs leading-none font-bold whitespace-nowrap text-white xl:px-7 xl:py-5"
-		>
-			Premium
-		</span>
-	{:else if role == "contributor"}
-		<span
-			class="inline-block rounded-full bg-blue-500 px-2.5 py-1 text-center align-baseline text-xs leading-none font-bold whitespace-nowrap text-white xl:px-7 xl:py-5"
-		>
-			Contributor
-		</span>
-	{:else if role == "tester"}
-		<span
-			class="inline-block rounded-full bg-green-500 px-2.5 py-1 text-center align-baseline text-xs leading-none font-bold whitespace-nowrap text-white xl:px-7 xl:py-5"
-		>
-			Tester
-		</span>
-	{:else if role == "scripter"}
-		<span
-			class="inline-block rounded-full bg-teal-500 px-2.5 py-1 text-center align-baseline text-xs leading-none font-bold whitespace-nowrap text-white xl:px-7 xl:py-5"
-		>
-			Scripter
-		</span>
-	{:else if role == "moderator"}
-		<span
-			class="inline-block rounded-full bg-purple-500 px-2.5 py-1 text-center align-baseline text-xs leading-none font-bold whitespace-nowrap text-white xl:px-7 xl:py-5"
-		>
-			Mod
-		</span>
-	{:else if role == "administrator"}
-		<span
-			class="inline-block rounded-full bg-orange-500 px-2.5 py-1 text-center align-baseline text-xs leading-none font-bold whitespace-nowrap text-white xl:px-7 xl:py-5"
-		>
-			Admin
-		</span>
-	{:else}
-		<span
-			class="inline-block rounded-full bg-stone-500 px-2.5 py-1 text-center align-baseline text-xs leading-none font-bold whitespace-nowrap text-white xl:px-7 xl:py-5"
-		>
-			OSRS Botter
-		</span>
-	{/if}
-</div>
+<span class={`mx-auto rounded-lg px-4 py-2 ${roleInfo.class}`}>
+	{roleInfo.label}
+</span>

@@ -7,6 +7,7 @@
 	import ExternalLink from "@lucide/svelte/icons/external-link"
 	import ScriptLinks from "./ScriptLinks.svelte"
 	import { zodClient } from "sveltekit-superforms/adapters"
+	import { Loader } from "@lucide/svelte"
 
 	let {
 		data,
@@ -19,7 +20,7 @@
 	} = $props()
 
 	let { form, errors, enhance } = superForm(data, {
-		id: "checkout",
+		id: bundles.length === 0 && scripts.length === 0 ? "checkout-loading" : "checkout",
 		dataType: "json",
 		multipleSubmits: "prevent",
 		clearOnSubmit: "errors",
@@ -197,127 +198,155 @@
 			</colgroup>
 			<TableHeader headers={["Product", "Type", "Price", "Interval", "Checkout"]} />
 			<tbody class="preset-filled-surface-200-800 [&>tr]:hover:preset-tonal">
-				{#each bundleArray, i}
-					{#if bundleArray[i].active}
-						<tr class="table-row">
-							<td>
-								<div class="mx-3">
-									<div>{bundleArray[i].name}</div>
-									<div class="text-left text-xs">
-										{#await bundleArray[i].username}
-											by Loading...
-										{:then username}
-											by {username}
-										{/await}
+				{#if bundleArray.length === 0 && scriptArray.length === 0}
+					<tr class="table-row">
+						<td>
+							<div class="mx-3">
+								<div>Loading...</div>
+								<div class="text-left text-xs">by Loading...</div>
+							</div>
+						</td>
+
+						<td class="text-center">
+							<div class="btn hover:cursor-pointer hover:text-primary-400-600">
+								<Loader size="16" />
+								<span>Loading...</span>
+							</div>
+						</td>
+
+						<td class="text-center"> - </td>
+
+						<td class="text-center"> Unavailable </td>
+
+						<td>
+							<button class="btn preset-filled-primary-500 font-bold" disabled type="button">
+								Checkout
+							</button>
+						</td>
+					</tr>
+				{:else}
+					{#each bundleArray, i}
+						{#if bundleArray[i].active}
+							<tr class="table-row">
+								<td>
+									<div class="mx-3">
+										<div>{bundleArray[i].name}</div>
+										<div class="text-left text-xs">
+											{#await bundleArray[i].username}
+												by Loading...
+											{:then username}
+												by {username}
+											{/await}
+										</div>
 									</div>
-								</div>
-							</td>
+								</td>
 
-							<td class="text-center">
-								<ScriptLinks bundle={bundleArray[i]} />
-							</td>
+								<td class="text-center">
+									<ScriptLinks bundle={bundleArray[i]} />
+								</td>
 
-							<td class="text-center">
-								{#if bundleArray[i].active}
-									{getCurrentPrice(bundleArray[i].prices)}
-								{:else}
-									-
-								{/if}
-							</td>
+								<td class="text-center">
+									{#if bundleArray[i].active}
+										{getCurrentPrice(bundleArray[i].prices)}
+									{:else}
+										-
+									{/if}
+								</td>
 
-							<td class="text-center">
-								{#if bundleArray[i].active}
-									<div class="mx-auto btn-group flex w-fit flex-col lg:flex-row">
-										{#each bundleArray[i].prices, j}
-											<button
-												class="btn w-full preset-outlined-surface-500"
-												class:border-primary-500={bundleArray[i].prices[j].active}
-												onclick={(e) => {
-													e.preventDefault()
-													changePriceInterval(bundleArray[i].prices, j, bundleArray[i].index)
-												}}
-											>
-												{getPriceIntervalEx(bundleArray[i].prices[j])}
-											</button>
-										{/each}
+								<td class="text-center">
+									{#if bundleArray[i].active}
+										<div class="mx-auto btn-group flex w-fit flex-col lg:flex-row">
+											{#each bundleArray[i].prices, j}
+												<button
+													class="btn w-full preset-outlined-surface-500"
+													class:border-primary-500={bundleArray[i].prices[j].active}
+													onclick={(e) => {
+														e.preventDefault()
+														changePriceInterval(bundleArray[i].prices, j, bundleArray[i].index)
+													}}
+												>
+													{getPriceIntervalEx(bundleArray[i].prices[j])}
+												</button>
+											{/each}
+										</div>
+									{:else}
+										Unavailable
+									{/if}
+								</td>
+
+								<td>
+									<button
+										class="btn preset-filled-primary-500 font-bold"
+										formaction="?/checkout&product={bundleArray[i].id}&code={code}"
+									>
+										Checkout
+									</button>
+								</td>
+							</tr>
+						{/if}
+					{/each}
+
+					{#each scriptArray, i}
+						{#if scriptArray[i].active}
+							<tr>
+								<td>
+									<div class="mx-3">
+										<div class="">{scriptArray[i].name}</div>
+										<div class="text-xs">
+											{#await scriptArray[i].username}
+												by Loading...
+											{:then username}
+												by {username}
+											{/await}
+										</div>
 									</div>
-								{:else}
-									Unavailable
-								{/if}
-							</td>
+								</td>
 
-							<td>
-								<button
-									class="btn preset-filled-primary-500 font-bold"
-									formaction="?/checkout&product={bundleArray[i].id}&code={code}"
-								>
-									Checkout
-								</button>
-							</td>
-						</tr>
-					{/if}
-				{/each}
+								<td class="text-center">
+									<a
+										href="/scripts/{scriptArray[i].url}"
+										class="btn hover:cursor-pointer hover:text-primary-400-600"
+									>
+										<ExternalLink size="16" />
+										<span>Script</span>
+									</a>
+								</td>
 
-				{#each scriptArray, i}
-					{#if scriptArray[i].active}
-						<tr>
-							<td>
-								<div class="mx-3">
-									<div class="">{scriptArray[i].name}</div>
-									<div class="text-xs">
-										{#await scriptArray[i].username}
-											by Loading...
-										{:then username}
-											by {username}
-										{/await}
-									</div>
-								</div>
-							</td>
+								<td class="text-center">{getCurrentPrice(scriptArray[i].prices)}</td>
 
-							<td class="text-center">
-								<a
-									href="/scripts/{scriptArray[i].url}"
-									class="btn hover:cursor-pointer hover:text-primary-400-600"
-								>
-									<ExternalLink size="16" />
-									<span>Script</span>
-								</a>
-							</td>
+								<td class="text-center">
+									{#if scriptArray[i].active}
+										<div class="mx-auto btn-group flex w-fit flex-col lg:flex-row">
+											{#each scriptArray[i].prices, j}
+												<button
+													class="btn w-full preset-outlined-surface-500"
+													class:border-primary-500={scriptArray[i].prices[j].active}
+													onclick={(e) => {
+														e.preventDefault()
+														changePriceInterval(scriptArray[i].prices, j, scriptArray[i].index)
+													}}
+												>
+													{getPriceIntervalEx(scriptArray[i].prices[j])}
+												</button>
+											{/each}
+										</div>
+									{:else}
+										Unavailable
+									{/if}
+								</td>
 
-							<td class="text-center">{getCurrentPrice(scriptArray[i].prices)}</td>
-
-							<td class="text-center">
-								{#if scriptArray[i].active}
-									<div class="mx-auto btn-group flex w-fit flex-col lg:flex-row">
-										{#each scriptArray[i].prices, j}
-											<button
-												class="btn w-full preset-outlined-surface-500"
-												class:border-primary-500={scriptArray[i].prices[j].active}
-												onclick={(e) => {
-													e.preventDefault()
-													changePriceInterval(scriptArray[i].prices, j, scriptArray[i].index)
-												}}
-											>
-												{getPriceIntervalEx(scriptArray[i].prices[j])}
-											</button>
-										{/each}
-									</div>
-								{:else}
-									Unavailable
-								{/if}
-							</td>
-
-							<td>
-								<button
-									class="btn preset-filled-primary-500 font-bold"
-									formaction="?/checkout&product={scriptArray[i].id}&code={code}"
-								>
-									Checkout
-								</button>
-							</td>
-						</tr>
-					{/if}
-				{/each}
+								<td>
+									<button
+										class="btn preset-filled-primary-500 font-bold"
+										formaction="?/checkout&product={scriptArray[i].id}&code={code}"
+									>
+										Checkout
+									</button>
+								</td>
+							</tr>
+						{/if}
+					{/each}
+				{/if}
 			</tbody>
 		</table>
 	</form>

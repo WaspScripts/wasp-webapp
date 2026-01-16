@@ -33,7 +33,7 @@ export const load = async ({ parent, params: { slug } }) => {
 	}
 
 	return {
-		stats: await getStats(),
+		statsPromise: getStats(),
 		subscriptions: {
 			subscribers: data.count,
 			cancelling: data.cancelling,

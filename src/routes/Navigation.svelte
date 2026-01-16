@@ -44,12 +44,6 @@
 	function randomString() {
 		return (Math.random() + 1).toString(36).substring(7)
 	}
-
-	const src = $derived(
-		profile ? profile.avatar : "https://api.dicebear.com/6.x/bottts/svg?seed=" + randomString()
-	)
-
-	const avatarName = $derived(profile?.username ?? "Avatar")
 </script>
 
 <nav class="col-span-12 row-span-1 w-full flex-col text-sm xl:text-base">
@@ -102,25 +96,40 @@
 			{/each}
 		</ul>
 
-		<div class="mx-1 flex">
+		<div class="mx-1 flex gap-1">
 			<button
 				name="User panel"
 				aria-label="Open user panel"
-				class="group flex items-center justify-around p-2"
+				class="group flex items-center justify-around gap-2"
 				onclick={() => {
 					showProfile = !showProfile
 					if (showProfile) showMenu = false
 				}}
 			>
 				{#if profile}
-					<span class="mx-2 my-auto hidden group-hover:text-primary-500 md:block">
+					<span class="my-auto hidden group-hover:text-primary-500 md:block lg:hidden xl:block">
 						{profile.username}
 					</span>
 				{/if}
-
-				<Avatar class="mx-2 h-11 w-11 md:h-11 md:w-12 xl:mx-1">
-					<Avatar.Image {src} alt={avatarName} />
-					<Avatar.Fallback>{avatarName}</Avatar.Fallback>
+				<Avatar class="my-2 size-11 min-w-fit md:size-10 lg:size-11">
+					<Avatar.Image
+						height="2.75rem"
+						width="2.75rem"
+						class="h-full w-full"
+						src={profile?.avatar}
+						alt={"..."}
+						loading="eager"
+					/>
+					<Avatar.Fallback>
+						<img
+							height="2.75rem"
+							width="2.75rem"
+							src={"https://api.dicebear.com/6.x/bottts/svg?seed=" + randomString()}
+							alt={"..."}
+							loading="lazy"
+							class="h-full w-full"
+						/>
+					</Avatar.Fallback>
 				</Avatar>
 			</button>
 
@@ -177,7 +186,7 @@
 		{#if profile}
 			<header class="card-header flex">
 				<div class="mx-auto">
-					<h3 class="my-6 text-center md:hidden">{profile.username}</h3>
+					<h3 class="my-6 text-center">{profile.username}</h3>
 
 					<a
 						href="/user/{profile.id}"

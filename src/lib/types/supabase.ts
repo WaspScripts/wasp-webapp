@@ -198,28 +198,6 @@ export type Database = {
           },
         ]
       }
-      private: {
-        Row: {
-          email: string
-          id: string
-        }
-        Insert: {
-          email: string
-          id?: string
-        }
-        Update: {
-          email?: string
-          id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "private_id_fkey"
-            columns: ["id"]
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       profiles: {
         Row: {
           avatar: string

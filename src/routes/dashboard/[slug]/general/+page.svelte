@@ -3,7 +3,7 @@
 	import { Avatar } from "@skeletonlabs/skeleton-svelte"
 
 	const { data } = $props()
-	const { supabaseClient, profile, stats, subscriptions } = $derived(data)
+	const { supabaseClient, profile, statsPromise, subscriptions } = $derived(data)
 
 	interface Scripter {
 		id: string
@@ -43,8 +43,14 @@
 
 			<tbody class="preset-filled-surface-200-800 [&>tr]:hover:preset-tonal">
 				<tr class="table-row">
-					<td class="text-center">{stats.scripts.length} / {stats.total}</td>
-					<td class="text-center">{stats.premium} / {stats.total}</td>
+					{#await statsPromise}
+						<td class="text-center">... / ...</td>
+						<td class="text-center">... / ...</td>
+					{:then stats}
+						<td class="text-center">{stats.scripts.length} / {stats.total}</td>
+						<td class="text-center">{stats.premium} / {stats.total}</td>
+					{/await}
+
 					<td class="text-center">{subscriptions.subscribers}</td>
 					<td class="text-center">{subscriptions.cancelling}</td>
 					<td class="text-center">{subscriptions.free_access}</td>
@@ -62,18 +68,18 @@
 				{#await fetchcripters()}
 					Loading...
 				{:then scripters}
-					{#each scripters as scripter (scripter.id)}
+					{#each scripters as { id, profiles: { avatar, username } } (id)}
 						<a
-							href="/dashboard/{scripter.id}/general"
+							href="/dashboard/{id}/general"
 							class="m-2 mx-auto btn flex w-full justify-around preset-outlined-tertiary-300-700 p-4 font-bold hover:border-primary-500"
 						>
 							<Avatar class="mx-2 h-11 w-11 md:h-11 md:w-12 xl:mx-1">
-								<Avatar.Image src={scripter.profiles.avatar} alt={scripter.profiles.username} />
-								<Avatar.Fallback>{scripter.profiles.username}</Avatar.Fallback>
+								<Avatar.Image src={avatar} alt={username} loading="eager" />
+								<Avatar.Fallback>{username}</Avatar.Fallback>
 							</Avatar>
 
 							<span>
-								{scripter.profiles.username}
+								{username}
 							</span>
 						</a>
 					{/each}

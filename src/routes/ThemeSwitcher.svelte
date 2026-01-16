@@ -20,7 +20,7 @@
 
 <div class="my-auto input-group flex hover:preset-tonal">
 	<Popover {open} onOpenChange={(e) => (open = e.open)}>
-		<Popover.Trigger class="btn h-full hover:preset-tonal">
+		<Popover.Trigger class="btn h-full px-2 py-1.5 hover:preset-tonal xl:py-0.5">
 			<Palette size="16" />
 			<span class="mx-4 my-auto flex lg:hidden xl:flex">{theme}</span>
 			<ChevronDown size="16" />

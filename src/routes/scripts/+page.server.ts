@@ -51,5 +51,5 @@ export async function load({ depends, url, locals: { supabaseServer } }) {
 
 	const filteredScripts = scripts.slice(Math.max(0, start), Math.min(scripts.length, finish + 1))
 
-	return { scripts: filteredScripts, featured: await getFeatured(), amount, count: scripts.length }
+	return { scripts: filteredScripts, featuredPromise: getFeatured(), amount, count: scripts.length }
 }

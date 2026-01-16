@@ -7,12 +7,17 @@
 	const { content, meta, supabaseClient } = $derived(data)
 
 	async function getUsername(id: string) {
+		interface Profile {
+			username: string
+			avatar: string
+		}
 		const { data, error: err } = await supabaseClient
 			.schema("profiles")
 			.from("profiles")
 			.select("username, avatar")
 			.eq("id", id)
 			.single()
+			.overrideTypes<Profile>()
 
 		if (err) {
 			console.error(err)
@@ -48,8 +53,8 @@
 					{:then author}
 						<span class="my-auto">{author.username}</span>
 						<Avatar class="mx-1 h-8 w-8">
-							<Avatar.Image src={author.avatar} alt={author.username} />
-							<Avatar.Fallback>{author.username ?? "Error"}</Avatar.Fallback>
+							<Avatar.Image src={author.avatar} alt={author.username} loading="eager" />
+							<Avatar.Fallback>{author.username}</Avatar.Fallback>
 						</Avatar>
 					{/await}
 				</span>
@@ -66,8 +71,8 @@
 								<span class="mx-2 flex">
 									<span class="my-auto">{author.username}</span>
 									<Avatar class="mx-1 h-6 w-6">
-										<Avatar.Image src={author.avatar} alt={author.username} />
-										<Avatar.Fallback>{author.username ?? "Error"}</Avatar.Fallback>
+										<Avatar.Image src={author.avatar} alt={author.username} loading="eager" />
+										<Avatar.Fallback>{author.username}</Avatar.Fallback>
 									</Avatar>
 								</span>
 							{/await}

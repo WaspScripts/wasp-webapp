@@ -11,6 +11,7 @@
 
 	const { data, children } = $props()
 
+	const { scripter } = $derived(data)
 	let tab = $derived(page.url.pathname.split("/").pop())
 </script>
 
@@ -20,18 +21,18 @@
 	<h3 class="my-4 flex justify-center gap-2">
 		<span class="my-auto"> Viewing user: </span>
 		<Avatar class="m-2 flex border-2 border-surface-300-700">
-			<Avatar.Image src={data.scripter.profiles.avatar} alt={data.scripter.profiles.username} />
-			<Avatar.Fallback>{data.scripter.profiles.username}</Avatar.Fallback>
+			<Avatar.Image src={scripter.profiles.avatar} alt={scripter.profiles.username} loading="eager" />
+			<Avatar.Fallback>{scripter.profiles.username}</Avatar.Fallback>
 		</Avatar>
 
 		<span class="my-auto">
-			{data.scripter.profiles.username}
+			{scripter.profiles.username}
 		</span>
-		<small class="my-auto"><UUID uuid={data.scripter.id}></UUID></small>
+		<small class="my-auto"><UUID uuid={scripter.id}></UUID></small>
 	</h3>
 
 	<div class="my-8 grid place-items-center">
-		<a href="/scripters/{data.scripter ? data.scripter.url : ''}" class="btn preset-filled-primary-500">
+		<a href="/scripters/{scripter ? scripter.url : ''}" class="btn preset-filled-primary-500">
 			Scripter profile
 		</a>
 	</div>

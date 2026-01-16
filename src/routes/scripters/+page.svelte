@@ -49,5 +49,5 @@
 		{/each}
 	</div>
 
-	<Paginator data={scripters} {currentPage} bind:pageSize={amount} {count} />
+	<Paginator {currentPage} bind:pageSize={amount} {count} />
 </main>

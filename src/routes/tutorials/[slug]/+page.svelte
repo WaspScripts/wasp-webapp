@@ -52,7 +52,7 @@
 			{:then author}
 				<span class="my-auto">{author.username}</span>
 				<Avatar class="mx-1 h-8 w-8">
-					<Avatar.Image src={author.avatar} alt={author.username} />
+					<Avatar.Image src={author.avatar} alt={author.username} loading="eager" />
 					<Avatar.Fallback>{author.username}</Avatar.Fallback>
 				</Avatar>
 			{/await}
@@ -69,7 +69,7 @@
 						<span class="mx-2 flex">
 							<span class="my-auto">{author.username}</span>
 							<Avatar class="mx-1 h-6 w-6">
-								<Avatar.Image src={author.avatar} alt={author.username} />
+								<Avatar.Image src={author.avatar} alt={author.username} loading="eager" />
 								<Avatar.Fallback>{author.username}</Avatar.Fallback>
 							</Avatar>
 						</span>
