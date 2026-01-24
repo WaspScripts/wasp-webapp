@@ -27,7 +27,7 @@
 	}).format((value ?? 0) / 100)
 
 	const endDate = new Date(date_end)
-	const startDate = new Date(endDate)
+	const startDate = new SvelteDate(endDate)
 
 	switch (price.interval) {
 		case "week":

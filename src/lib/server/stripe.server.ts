@@ -81,7 +81,8 @@ export async function createCheckoutSession(
 				on_behalf_of: stripeUser ?? undefined,
 				application_fee_percent: stripeUser ? (currency === "eur" ? 20 : 22) : undefined,
 				transfer_data: stripeUser ? { destination: stripeUser } : undefined,
-				metadata: { user_id: id }
+				metadata: { user_id: id },
+				billing_mode: { type: "flexible" }
 			},
 			success_url: origin + "/subscriptions/success?session_id={CHECKOUT_SESSION_ID}",
 			cancel_url: origin + "/subscriptions/cancel?session_id={CHECKOUT_SESSION_ID}"

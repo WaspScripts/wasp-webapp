@@ -4,10 +4,6 @@ import type { Database } from "./supabase"
 
 export type ProfileBase = Database["profiles"]["Tables"]["profiles"]["Row"]
 export type ProfileRole = ProfileBase["role"] | undefined
-type ProfilePrivate = Database["profiles"]["Tables"]["private"]["Row"]
-export interface FullProfile extends ProfileBase {
-	private: Omit<ProfilePrivate, "id">
-}
 
 export interface Profile extends ProfileBase {
 	subscriptions: Database["profiles"]["Tables"]["subscriptions"]["Row"][]
@@ -113,9 +109,9 @@ export interface ScriptProtected {
 	updated_at: Database["scripts"]["Tables"]["protected"]["Row"]["updated_at"]
 }
 
-export type TScriptStatus = Database["scripts"]["Tables"]["metadata"]["Row"]["status"]
-export type TScriptTypes = Database["scripts"]["Tables"]["metadata"]["Row"]["type"]
-export type TScriptCategories = Database["scripts"]["Tables"]["metadata"]["Row"]["categories"]
+export type TScriptStatus = Database["scripts"]["Enums"]["status"]
+export type TScriptTypes = Database["scripts"]["Enums"]["type"]
+export type TScriptCategories = Database["scripts"]["Enums"]["category"][]
 
 export interface ScriptMetaData {
 	status: TScriptStatus
@@ -213,4 +209,4 @@ export interface ScriptProduct {
 	active: boolean
 }
 
-export type Interval = "week" | "month" | "year"
+export type Interval = Database["stripe"]["Enums"]["cycle"]

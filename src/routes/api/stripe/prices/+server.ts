@@ -1,6 +1,7 @@
 import { STRIPE_WEBHOOK_SECRET_PRICES } from "$env/static/private"
 import { stripe } from "$lib/server/stripe.server"
 import { supabaseAdmin } from "$lib/server/supabase.server.js"
+import type { Interval } from "$lib/types/collection"
 import { formatError } from "$lib/utils"
 import { error, json } from "@sveltejs/kit"
 import type Stripe from "stripe"
@@ -47,7 +48,7 @@ export const POST = async ({ request }) => {
 				.from("prices")
 				.update({
 					amount: priceUpdated.unit_amount ?? 100,
-					interval: priceUpdated.recurring?.interval as "week" | "month" | "year" | undefined,
+					interval: priceUpdated.recurring?.interval as Interval | undefined,
 					currency: priceUpdated.currency as "eur" | "usd" | "cad" | "aud" | undefined,
 					active: priceUpdated.active
 				})
@@ -71,7 +72,7 @@ export const POST = async ({ request }) => {
 					id: priceCreated.id,
 					product: priceCreated.product.toString(),
 					amount: priceCreated.unit_amount ?? 100,
-					interval: priceCreated.recurring?.interval as "week" | "month" | "year" | undefined,
+					interval: priceCreated.recurring?.interval as Interval | undefined,
 					currency: priceCreated.currency as "eur" | "usd" | "cad" | "aud" | undefined,
 					active: priceCreated.active
 				})

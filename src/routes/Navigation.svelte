@@ -117,7 +117,7 @@
 						width="2.75rem"
 						class="h-full w-full"
 						src={profile?.avatar}
-						alt={"..."}
+						alt="..."
 						loading="eager"
 					/>
 					<Avatar.Fallback>
@@ -125,7 +125,7 @@
 							height="2.75rem"
 							width="2.75rem"
 							src={"https://api.dicebear.com/6.x/bottts/svg?seed=" + randomString()}
-							alt={"..."}
+							alt="..."
 							loading="lazy"
 							class="h-full w-full"
 						/>

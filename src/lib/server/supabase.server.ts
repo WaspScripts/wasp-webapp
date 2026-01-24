@@ -69,24 +69,6 @@ export async function getUsername(id: string) {
 	return data.username
 }
 
-export async function getPrivateProfile(id: string) {
-	console.log("Updating profiles.profiles for user: ", id)
-
-	const { data, error: err } = await supabaseAdmin
-		.schema("profiles")
-		.from("profiles")
-		.select("username, discord")
-		.eq("id", id)
-		.single()
-
-	if (err) {
-		console.error(formatError(err))
-		return false
-	}
-
-	return data
-}
-
 export async function addFreeAccess(user_id: string, product: string, date_end: string) {
 	const { error: err } = await supabaseAdmin
 		.schema("profiles")
