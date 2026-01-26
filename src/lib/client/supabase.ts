@@ -131,7 +131,7 @@ export async function fetchScriptByID(supabase: SupabaseClient<Database>, id: st
 		.select(
 			`id, title, description, content, url, published,
 			protected!left (author, revision, username, avatar, updated_at),
-			metadata!left (status, type, categories)`
+			metadata!left (status, type, categories, stage)`
 		)
 		.eq("id", id)
 		.single()

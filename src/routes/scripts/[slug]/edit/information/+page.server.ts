@@ -5,6 +5,7 @@ import { UUID_V4_REGEX } from "$lib/utils"
 import { zod } from "sveltekit-superforms/adapters"
 import { getScriptByID, getScriptByURL, updateScript } from "$lib/server/scripts.server"
 import { scriptInfoSchema } from "$lib/client/schemas.js"
+import type { TScriptStages } from "$lib/types/collection.js"
 
 export const load = async ({ locals: { supabaseServer, user, session }, parent }) => {
 	if (!user || !session) {
@@ -18,6 +19,7 @@ export const load = async ({ locals: { supabaseServer, user, session }, parent }
 			published: script.published,
 			status: script.metadata.status === "official",
 			type: script.metadata.type === "premium",
+			stage: script.metadata.stage,
 			title: script.title,
 			description: script.description,
 			content: script.content,
@@ -81,7 +83,8 @@ export const actions = {
 		const metadata = {
 			status: (form.data.status ? "official" : "community") as "official" | "community",
 			type: (form.data.type ? "premium" : "free") as "premium" | "free",
-			categories: form.data.categories
+			categories: form.data.categories,
+			stage: form.data.stage as TScriptStages
 		}
 
 		const updates = [

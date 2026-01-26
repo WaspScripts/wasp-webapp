@@ -5,7 +5,7 @@ import { scriptExists } from "$lib/client/supabase"
 import { doLogin, uploadFile } from "$lib/server/supabase.server"
 import { encodeSEO, formatError } from "$lib/utils"
 import { zod } from "sveltekit-superforms/adapters"
-import type { TScriptStatus, TScriptTypes } from "$lib/types/collection"
+import type { TScriptStages, TScriptStatus, TScriptTypes } from "$lib/types/collection"
 import { pad } from "$lib/client/utils"
 import { updateScript } from "$lib/server/scripts.server"
 import { DISCORD_WEBHOOK } from "$env/static/private"
@@ -147,7 +147,8 @@ export const actions = {
 		const metadata = {
 			status: (form.data.status ? "official" : "community") as TScriptStatus,
 			type: (form.data.type ? "premium" : "free") as TScriptTypes,
-			categories: form.data.categories
+			categories: form.data.categories,
+			stage: form.data.stage as TScriptStages
 		}
 
 		const { error: errData } = await supabaseServer

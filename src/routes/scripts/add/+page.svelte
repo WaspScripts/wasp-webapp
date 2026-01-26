@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { superForm } from "sveltekit-superforms"
 	import { zodClient } from "sveltekit-superforms/adapters"
-	import { cropString, scriptCategories, scriptStatus, scriptTypes } from "$lib/utils"
+	import { cropString, scriptCategories, scriptStages, scriptStatus, scriptTypes } from "$lib/utils"
 	import { getScriptContent } from "$lib/client/utils"
 	import ScriptHeader from "../ScriptHeader.svelte"
 	import ScriptArticle from "../ScriptArticle.svelte"
 	import { addScriptClientSchema } from "$lib/client/schemas"
 	import { Combobox, FileUpload, Portal, Switch } from "@skeletonlabs/skeleton-svelte"
 	import NewScriptCard from "$lib/components/NewScriptCard.svelte"
-	import type { ScriptMetaData, ScriptPublic } from "$lib/types/collection"
+	import type { ScriptMetaData, ScriptPublic, TScriptStages } from "$lib/types/collection"
 	import FileCode from "@lucide/svelte/icons/file-code"
 	import ImagePlus from "@lucide/svelte/icons/image-plus"
 
@@ -46,10 +46,15 @@
 	let metaData: ScriptMetaData = $derived({
 		status: $form.status ? "official" : "community",
 		type: $form.type ? "premium" : "free",
-		categories: $form.categories
+		categories: $form.categories,
+		stage: $form.stage as TScriptStages
 	})
 
 	let simbaFiles: string[] = $state([])
+
+	let dialog: HTMLDialogElement
+	let newStage = $state($form.stage)
+	let oldStage = $state($form.stage)
 </script>
 
 <main>
@@ -150,6 +155,96 @@
 				<h3>Edit Script</h3>
 			</header>
 			<form method="POST" enctype="multipart/form-data" use:enhance>
+				<div class="mx-auto">
+					<label class="mx-auto label w-94">
+						<span class="label-text">Script stage:</span>
+						<select
+							class="mx-auto select"
+							bind:value={newStage}
+							onchange={() => {
+								dialog.showModal()
+							}}
+							class:ring-error-500={$errors.title != null}
+						>
+							{#each Object.keys(scriptStages) as stage}
+								<option
+									value={scriptStages[stage as TScriptStages].value}
+									disabled={scriptStages[stage as TScriptStages].value === "archived"}
+									class="disabled:bg-surface-50-950 disabled:text-surface-400-600"
+								>
+									{scriptStages[stage as TScriptStages].icon +
+										" " +
+										scriptStages[stage as TScriptStages].name}
+								</option>
+							{/each}
+						</select>
+						{#if $errors.stage}
+							{#each $errors.stage as err (err)}
+								<small class="text-error-500">{err}</small>
+							{/each}
+						{/if}
+					</label>
+
+					<dialog
+						bind:this={dialog}
+						class="top-1/2 left-1/2 z-10 max-w-[840px] -translate-1/2 space-y-4 rounded-container bg-surface-100-900 p-4 text-inherit backdrop-blur-lg backdrop:bg-surface-50-950/90"
+					>
+						<h2 class="text-center h3">Script Stage</h2>
+						<div class="m-4">
+							<div class="text-lg">
+								<p>Script stage represents the stage of your script lifecyle in a linear fashion.</p>
+								<p>
+									You can freely jump stages, e.g. from "prototype" to "stable", but you can never go back to
+									previous stages. This means that once you make your script "stable" it can never again be
+									"prototype", "alpha" or "beta".
+								</p>
+								<p class="my-4">Access rules:</p>
+							</div>
+							<ul class="mx-auto text-sm">
+								<li>
+									- 💡 Prototype: Has a warning. Only you, moderators/administrators can see/download the
+									script.
+								</li>
+								<li>
+									- 🧪 Alpha: Has a warning. Only you, testers/scripters/moderators/administrators can
+									see/download the script.
+								</li>
+								<li>- 🔬 Beta: Has a warning. Everyone can see/download your script.</li>
+								<li>
+									- 🤖 Stable: No warning. Everyone can see the script and those with access can download it.
+								</li>
+								<li>
+									- 💀 Archived: Has a warning. Only you, moderators/administrators can see/download the
+									script.
+								</li>
+							</ul>
+						</div>
+						<footer class="flex justify-end gap-4">
+							<button
+								type="button"
+								class="btn preset-tonal"
+								onclick={() => {
+									newStage = oldStage
+									dialog.close()
+								}}
+							>
+								Cancel
+							</button>
+							<button
+								type="button"
+								class="btn preset-filled-success-500"
+								onclick={() => {
+									oldStage = newStage
+									$form.stage = newStage
+									dialog.close()
+								}}
+							>
+								Confirm
+							</button>
+						</footer>
+					</dialog>
+				</div>
+
 				<div class="mx-auto my-12 flex flex-col justify-evenly md:flex-row">
 					<Switch
 						name="published"

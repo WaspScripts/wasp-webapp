@@ -32,7 +32,7 @@ export async function getScripts(): Promise<Script[]> {
 		.select(
 			`id, title, description, content, url, published,
 			protected!left (author, revision, username, avatar, updated_at),
-			metadata!left (status, type, categories)`
+			metadata!left (status, type, categories, stage)`
 		)
 		.order("title", { ascending: true })
 		.overrideTypes<Script[]>()

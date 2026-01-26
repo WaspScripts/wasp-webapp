@@ -1,7 +1,7 @@
 import { z } from "zod"
-import { ACCEPTED_IMAGE_TYPES, MB_SIZE, scriptCategories } from "$lib/utils"
+import { ACCEPTED_IMAGE_TYPES, MB_SIZE, scriptCategories, scriptStages } from "$lib/utils"
 import { checkClientImageDimensions } from "$lib/client/utils"
-import type { TScriptCategories } from "$lib/types/collection"
+import type { TScriptCategories, TScriptStages } from "$lib/types/collection"
 
 const title = z
 	.string()
@@ -26,6 +26,8 @@ const content = z
 const categoryKeys = Object.keys(scriptCategories) as TScriptCategories
 const ScriptCategoryEnum = z.enum(categoryKeys as [TScriptCategories[number], ...TScriptCategories])
 
+const stageKeys = Object.keys(scriptStages) as TScriptStages[]
+
 export const scriptInfoSchema = z.object({
 	title: title,
 	description: description,
@@ -33,7 +35,8 @@ export const scriptInfoSchema = z.object({
 	status: z.boolean().default(false),
 	type: z.boolean().default(false),
 	categories: z.array(ScriptCategoryEnum).min(1, "You should have at least 1 category."),
-	published: z.boolean().default(true)
+	published: z.boolean().default(true),
+	stage: z.enum(stageKeys as [TScriptStages[number], TScriptStages])
 })
 
 export const scriptStatsSchema = z

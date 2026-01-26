@@ -2,7 +2,14 @@
 	import { goto } from "$app/navigation"
 	import { PUBLIC_SUPABASE_URL } from "$env/static/public"
 	import type { Script } from "$lib/types/collection"
-	import { cropString, encodeSEO, scriptCategories, scriptStatus, scriptTypes } from "$lib/utils"
+	import {
+		cropString,
+		encodeSEO,
+		scriptCategories,
+		scriptStages,
+		scriptStatus,
+		scriptTypes
+	} from "$lib/utils"
 	import { Portal, Tooltip } from "@skeletonlabs/skeleton-svelte"
 
 	let { script, customCover, link }: { script: Script; customCover?: string; link?: string } = $props()
@@ -26,6 +33,13 @@
 			if (link) goto(link)
 		}}
 	>
+		{#if script.metadata.stage !== "stable"}
+			<div
+				class="absolute z-1 m-2 w-fit rounded-md preset-outlined-surface-600-400 preset-filled-surface-500 px-1"
+			>
+				{scriptStages[script.metadata.stage].icon + scriptStages[script.metadata.stage].name}
+			</div>
+		{/if}
 		<img src={imgLink} alt="Script cover" class="rounded-md contain-content" loading="lazy" />
 	</button>
 	<button

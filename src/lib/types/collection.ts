@@ -92,14 +92,7 @@ export interface ScriptBase {
 	}
 }
 
-export interface ScriptPublic {
-	id: Database["scripts"]["Tables"]["scripts"]["Row"]["id"]
-	url: Database["scripts"]["Tables"]["scripts"]["Row"]["url"]
-	title: Database["scripts"]["Tables"]["scripts"]["Row"]["title"]
-	description: Database["scripts"]["Tables"]["scripts"]["Row"]["description"]
-	content: Database["scripts"]["Tables"]["scripts"]["Row"]["content"]
-	published: Database["scripts"]["Tables"]["scripts"]["Row"]["published"]
-}
+export type ScriptPublic = Database["scripts"]["Tables"]["scripts"]["Row"]
 
 export interface ScriptProtected {
 	author: Database["scripts"]["Tables"]["protected"]["Row"]["author"]
@@ -112,11 +105,13 @@ export interface ScriptProtected {
 export type TScriptStatus = Database["scripts"]["Enums"]["status"]
 export type TScriptTypes = Database["scripts"]["Enums"]["type"]
 export type TScriptCategories = Database["scripts"]["Enums"]["category"][]
+export type TScriptStages = Database["scripts"]["Enums"]["stage"]
 
 export interface ScriptMetaData {
 	status: TScriptStatus
 	type: TScriptTypes
 	categories: TScriptCategories
+	stage: TScriptStages
 }
 
 export interface ScriptLimits {

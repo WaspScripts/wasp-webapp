@@ -33,3 +33,25 @@ html.dark .shiki span {
 	font-weight: var(--shiki-dark-font-weight) !important;
 	text-decoration: var(--shiki-dark-text-decoration) !important;
 }
+
+dialog,
+dialog::backdrop {
+	--anim-duration: 250ms;
+	transition:
+		display var(--anim-duration) allow-discrete,
+		overlay var(--anim-duration) allow-discrete,
+		opacity var(--anim-duration);
+	opacity: 0;
+}
+/* Animate In */
+dialog[open],
+dialog[open]::backdrop {
+	opacity: 1;
+}
+/* Animate Out */
+@starting-style {
+	dialog[open],
+	dialog[open]::backdrop {
+		opacity: 0;
+	}
+}

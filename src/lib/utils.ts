@@ -1,5 +1,5 @@
 import type { AuthError, PostgrestError } from "@supabase/supabase-js"
-import type { Price, TScriptCategories, TScriptStatus, TScriptTypes } from "./types/collection"
+import type { Price, TScriptCategories, TScriptStages, TScriptStatus, TScriptTypes } from "./types/collection"
 
 export const API_URL = "https://api.waspscripts.dev" //http://localhost:8080
 export const UUID_V4_REGEX =
@@ -164,4 +164,12 @@ export const scriptCategories: Record<TScriptCategories[number], NameValueIcon> 
 	slayer: { name: "Slayer", value: "slayer", icon: "💀" },
 	thieving: { name: "Thieving", value: "thieving", icon: "🦝" },
 	runecrafting: { name: "Runecrafting", value: "runecrafting", icon: "⚡" }
+}
+
+export const scriptStages: Record<TScriptStages, NameValueIcon> = {
+	prototype: { name: "Prototype", value: "prototype", icon: "💡" },
+	alpha: { name: "Alpha", value: "alpha", icon: "🧪" },
+	beta: { name: "Beta", value: "beta", icon: "🔬" },
+	stable: { name: "Stable", value: "stable", icon: "🤖" },
+	archived: { name: "Archived", value: "archived", icon: "💀" }
 }
