@@ -2,6 +2,7 @@
 	import UUID from "$lib/components/UUID.svelte"
 	import type { TScriptStages } from "$lib/types/collection"
 	import { scriptStages } from "$lib/utils"
+	import { Portal, Tooltip } from "@skeletonlabs/skeleton-svelte"
 	import StatsHeader from "./StatsHeader.svelte"
 
 	const data = $props()
@@ -29,11 +30,25 @@
 			{/if}
 		</h1>
 		{#if stage !== "stable"}
-			<div
-				class="z-1 mx-auto my-4 w-fit cursor-default rounded-md preset-outlined-surface-600-400 preset-filled-surface-500 px-4 py-2 hover:preset-tonal"
-			>
-				{scriptStages[stage].icon + scriptStages[stage].name}
-			</div>
+			<Tooltip positioning={{ placement: "bottom" }}>
+				<Tooltip.Trigger
+					class="mx-auto my-2 w-fit cursor-default rounded-md preset-outlined-surface-600-400 preset-filled-surface-500 px-2 py-1 hover:preset-tonal"
+				>
+					{scriptStages[stage].icon + scriptStages[stage].name}
+				</Tooltip.Trigger>
+				<Portal>
+					<Tooltip.Positioner>
+						<Tooltip.Content class="card preset-filled-surface-950-50 p-2">
+							<span>This script is in <b>{scriptStages[stage].name}</b> and might not be stable!</span>
+							<Tooltip.Arrow
+								class="[--arrow-background:var(--color-surface-950-50)] [--arrow-size:--spacing(2)]"
+							>
+								<Tooltip.ArrowTip />
+							</Tooltip.Arrow>
+						</Tooltip.Content>
+					</Tooltip.Positioner>
+				</Portal>
+			</Tooltip>
 		{/if}
 		<h2 class="my-4">
 			{description ?? "Loading..."}
