@@ -24,7 +24,7 @@
 </script>
 
 <div
-	class="mx-auto flex h-fit w-fit flex-col card preset-filled-surface-200-800 shadow-sm card-hover hover:preset-outlined"
+	class="mx-auto flex h-fit w-fit flex-col card preset-filled-surface-200-800 shadow-sm card-hover hover:outline-1"
 	class:cursor-pointer={link}
 >
 	<button
