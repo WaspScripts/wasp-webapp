@@ -341,10 +341,6 @@ export type Database = {
         Args: { accesser: string; owner: string; product: string }
         Returns: boolean
       }
-      cron_update_subscriptions: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
       get_avatar: {
         Args: { userid: string }
         Returns: string
@@ -489,6 +485,12 @@ export type Database = {
           {
             foreignKeyName: "metadata_id_fkey"
             columns: ["id"]
+            referencedRelation: "featured"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "metadata_id_fkey"
+            columns: ["id"]
             referencedRelation: "scripts"
             referencedColumns: ["id"]
           },
@@ -538,6 +540,12 @@ export type Database = {
           username?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "protected_id_fkey"
+            columns: ["id"]
+            referencedRelation: "featured"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "protected_id_fkey"
             columns: ["id"]
@@ -611,6 +619,12 @@ export type Database = {
           wasplib?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "versions_id_fkey"
+            columns: ["id"]
+            referencedRelation: "featured"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "versions_id_fkey"
             columns: ["id"]
@@ -720,6 +734,7 @@ export type Database = {
         | "slayer"
         | "thieving"
         | "runecrafting"
+        | "sailing"
       stage: "prototype" | "alpha" | "beta" | "stable" | "archived"
       status: "official" | "community"
       type: "premium" | "free"
@@ -1812,6 +1827,7 @@ export const Constants = {
         "slayer",
         "thieving",
         "runecrafting",
+        "sailing",
       ],
       stage: ["prototype", "alpha", "beta", "stable", "archived"],
       status: ["official", "community"],

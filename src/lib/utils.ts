@@ -163,7 +163,8 @@ export const scriptCategories: Record<TScriptCategories[number], NameValueIcon> 
 	agility: { name: "Agility", value: "agility", icon: "🏃" },
 	slayer: { name: "Slayer", value: "slayer", icon: "💀" },
 	thieving: { name: "Thieving", value: "thieving", icon: "🦝" },
-	runecrafting: { name: "Runecrafting", value: "runecrafting", icon: "⚡" }
+	runecrafting: { name: "Runecrafting", value: "runecrafting", icon: "⚡" },
+	sailing: { name: "Sailing", value: "sailing", icon: "⛵" }
 }
 
 export const scriptStages: Record<TScriptStages, NameValueIcon> = {
