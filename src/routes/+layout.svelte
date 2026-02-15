@@ -8,9 +8,19 @@
 	let { data, children } = $props()
 	const { session, supabaseClient } = $derived(data)
 
+	let callTimestamps: number[] = []
 	onMount(() => {
 		const { data } = supabaseClient.auth.onAuthStateChange((_, newSession) => {
 			if (newSession?.expires_at !== session?.expires_at) {
+				const now = Date.now()
+				callTimestamps = callTimestamps.filter((ts) => now - ts < 10000)
+				if (callTimestamps.length >= 10) {
+					console.error(
+						"Rate limit exceeded: invalidate('supabase:layout') blocked to prevent loop infinite loop."
+					)
+					return
+				}
+				callTimestamps.push(now)
 				invalidate("supabase:auth")
 			}
 		})
