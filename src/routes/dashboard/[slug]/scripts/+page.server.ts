@@ -7,7 +7,7 @@ import {
 	updatePrice,
 	updateProduct
 } from "$lib/server/stripe.server"
-import { addFreeAccess, cancelFreeAccess, doLogin } from "$lib/server/supabase.server"
+import { addFreeAccess, addFreeAccessRole, cancelFreeAccess, doLogin } from "$lib/server/supabase.server"
 import { formatError, UUID_V4_REGEX } from "$lib/utils"
 import { error, redirect } from "@sveltejs/kit"
 import { fail, setError, superValidate } from "sveltekit-superforms"
@@ -289,6 +289,42 @@ export const actions = {
 
 		return
 	},
+
+	addFreeRole: async ({
+		request,
+		locals: { supabaseServer, user, getProfile },
+		url: { origin, searchParams },
+		params: { slug }
+	}) => {
+		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
+		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
+
+		const promises = await Promise.all([getProfile(), request.formData()])
+		const profile = promises[0]
+
+		if (user.id !== slug && profile?.role != "administrator")
+			error(403, "You cannot access another scripter dashboard.")
+
+		const product = searchParams.get("product")
+		if (!product) error(403, "Product not specified.")
+
+		const data = promises[1]
+
+		const role = data.get("rolename")?.toString()
+		if (!role || role === "") error(403, "Role not specified.")
+
+		const date_end_str = data.get("role-enddate")?.toString()
+		if (!date_end_str || date_end_str === "") error(403, "End date not specified.")
+
+		const date_end = new Date(date_end_str).toISOString().toLocaleString()
+
+		const err = await addFreeAccessRole(role, product, date_end)
+
+		if (err) error(403, err)
+
+		return
+	},
+
 	cancelFree: async ({
 		request,
 		locals: { supabaseServer, user, getProfile },

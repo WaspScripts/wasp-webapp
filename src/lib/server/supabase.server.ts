@@ -78,6 +78,37 @@ export async function addFreeAccess(user_id: string, product: string, date_end: 
 	return err
 }
 
+export async function addFreeAccessRole(role: string, product: string, date_end: string) {
+	role = role.toLowerCase()
+	if (["administrator", "moderator", "scripter", "tester"].includes(role)) return null
+	if (!["contributor"].includes(role)) return null
+
+	const { data, error, count } = await supabaseAdmin
+		.schema("profiles")
+		.from("profiles")
+		.select("id", { count: "exact", head: false })
+		.eq("role", role as Database["profiles"]["Enums"]["roles"])
+
+	if (error) return formatError(error)
+	if (!data || data.length === 0) return "No users found for that role."
+	if (!count || count === 0) return "No users found for that role."
+
+	const inserts = data.slice(0, 100).map((user) => ({
+		product,
+		user_id: user.id,
+		date_end
+	}))
+
+	const { error: err } = await supabaseAdmin.schema("profiles").from("free_access").insert(inserts)
+
+	if (err) return formatError(err)
+
+	if (count > 100) {
+		return "This role has too many users, only the first 100 in the database were added."
+	}
+	return null
+}
+
 export async function cancelFreeAccess(id: string, product: string) {
 	const { error: err } = await supabaseAdmin
 		.schema("profiles")

@@ -3,6 +3,7 @@
 	import TableHeader from "$lib/components/TableHeader.svelte"
 	import { Dialog, Portal } from "@skeletonlabs/skeleton-svelte"
 	import UserRoundPlus from "@lucide/svelte/icons/user-round-plus"
+	import { TicketPlus } from "@lucide/svelte"
 
 	let {
 		id,
@@ -58,7 +59,7 @@
 					<h1 class="my-4 flex flex-col gap-4 text-lg lg:flex-row lg:h4">{name} Free Access</h1>
 					<h2>Total: {count}</h2>
 				</Dialog.Title>
-				<Dialog.Description>
+				<Dialog.Description class="flex flex-col gap-4">
 					<div class="rounded-md preset-outlined-surface-500 p-1">
 						<form method="POST" class="max-h-112 table-wrap">
 							<table class="table">
@@ -95,16 +96,16 @@
 					</div>
 					<form
 						method="POST"
-						class="mx-auto flex flex-col justify-around rounded-md preset-outlined-surface-500 p-8 md:flex-row"
+						class="mx-auto flex flex-col justify-around gap-4 rounded-md preset-outlined-surface-500 p-8 md:flex-row"
 					>
 						<label>
 							<span class="label-text">Add user:</span>
-							<input name="userid" type="text" placeholder="User UUID" class="input" />
+							<input name="userid" type="text" placeholder="User UUID" class="input hover:preset-tonal" />
 						</label>
 
 						<label>
 							<span class="label-text">End date:</span>
-							<input name="enddate" type="date" class="input" />
+							<input name="enddate" type="date" class="input hover:preset-tonal" />
 						</label>
 
 						<button
@@ -115,8 +116,35 @@
 							<UserRoundPlus /> Add user</button
 						>
 					</form>
+
+					<form
+						method="POST"
+						class="mx-auto flex flex-col justify-around gap-4 rounded-md preset-outlined-surface-500 p-8 md:flex-row"
+					>
+						<label>
+							<span class="label-text">Add role:</span>
+							<input name="rolename" type="text" placeholder="Role name" class="input hover:preset-tonal" />
+						</label>
+
+						<label>
+							<span class="label-text">End date:</span>
+							<input name="role-enddate" type="date" class="input hover:preset-tonal" />
+						</label>
+
+						<button
+							type="submit"
+							class="my-4 btn preset-filled-success-500"
+							formaction="?/addFreeRole&product={id}"
+						>
+							<TicketPlus /> Add role</button
+						>
+					</form>
+					<small class="mx-auto my-4 flex flex-col text-center">
+						<span>Refresh the page after making any change!</span>
+						<span>For multiple changes you should refresh in between changes.</span>
+					</small>
 				</Dialog.Description>
-				<Dialog.CloseTrigger class="btn preset-tonal">Close</Dialog.CloseTrigger>
+				<Dialog.CloseTrigger class="mx-auto btn flex preset-tonal">Close</Dialog.CloseTrigger>
 			</Dialog.Content>
 		</Dialog.Positioner>
 	</Portal>
