@@ -93,7 +93,8 @@
 							gp_min: 0,
 							gp_max: 0
 						},
-						profile.username ?? ""
+						profile.username ?? "",
+						navigator.language
 					)}
 				/>
 			</div>
