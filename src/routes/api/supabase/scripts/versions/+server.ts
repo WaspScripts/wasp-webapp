@@ -1,15 +1,12 @@
 import { error, json } from "@sveltejs/kit"
 import { SUPABASE_WEBHOOK_SECRET } from "$env/static/private"
-import { hexToBytes } from "$lib/utils"
 import { getScriptVersion, resetScriptVersions } from "$lib/server/versions.server"
+import { base64ToBytes } from "$lib/utils"
 
 export const POST = async ({ request }) => {
 	const signature = request.headers.get("x-supabase-signature")
-	const body = await request.text()
-
+	const bodyPromise = request.text()
 	if (!signature) error(401, "Webhook signature is missing")
-
-	console.log("Signature: ", signature)
 
 	const encoder = new TextEncoder()
 	const key = await crypto.subtle.importKey(
@@ -20,9 +17,13 @@ export const POST = async ({ request }) => {
 		["verify"]
 	)
 
-	const isValid = await crypto.subtle.verify("HMAC", key, hexToBytes(signature), encoder.encode(body))
+	const body = await bodyPromise
+	const isValid = await crypto.subtle.verify("HMAC", key, base64ToBytes(signature), encoder.encode(body))
 
-	if (!isValid) error(403, "Webhook signature is not valid")
+	if (!isValid) {
+		console.log("Signature is invalid!\n", "Signature: ", signature, "\nBody: ", body)
+		error(403, "Webhook signature is not valid")
+	}
 
 	const payload = JSON.parse(body)
 

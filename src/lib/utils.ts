@@ -175,10 +175,7 @@ export const scriptStages: Record<TScriptStages, NameValueIcon> = {
 	archived: { name: "Archived", value: "archived", icon: "💀" }
 }
 
-export function hexToBytes(hex: string) {
-	const bytes = new Uint8Array(hex.length / 2)
-	for (let i = 0; i < bytes.length; i++) {
-		bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16)
-	}
-	return bytes as Uint8Array<ArrayBuffer>
+export function base64ToBytes(base64: string) {
+	const binString = atob(base64)
+	return Uint8Array.from(binString, (m) => m.codePointAt(0)!)
 }
