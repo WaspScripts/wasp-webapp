@@ -89,12 +89,12 @@ export const actions = {
 		console.log("📜 Updating script files: ", title, " (", id + ")")
 
 		const storagePromises = []
-		let fileNames: string[] = []
+		const fileNames: string[] = []
 
 		const revision = script.protected.revision + 1
+		console.log("Updating script revision to ", revision)
 
 		if (form.data.script && form.data.script.length > 0) {
-			console.log("Updating script revision to ", revision)
 			const path = script.id + "/" + pad(revision, 9) + "/"
 			for (let i = 0; i < form.data.script.length; i++) {
 				const fileName =
@@ -108,7 +108,7 @@ export const actions = {
 				.from("versions")
 				.select("files")
 				.eq("id", id)
-				.eq("revision", revision - 1)
+				.eq("revision", script.protected.revision)
 				.single()
 
 			if (filesError) {
@@ -116,7 +116,13 @@ export const actions = {
 				error(500, "Server failed to retrieve old versions of the script.")
 			}
 
-			fileNames = filesData.files
+			const old_path = script.id + "/" + pad(script.protected.revision, 9) + "/"
+			const new_path = script.id + "/" + pad(revision, 9) + "/"
+
+			filesData.files.forEach((name) => {
+				fileNames.push(name)
+				storagePromises.push(supabaseServer.storage.from("scripts").copy(old_path + name, new_path + name))
+			})
 		}
 
 		if (form.data.cover) {
