@@ -13,15 +13,20 @@
 		multipleSubmits: "prevent",
 		taintedMessage: "Are you sure you want to leave?",
 		validators: zodClient(scriptInfoSchema),
-		scrollToError: true
+		scrollToError: true,
+		onSubmit: () => (waitingReply = true),
+		onUpdated: () => (waitingReply = false),
+		onError: () => (waitingReply = false)
 	})
+
+	let waitingReply = $state(false)
 
 	const categories = Object.values(scriptCategories)
 
 	let dialog: HTMLDialogElement
 
-	const stages = Object.keys(scriptStages)
-	const stageIdx = stages.indexOf($form.stage)
+	const stages = Object.keys(scriptStages) as (keyof typeof scriptStages)[]
+	const stageIdx = stages.indexOf($form.stage as keyof typeof scriptStages)
 	let newStage = $state($form.stage)
 	let oldStage = $state($form.stage)
 </script>
@@ -42,13 +47,13 @@
 					}}
 					class:ring-error-500={$errors.stage != null}
 				>
-					{#each stages as stage, idx}
+					{#each stages as stage, idx (stage)}
 						<option
-							value={scriptStages[stage as TScriptStages].value}
+							value={scriptStages[stage].value}
 							disabled={idx < stageIdx}
 							class="disabled:bg-surface-50-950 disabled:text-surface-400-600"
 						>
-							{scriptStages[stage as TScriptStages].icon + " " + scriptStages[stage as TScriptStages].name}
+							{scriptStages[stage].icon + " " + scriptStages[stage].name}
 						</option>
 					{/each}
 				</select>
@@ -276,11 +281,20 @@
 		{/if}
 
 		<div class="flex justify-between">
-			<a href="./">
-				<button class="btn preset-filled-primary-500 font-bold">Back</button>
+			<a
+				href="./"
+				class="btn preset-filled-primary-500 font-bold {waitingReply ? 'pointer-events-none opacity-50' : ''}"
+			>
+				Back
 			</a>
 
-			<button type="submit" class="btn preset-filled-primary-500 font-bold">Submit</button>
+			<button
+				type="submit"
+				class="btn preset-filled-primary-500 font-bold"
+				disabled={waitingReply || $message}
+			>
+				Submit
+			</button>
 		</div>
 	</form>
 

@@ -24,7 +24,7 @@
 </script>
 
 <Head
-	title="Edit{script.title} - Scripts"
+	title="Edit {script.title} - Scripts"
 	description="The best open source OSRS botting scripts."
 	keywords="Premium, Free, Automation, ComputerVision"
 	author={script.protected.username}

@@ -20,8 +20,13 @@
 		multipleSubmits: "prevent",
 		taintedMessage: "Are you sure you want to leave?",
 		validators: zodClient(addScriptClientSchema),
-		scrollToError: true
+		scrollToError: true,
+		onSubmit: () => (waitingReply = true),
+		onUpdated: () => (waitingReply = false),
+		onError: () => (waitingReply = false)
 	})
+
+	let waitingReply = $state(false)
 
 	const categories = Object.values(scriptCategories)
 
@@ -167,7 +172,7 @@
 							}}
 							class:ring-error-500={$errors.title != null}
 						>
-							{#each Object.keys(scriptStages) as stage}
+							{#each Object.keys(scriptStages) as stage (stage)}
 								<option
 									value={scriptStages[stage as TScriptStages].value}
 									disabled={scriptStages[stage as TScriptStages].value === "archived"}
@@ -679,11 +684,18 @@
 				{/if}
 
 				<div class="flex justify-between">
-					<a href="./">
-						<button class="btn preset-filled-primary-500 font-bold">Back</button>
+					<a
+						href="./"
+						class="btn preset-filled-primary-500 font-bold {waitingReply
+							? 'pointer-events-none opacity-50'
+							: ''}"
+					>
+						Back
 					</a>
 
-					<button type="submit" class="btn preset-filled-primary-500 font-bold">Submit</button>
+					<button type="submit" class="btn preset-filled-primary-500 font-bold" disabled={waitingReply}>
+						Submit
+					</button>
 				</div>
 			</form>
 		</article>

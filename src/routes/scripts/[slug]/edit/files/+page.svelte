@@ -13,8 +13,13 @@
 		multipleSubmits: "prevent",
 		taintedMessage: "Are you sure you want to leave?",
 		validators: zodClient(scriptFilesSchema),
-		scrollToError: true
+		scrollToError: true,
+		onSubmit: () => (waitingReply = true),
+		onUpdated: () => (waitingReply = false),
+		onError: () => (waitingReply = false)
 	})
+
+	let waitingReply = $state(false)
 
 	let cStyle: 0 | 1 | 2 = $state(0)
 	let bStyle: 0 | 1 | 2 = $state(0)
@@ -269,11 +274,20 @@
 		{/if}
 
 		<div class="flex justify-between">
-			<a href="./">
-				<button class="btn preset-filled-primary-500 font-bold">Back</button>
+			<a
+				href="./"
+				class="btn preset-filled-primary-500 font-bold {waitingReply ? 'pointer-events-none opacity-50' : ''}"
+			>
+				Back
 			</a>
 
-			<button type="submit" class="btn preset-filled-primary-500 font-bold">Submit</button>
+			<button
+				type="submit"
+				class="btn preset-filled-primary-500 font-bold"
+				disabled={waitingReply || $message}
+			>
+				Submit
+			</button>
 		</div>
 	</form>
 
