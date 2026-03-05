@@ -7,6 +7,7 @@ import { formatError, UUID_V4_REGEX } from "$lib/utils"
 import { zod } from "sveltekit-superforms/adapters"
 import { getScriptByID, getScriptByURL, updateScript } from "$lib/server/scripts.server"
 import { pad } from "$lib/client/utils"
+import { getScriptVersion, getSimbaVersions, getWaspLibVersions } from "$lib/server/versions.server.js"
 
 export const load = async ({ locals: { supabaseServer, user, session }, parent }) => {
 	if (!user || !session) {
@@ -16,36 +17,23 @@ export const load = async ({ locals: { supabaseServer, user, session }, parent }
 	const { script } = await parent()
 
 	const promises = await Promise.all([
-		supabaseServer
-			.schema("scripts")
-			.from("simba")
-			.select("version")
-			.limit(10)
-			.order("created_at", { ascending: false }),
-		supabaseServer
-			.schema("scripts")
-			.from("wasplib")
-			.select("version")
-			.limit(10)
-			.order("created_at", { ascending: false }),
-		supabaseServer
-			.schema("scripts")
-			.from("versions")
-			.select("simba, wasplib")
-			.eq("id", script.id)
-			.eq("revision", script.protected.revision)
-			.single()
+		getSimbaVersions(),
+		getWaspLibVersions(),
+		getScriptVersion(script.id, script.protected.revision)
 	])
 
-	for (let i = 0; i < promises.length; i++) {
-		const { error: err } = promises[i]
-		if (err) error(500, formatError(err))
-	}
+	const simbaVersions = promises[0]
+	const wasplibVersions = promises[1]
+	const scriptVersions = promises[2]
+
+	if (simbaVersions.length == 0) error(500, "Failed to get Simba versions.")
+	if (wasplibVersions.length == 0) error(500, "Failed to get WaspLib versions.")
+	if (!scriptVersions) error(500, "Script versions is empty")
 
 	const form = await superValidate(
 		{
-			simba: promises[2].data!.simba,
-			wasplib: promises[2].data!.wasplib
+			simba: scriptVersions.simba,
+			wasplib: scriptVersions.wasplib
 		},
 		zod(scriptFilesServerSchema),
 		{ allowFiles: true, errors: false }
@@ -53,8 +41,8 @@ export const load = async ({ locals: { supabaseServer, user, session }, parent }
 
 	return {
 		form,
-		simbaVersions: promises[0].data ?? [],
-		wlVersions: promises[1].data ?? []
+		simbaVersions: simbaVersions,
+		wlVersions: wasplibVersions
 	}
 }
 

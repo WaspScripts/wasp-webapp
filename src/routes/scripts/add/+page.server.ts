@@ -9,6 +9,7 @@ import type { TScriptStages, TScriptStatus, TScriptTypes } from "$lib/types/coll
 import { pad } from "$lib/client/utils"
 import { updateScript } from "$lib/server/scripts.server"
 import { DISCORD_WEBHOOK } from "$env/static/private"
+import { getSimbaVersions, getWaspLibVersions } from "$lib/server/versions.server.js"
 
 const scriptDefaultContent = `### {$title} by {$author}
 
@@ -47,32 +48,20 @@ export const load = async ({ locals: { supabaseServer, user, session } }) => {
 		return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 	}
 
-	const promises = await Promise.all([
-		supabaseServer
-			.schema("scripts")
-			.from("simba")
-			.select("version")
-			.limit(20)
-			.order("created_at", { ascending: false }),
-		supabaseServer
-			.schema("scripts")
-			.from("wasplib")
-			.select("version")
-			.limit(20)
-			.order("created_at", { ascending: false })
-	])
+	const promises = await Promise.all([getSimbaVersions(), getWaspLibVersions()])
 
-	const { data: versions, error: errVersions } = promises[0]
-	if (errVersions) error(500, formatError(errVersions))
-	const { data: wasplib, error: errWasplib } = promises[1]
-	if (errWasplib) error(500, formatError(errWasplib))
+	const simbaVersions = promises[0]
+	const wasplibVersions = promises[1]
+
+	if (simbaVersions.length == 0) error(500, "Failed to get Simba versions.")
+	if (wasplibVersions.length == 0) error(500, "Failed to get WaspLib versions.")
 
 	return {
 		form: await superValidate(
 			{
 				content: scriptDefaultContent,
-				simba: versions[0].version,
-				wasplib: wasplib[0].version
+				simba: simbaVersions[0].version,
+				wasplib: wasplibVersions[0].version
 			},
 			zod(addScriptServerSchema),
 			{
@@ -80,8 +69,8 @@ export const load = async ({ locals: { supabaseServer, user, session } }) => {
 				errors: false
 			}
 		),
-		simbaVersions: versions ?? [],
-		wlVersions: wasplib ?? []
+		simbaVersions: simbaVersions,
+		wlVersions: wasplibVersions
 	}
 }
 

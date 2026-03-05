@@ -2,6 +2,7 @@ import { bannerImage, scriptInfoSchema, coverImage, scriptFile } from "$lib/clie
 import sharp from "sharp"
 import { supabaseAdmin } from "./supabase.server"
 import z from "zod"
+import { getSimbaVersions, getWaspLibVersions } from "./versions.server"
 
 async function checkServerImageDimensions(file: File, width: number, height: number): Promise<boolean> {
 	if (file == null) return false
@@ -32,6 +33,9 @@ export const addScriptServerSchema = scriptInfoSchema
 	.refine(async (schema) => await checkServerImageDimensions(schema.cover, 300, 200))
 	.refine(async (schema) => await checkServerImageDimensions(schema.banner, 1920, 768))
 	.refine(async (schema) => {
+		const simbaVersions = await getSimbaVersions()
+		if (simbaVersions.includes({ version: schema.simba })) return true
+
 		const { count, error } = await supabaseAdmin
 			.schema("scripts")
 			.from("simba")
@@ -43,6 +47,9 @@ export const addScriptServerSchema = scriptInfoSchema
 		return true
 	}, "Invalid Simba version.")
 	.refine(async (schema) => {
+		const wasplibVersions = await getWaspLibVersions()
+		if (wasplibVersions.includes({ version: schema.wasplib })) return true
+
 		const { count, error } = await supabaseAdmin
 			.schema("scripts")
 			.from("wasplib")
@@ -69,6 +76,9 @@ export const scriptFilesServerSchema = z
 		main: z.string().nonempty().optional()
 	})
 	.refine(async (schema) => {
+		const simbaVersions = await getSimbaVersions()
+		if (simbaVersions.includes({ version: schema.simba })) return true
+
 		const { count, error } = await supabaseAdmin
 			.schema("scripts")
 			.from("simba")
@@ -80,6 +90,9 @@ export const scriptFilesServerSchema = z
 		return true
 	}, "Invalid Simba version.")
 	.refine(async (schema) => {
+		const wasplibVersions = await getWaspLibVersions()
+		if (wasplibVersions.includes({ version: schema.wasplib })) return true
+
 		const { count, error } = await supabaseAdmin
 			.schema("scripts")
 			.from("wasplib")
