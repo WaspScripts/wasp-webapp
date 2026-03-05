@@ -89,12 +89,11 @@ export const actions = {
 		console.log("📜 Updating script files: ", title, " (", id + ")")
 
 		const storagePromises = []
-		const fileNames = []
+		let fileNames: string[] = []
 
-		let revision = script.protected.revision
+		const revision = script.protected.revision + 1
 
 		if (form.data.script && form.data.script.length > 0) {
-			revision = revision + 1
 			console.log("Updating script revision to ", revision)
 			const path = script.id + "/" + pad(revision, 9) + "/"
 			for (let i = 0; i < form.data.script.length; i++) {
@@ -103,6 +102,21 @@ export const actions = {
 				fileNames.push(fileName)
 				storagePromises.push(uploadFile(supabaseServer, "scripts", path + fileName, form.data.script[i]))
 			}
+		} else {
+			const { data: filesData, error: filesError } = await supabaseServer
+				.schema("scripts")
+				.from("versions")
+				.select("files")
+				.eq("id", id)
+				.eq("revision", revision - 1)
+				.single()
+
+			if (filesError) {
+				console.error(filesError)
+				error(500, "Server failed to retrieve old versions of the script.")
+			}
+
+			fileNames = filesData.files
 		}
 
 		if (form.data.cover) {
@@ -121,19 +135,13 @@ export const actions = {
 
 		const storage = Promise.all(storagePromises)
 		const database = Promise.all([
-			supabaseAdmin
-				.schema("scripts")
-				.from("protected")
-				.update({
-					revision: revision
-				})
-				.eq("id", id),
+			supabaseAdmin.schema("scripts").from("protected").update({ revision }).eq("id", id),
 			supabaseServer
 				.schema("scripts")
 				.from("versions")
 				.upsert({
-					id: id,
-					revision: revision,
+					id,
+					revision,
 					simba: form.data.simba,
 					wasplib: form.data.wasplib,
 					files: fileNames.length > 0 ? fileNames : undefined
