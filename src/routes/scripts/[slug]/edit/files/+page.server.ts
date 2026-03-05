@@ -2,7 +2,7 @@ import { superValidate, setError, message } from "sveltekit-superforms/server"
 import { error } from "@sveltejs/kit"
 import { scriptFilesServerSchema } from "$lib/server/schemas.server"
 import { canEdit } from "$lib/client/supabase"
-import { doLogin, supabaseAdmin, updateImgFile, uploadFile } from "$lib/server/supabase.server"
+import { doLogin, reuseFile, supabaseAdmin, updateImgFile, uploadFile } from "$lib/server/supabase.server"
 import { formatError, UUID_V4_REGEX } from "$lib/utils"
 import { zod } from "sveltekit-superforms/adapters"
 import { getScriptByID, getScriptByURL, updateScript } from "$lib/server/scripts.server"
@@ -100,7 +100,8 @@ export const actions = {
 				const fileName =
 					form.data.script[i].name == form.data.main ? "script.simba" : form.data.script[i].name
 				fileNames.push(fileName)
-				storagePromises.push(uploadFile(supabaseServer, "scripts", path + fileName, form.data.script[i]))
+				const promise = uploadFile(supabaseServer, "scripts", path + fileName, form.data.script[i])
+				storagePromises.push(promise)
 			}
 		} else {
 			const { data: filesData, error: filesError } = await supabaseServer
@@ -121,7 +122,8 @@ export const actions = {
 
 			filesData.files.forEach((name) => {
 				fileNames.push(name)
-				storagePromises.push(supabaseServer.storage.from("scripts").copy(old_path + name, new_path + name))
+				const promise = reuseFile(supabaseServer, "scripts", old_path + name, new_path + name)
+				storagePromises.push(promise)
 			})
 		}
 

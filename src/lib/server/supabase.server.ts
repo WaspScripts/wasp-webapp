@@ -42,6 +42,23 @@ export async function uploadFile(supabase: SupabaseClient, bucket: string, path:
 	}
 }
 
+export async function reuseFile(supabase: SupabaseClient, bucket: string, oldPath: string, newPath: string) {
+	const { error: err } = await supabase.storage.from("scripts").copy(oldPath, newPath)
+	if (err) {
+		console.error(err)
+		return (
+			"storage " +
+			bucket +
+			" COPY " +
+			oldPath +
+			" TO " +
+			newPath +
+			" failed with the following error: " +
+			JSON.stringify(err)
+		)
+	}
+}
+
 export async function updateImgFile(supabase: SupabaseClient, bucket: string, path: string, file: File) {
 	const { error: err } = await supabase.storage
 		.from(bucket)
