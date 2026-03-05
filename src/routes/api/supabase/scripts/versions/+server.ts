@@ -9,6 +9,8 @@ export const POST = async ({ request }) => {
 
 	if (!signature) error(401, "Webhook signature is missing")
 
+	console.log("Signature: ", signature)
+
 	const encoder = new TextEncoder()
 	const key = await crypto.subtle.importKey(
 		"raw",
