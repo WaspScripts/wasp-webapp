@@ -69,16 +69,16 @@ export async function createCheckoutSession(
 	try {
 		const start = performance.now()
 		session = await stripe.checkout.sessions.create({
-			line_items: [{ price: price, quantity: 1 }],
-			customer: customer,
+			line_items: [{ price, quantity: 1 }],
+			customer,
 			customer_update: { address: "auto", shipping: "auto" },
 			mode: "subscription",
 			billing_address_collection: "auto",
-			automatic_tax: { enabled: stripeUser == null },
+			automatic_tax: { enabled: true },
 			payment_method_collection: "always",
 			allow_promotion_codes: true,
 			subscription_data: {
-				on_behalf_of: stripeUser ?? undefined,
+				on_behalf_of: undefined,
 				application_fee_percent: stripeUser ? (currency === "eur" ? 20 : 22) : undefined,
 				transfer_data: stripeUser ? { destination: stripeUser } : undefined,
 				metadata: { user_id: id },
