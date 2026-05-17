@@ -13,8 +13,8 @@ import {
 	updateAccountDBA
 } from "$lib/server/stripe.server"
 
-export const load = async ({ locals: { supabaseServer }, params: { slug } }) => {
-	const scripter = await getScripter(supabaseServer, slug)
+export const load = async ({ parent }) => {
+	const { scripter } = await parent()
 	const promises = await Promise.all([
 		superValidate(zod(countryCodeSchema)),
 		superValidate(zod(dbaSchema)),
@@ -38,17 +38,18 @@ export const actions = {
 		params: { slug }
 	}) => {
 		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
-
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
+		if (user.id !== slug) {
+			const profile = await getProfile()
+			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
+		}
 
-		const promises = await Promise.all([getProfile(), superValidate(request, zod(countryCodeSchema))])
-		const profile = promises[0]
-		const form = promises[1]
+		const promises = await Promise.all([
+			getScripter(supabaseServer, slug),
+			superValidate(request, zod(countryCodeSchema))
+		])
+		const [scripter, form] = promises
 
-		if (user.id !== slug && profile?.role != "administrator")
-			return setError(form, "", "You cannot access another scripter dashboard.")
-
-		const scripter = await getScripter(supabaseServer, slug)
 		if (scripter.stripe != scripter.id) return setError(form, "", "Stripe account is already created!")
 		if (!form.valid) return setError(form, "", "The country code form is not valid!")
 
@@ -64,10 +65,10 @@ export const actions = {
 	}) => {
 		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-
-		const profile = await getProfile()
-		if (user.id !== slug && profile?.role != "administrator")
-			error(403, "You cannot access another scripter dashboard.")
+		if (user.id !== slug) {
+			const profile = await getProfile()
+			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
+		}
 
 		const scripter = await getScripter(supabaseServer, slug)
 		if (scripter.stripe == scripter.id) error(403, "You need a linked stripe account to edit it.")
@@ -84,17 +85,17 @@ export const actions = {
 		params: { slug }
 	}) => {
 		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
-
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
+		if (user.id !== slug) {
+			const profile = await getProfile()
+			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
+		}
 
-		const promises = await Promise.all([getProfile(), superValidate(request, zod(dbaSchema))])
-		const profile = promises[0]
-		const form = promises[1]
+		const [scripter, form] = await Promise.all([
+			getScripter(supabaseServer, slug),
+			superValidate(request, zod(dbaSchema))
+		])
 
-		if (user.id !== slug && profile?.role != "administrator")
-			error(403, "You cannot access another scripter dashboard.")
-
-		const scripter = await getScripter(supabaseServer, slug)
 		if (scripter.stripe == scripter.id) return setError(form, "", "The user is missing a stripe profile!")
 		if (!form.valid) return setError(form, "", "The name you set is not valid!")
 
@@ -102,6 +103,7 @@ export const actions = {
 		if (!success) return setError(form, "", "Failed to update stripe's business name")
 		return { form }
 	},
+
 	stripeDashboard: async ({
 		locals: { supabaseServer, user, getProfile },
 		url: { origin },
@@ -109,10 +111,10 @@ export const actions = {
 	}) => {
 		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-
-		const profile = await getProfile()
-		if (user.id !== slug && profile?.role != "administrator")
-			error(403, "You cannot access another scripter dashboard.")
+		if (user.id !== slug) {
+			const profile = await getProfile()
+			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
+		}
 
 		const scripter = await getScripter(supabaseServer, slug)
 		if (scripter.stripe == scripter.id) error(403, "You need a linked stripe account to edit it.")

@@ -392,3 +392,11 @@ export const loginAsSchema = z.object({
 export type PriceSchema = z.infer<typeof priceSchema>
 export type BundleSchema = z.infer<typeof newBundleSchema>
 export type NewScriptSchema = z.infer<typeof newScriptSchema>
+
+export const transactionDaysSchema = z.object({
+	days: z
+		.number()
+		.int()
+		.min(0, "You can only export transactions for at least one day.")
+		.max(400, "You can only export transactions for a maximum of 400 days.")
+})

@@ -13,7 +13,6 @@ export const load = async ({
 	depends("wasp:dashboard")
 	if (!user) error(403, "You need to be logged in.")
 	if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-
 	if (user.id !== slug) {
 		const profile = await getProfile()
 		if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")

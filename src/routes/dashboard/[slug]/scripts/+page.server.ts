@@ -98,25 +98,20 @@ export const actions = {
 		url: { origin, searchParams, pathname },
 		params: { slug }
 	}) => {
-		if (!user) {
-			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
-		}
-
+		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-
-		const promises = await Promise.all([getProfile(), superValidate(request, zod(scriptArraySchema))])
-		const profile = promises[0]
-		const form = promises[1]
-
-		if (user.id !== slug && profile?.role != "administrator") {
-			error(403, "You cannot access another scripter dashboard.")
+		if (user.id !== slug) {
+			const profile = await getProfile()
+			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
 		}
 
-		if (!form.valid) return setError(form, "", "The form is not valid!")
-
-		const scripter = await getScripter(supabaseServer, slug)
+		const [scripter, form] = await Promise.all([
+			getScripter(supabaseServer, slug),
+			superValidate(request, zod(scriptArraySchema))
+		])
 
 		if (scripter.stripe == scripter.id) return setError(form, "", "Stripe account is not setup!")
+		if (!form.valid) return setError(form, "", "The form is not valid!")
 
 		const productID = searchParams.get("product")
 		if (!productID) {
@@ -145,7 +140,6 @@ export const actions = {
 			.single()
 
 		if (errProducts) return setError(form, "", errProducts.message)
-
 		if (product.name !== productsData.name) await updateProduct(product.id, product.name)
 
 		const { data: pricesData, error: errPrices } = await supabaseServer
@@ -194,31 +188,27 @@ export const actions = {
 		await Promise.all(createPricePromises)
 		redirect(303, pathname)
 	},
+
 	scriptAdd: async ({
 		request,
 		locals: { supabaseServer, user, getProfile },
 		url: { origin, pathname },
 		params: { slug }
 	}) => {
-		if (!user) {
-			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
-		}
+		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-
-		const promises = await Promise.all([getProfile(), superValidate(request, zod(newScriptSchema))])
-
-		const profile = promises[0]
-		const form = promises[1]
-
-		if (user.id !== slug && profile?.role != "administrator") {
-			error(403, "You cannot access another scripter dashboard.")
+		if (user.id !== slug) {
+			const profile = await getProfile()
+			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
 		}
 
-		if (!form.valid) return setError(form, "", "The form is not valid!")
-
-		const scripter = await getScripter(supabaseServer, slug)
+		const [scripter, form] = await Promise.all([
+			getScripter(supabaseServer, slug),
+			superValidate(request, zod(newScriptSchema))
+		])
 
 		if (scripter.stripe == scripter.id) return setError(form, "", "Stripe account is not setup!")
+		if (!form.valid) return setError(form, "", "The form is not valid!")
 
 		const { data: prodData, error: err } = await supabaseServer
 			.schema("stripe")
@@ -260,19 +250,16 @@ export const actions = {
 		params: { slug }
 	}) => {
 		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
-
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-
-		const promises = await Promise.all([getProfile(), request.formData()])
-		const profile = promises[0]
-
-		if (user.id !== slug && profile?.role != "administrator")
-			error(403, "You cannot access another scripter dashboard.")
+		if (user.id !== slug) {
+			const profile = await getProfile()
+			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
+		}
 
 		const product = searchParams.get("product")
 		if (!product) error(403, "Product not specified.")
 
-		const data = promises[1]
+		const data = await request.formData()
 
 		const id = data.get("userid")?.toString()
 		if (!id || id === "") error(403, "User ID not specified.")
@@ -282,7 +269,6 @@ export const actions = {
 		if (!date_end_str || date_end_str === "") error(403, "End date not specified.")
 
 		const date_end = new Date(date_end_str).toISOString().toLocaleString()
-
 		const err = await addFreeAccess(id, product, date_end)
 
 		if (err) error(403, formatError(err))
@@ -298,17 +284,14 @@ export const actions = {
 	}) => {
 		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-
-		const promises = await Promise.all([getProfile(), request.formData()])
-		const profile = promises[0]
-
-		if (user.id !== slug && profile?.role != "administrator")
-			error(403, "You cannot access another scripter dashboard.")
-
+		if (user.id !== slug) {
+			const profile = await getProfile()
+			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
+		}
 		const product = searchParams.get("product")
 		if (!product) error(403, "Product not specified.")
 
-		const data = promises[1]
+		const data = await request.formData()
 
 		const role = data.get("rolename")?.toString()
 		if (!role || role === "") error(403, "Role not specified.")
@@ -317,29 +300,23 @@ export const actions = {
 		if (!date_end_str || date_end_str === "") error(403, "End date not specified.")
 
 		const date_end = new Date(date_end_str).toISOString().toLocaleString()
-
 		const err = await addFreeAccessRole(role, product, date_end)
-
 		if (err) error(403, err)
 
 		return
 	},
 
 	cancelFree: async ({
-		request,
 		locals: { supabaseServer, user, getProfile },
 		url: { origin, searchParams },
 		params: { slug }
 	}) => {
 		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
-
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-
-		const promises = await Promise.all([getProfile(), request.formData()])
-		const profile = promises[0]
-
-		if (user.id !== slug && profile?.role != "administrator")
-			error(403, "You cannot access another scripter dashboard.")
+		if (user.id !== slug) {
+			const profile = await getProfile()
+			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
+		}
 
 		const product = searchParams.get("product")
 		if (!product) error(403, "Product not specified.")
@@ -360,12 +337,11 @@ export const actions = {
 		params: { slug }
 	}) => {
 		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
-
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-
-		const profile = await getProfile()
-		if (user.id !== slug && profile?.role != "administrator")
-			error(403, "You cannot access another scripter dashboard.")
+		if (user.id !== slug) {
+			const profile = await getProfile()
+			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
+		}
 
 		const subscription = searchParams.get("subscription")
 		if (!subscription) error(403, "Subscription not specified.")
@@ -398,19 +374,18 @@ export const actions = {
 
 		return { success: true }
 	},
+
 	cancelAllSubs: async ({
 		locals: { supabaseServer, user, getProfile },
 		url: { origin, searchParams },
 		params: { slug }
 	}) => {
 		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
-
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-
-		const profile = await getProfile()
-
-		if (user.id !== slug && profile?.role != "administrator")
-			error(403, "You cannot access another scripter dashboard.")
+		if (user.id !== slug) {
+			const profile = await getProfile()
+			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
+		}
 
 		const product = searchParams.get("product")
 		if (!product) error(403, "Product not specified.")
@@ -433,17 +408,13 @@ export const actions = {
 			)
 		}
 
-		data.forEach(async (sub) => {
-			let success = true
-
+		for (let i = 0; i < data.length; i++) {
 			try {
-				await stripe.subscriptions.update(sub.id, { cancel_at_period_end: true })
+				await stripe.subscriptions.update(data[i].id, { cancel_at_period_end: true })
 			} catch {
-				success = false
+				error(503, "Failed to update subscription: " + data[i].id + " on stripe side.")
 			}
-
-			if (!success) error(503, "Failed to update subscription: " + sub.id + " on stripe side.")
-		})
+		}
 
 		return { success: true }
 	}

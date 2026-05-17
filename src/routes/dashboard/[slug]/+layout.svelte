@@ -7,6 +7,8 @@
 	import Landmark from "@lucide/svelte/icons/landmark"
 	import Package from "@lucide/svelte/icons/package"
 	import Settings from "@lucide/svelte/icons/settings"
+	import HandCoins from "@lucide/svelte/icons/hand-coins"
+	import CreditCard from "@lucide/svelte/icons/credit-card"
 	import UUID from "$lib/components/UUID.svelte"
 
 	const { data, children } = $props()
@@ -41,6 +43,8 @@
 		<Tabs.List class="flex flex-col justify-center sm:flex-row">
 			<Tabs.Trigger value="general"><Settings /> General</Tabs.Trigger>
 			<Tabs.Trigger value="stripe"><Landmark />Stripe</Tabs.Trigger>
+			<Tabs.Trigger value="payouts"><HandCoins />Payouts</Tabs.Trigger>
+			<Tabs.Trigger value="transactions"><CreditCard />Transactions</Tabs.Trigger>
 			<Tabs.Trigger value="bundles"><Package /> Bundles</Tabs.Trigger>
 			<Tabs.Trigger value="scripts"><FileCode /> Scripts</Tabs.Trigger>
 			<Tabs.Indicator />
