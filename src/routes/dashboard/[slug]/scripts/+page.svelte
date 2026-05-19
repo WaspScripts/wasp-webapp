@@ -17,7 +17,8 @@
 		dataType: "json",
 		multipleSubmits: "prevent",
 		clearOnSubmit: "errors-and-message",
-		validators: zodClient(scriptArraySchema)
+		validators: zodClient(scriptArraySchema),
+		warnings: { duplicateId: false }
 	})
 
 	const {
@@ -29,7 +30,8 @@
 		dataType: "json",
 		multipleSubmits: "prevent",
 		clearOnSubmit: "errors-and-message",
-		validators: zodClient(newScriptSchema)
+		validators: zodClient(newScriptSchema),
+		warnings: { duplicateId: false }
 	})
 
 	const headers = [
@@ -160,7 +162,7 @@
 			<select
 				class="select"
 				bind:value={$newScriptForm.id}
-				class:disabled={available.length === 0}
+				disabled={available.length === 0}
 				class:ring-error-500={$newScriptErrors.id}
 			>
 				{#each available as script (script.id)}
@@ -183,7 +185,7 @@
 						class="input"
 						step="0.01"
 						bind:value={$newScriptForm.prices[i].amount}
-						class:disabled={available.length === 0}
+						disabled={available.length === 0}
 						class:ring-error-500={$newScriptErrors.prices && $newScriptErrors.prices[i]?.amount}
 					/>
 					{#if $newScriptErrors.prices && $newScriptErrors.prices[i]?.amount}

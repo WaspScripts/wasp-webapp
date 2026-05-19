@@ -13,6 +13,14 @@ import { error, redirect } from "@sveltejs/kit"
 import { fail, setError, superValidate } from "sveltekit-superforms"
 import { zod } from "sveltekit-superforms/adapters"
 
+const newPrices = [
+	{ amount: 4, currency: "eur", interval: "week" },
+	{ amount: 7.5, currency: "eur", interval: "month" },
+	{ amount: 50, currency: "eur", interval: "year" }
+]
+
+const intervals = ["week", "month", "year"] as const
+
 export const load = async ({ locals: { supabaseServer }, params: { slug }, parent }) => {
 	const { scripts, scripter, products, prices, data } = await parent()
 	if (scripter.stripe == scripter.id)
@@ -20,12 +28,6 @@ export const load = async ({ locals: { supabaseServer }, params: { slug }, paren
 			403,
 			"To use this section of the dashboard you need to go through and finish the stripe on-boarding."
 		)
-
-	const newPrices = [
-		{ amount: 4, currency: "eur", interval: "week" },
-		{ amount: 7.5, currency: "eur", interval: "month" },
-		{ amount: 50, currency: "eur", interval: "year" }
-	]
 
 	const bundleProducts = products.filter((p) => p.bundle)
 	const subs: (typeof data.data)[] = []
@@ -56,7 +58,6 @@ export const load = async ({ locals: { supabaseServer }, params: { slug }, paren
 
 				const productPrices = prices.filter((price) => price.product == product.id)
 				if (productPrices.length < 3) {
-					const intervals = ["week", "month", "year"] as const
 					intervals.forEach((interval) => {
 						const i = productPrices.findIndex((price) => price.interval === interval)
 						if (i === -1) {
@@ -99,16 +100,17 @@ export const load = async ({ locals: { supabaseServer }, params: { slug }, paren
 
 	const bundles = await getBundles()
 
-	const promises = await Promise.all([
-		superValidate({ bundles }, zod(bundleArraySchema)),
+	const [bundlesForm, newBundleForm] = await Promise.all([
+		superValidate({ bundles }, zod(bundleArraySchema), { id: "bundles" }),
 		superValidate({ user_id: slug, prices: newPrices, bundledScripts: scripts }, zod(newBundleSchema), {
+			id: "newbundle",
 			errors: false
 		})
 	])
 
 	return {
-		bundlesForm: promises[0],
-		newBundleForm: promises[1],
+		bundlesForm,
+		newBundleForm,
 		subscriptions: subs,
 		freeAccess: free
 	}

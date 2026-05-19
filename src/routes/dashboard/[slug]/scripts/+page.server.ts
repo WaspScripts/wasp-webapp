@@ -13,6 +13,14 @@ import { error, redirect } from "@sveltejs/kit"
 import { fail, setError, superValidate } from "sveltekit-superforms"
 import { zod } from "sveltekit-superforms/adapters"
 
+const newPrices = [
+	{ amount: 4, currency: "eur", interval: "week" },
+	{ amount: 7.5, currency: "eur", interval: "month" },
+	{ amount: 50, currency: "eur", interval: "year" }
+]
+
+const intervals = ["week", "month", "year"] as const
+
 export const load = async ({ params: { slug }, parent }) => {
 	const { scripts, scripter, products, prices, data } = await parent()
 	if (scripter.stripe == scripter.id)
@@ -20,12 +28,6 @@ export const load = async ({ params: { slug }, parent }) => {
 			403,
 			"To use this section of the dashboard you need to go through and finish the stripe on-boarding."
 		)
-
-	const newPrices = [
-		{ amount: 4, currency: "eur", interval: "week" },
-		{ amount: 7.5, currency: "eur", interval: "month" },
-		{ amount: 50, currency: "eur", interval: "year" }
-	]
 
 	const scriptProducts = products.filter((p) => p.script)
 	const subs: (typeof data.data)[] = []
@@ -39,7 +41,6 @@ export const load = async ({ params: { slug }, parent }) => {
 
 		const productPrices = prices.filter((price) => price.product == product.id)
 		if (productPrices.length < 3) {
-			const intervals = ["week", "month", "year"] as const
 			intervals.forEach((interval) => {
 				const i = productPrices.findIndex((price) => price.interval === interval)
 				if (i === -1) {
@@ -74,11 +75,11 @@ export const load = async ({ params: { slug }, parent }) => {
 	})
 
 	const promises = await Promise.all([
-		superValidate({ scripts: scriptData }, zod(scriptArraySchema)),
+		superValidate({ scripts: scriptData }, zod(scriptArraySchema), { id: "scripts" }),
 		superValidate(
 			{ id: available.length > 0 ? available[0].id : "", user_id: slug, prices: newPrices },
 			zod(newScriptSchema),
-			{ errors: false }
+			{ id: "newscript", errors: false }
 		)
 	])
 

@@ -18,7 +18,8 @@
 		dataType: "json",
 		multipleSubmits: "prevent",
 		clearOnSubmit: "errors-and-message",
-		validators: zodClient(bundleArraySchema)
+		validators: zodClient(bundleArraySchema),
+		warnings: { duplicateId: false }
 	})
 
 	const {
@@ -30,7 +31,8 @@
 		dataType: "json",
 		multipleSubmits: "prevent",
 		clearOnSubmit: "errors-and-message",
-		validators: zodClient(newBundleSchema)
+		validators: zodClient(newBundleSchema),
+		warnings: { duplicateId: false }
 	})
 
 	const headers = [

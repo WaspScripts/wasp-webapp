@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { page } from "$app/state"
 	import TableHeader from "$lib/components/TableHeader.svelte"
-	import { Dialog, Portal } from "@skeletonlabs/skeleton-svelte"
+	import { Avatar, Dialog, Portal } from "@skeletonlabs/skeleton-svelte"
 	import UserCheck from "@lucide/svelte/icons/user-check"
+	import UUID from "$lib/components/UUID.svelte"
 
 	let {
 		id,
@@ -23,22 +24,25 @@
 	const income = $state([incomeObject, incomeObject, incomeObject])
 
 	async function getSubscriptions(id: string) {
-		const { data: subData, error: subError } = await page.data.supabaseClient
-			.schema("profiles")
-			.from("subscriptions")
-			.select("id, user_id, price, date_start, date_end, cancel, disabled, profiles(username)")
-			.eq("product", id)
+		const { supabaseClient } = page.data
+		const promises = await Promise.all([
+			supabaseClient
+				.schema("profiles")
+				.from("subscriptions")
+				.select("id, user_id, price, date_start, date_end, cancel, disabled, profiles(username, avatar)")
+				.eq("product", id)
+				.gte("date_end", new Date().toISOString()),
+			supabaseClient.schema("stripe").from("prices").select("id, amount, interval").eq("product", id)
+		])
+
+		const { data: subData, error: subError } = promises[0]
 
 		if (subError) {
 			console.error(subError)
 			return []
 		}
 
-		const { data: priceData, error: priceError } = await page.data.supabaseClient
-			.schema("stripe")
-			.from("prices")
-			.select("id, amount, interval")
-			.eq("product", id)
+		const { data: priceData, error: priceError } = promises[1]
 
 		if (priceError) {
 			console.error(priceError)
@@ -63,6 +67,7 @@
 				id: sub.id,
 				user: sub.user_id,
 				username: sub.profiles.username,
+				avatar: sub.profiles.avatar,
 				date_start: sub.date_start,
 				date_end: sub.date_end,
 				price: value,
@@ -135,8 +140,18 @@
 								{:then subscriptions}
 									{#each subscriptions as row (row.id)}
 										<tr>
-											<td>{row.user}</td>
-											<td class="text-center">{row.username}</td>
+											<td>
+												<UUID uuid={row.user}></UUID>
+											</td>
+											<td class="flex justify-start gap-2">
+												<Avatar class="h-8 w-8">
+													<Avatar.Image src={row.avatar} alt={row.username} loading="eager" />
+													<Avatar.Fallback>{row.username}</Avatar.Fallback>
+												</Avatar>
+												<span class="my-auto">
+													{row.username}
+												</span>
+											</td>
 
 											<td class="text-center">{new Date(row.date_start).toLocaleString(userLocale)}</td>
 											<td class="text-center">{new Date(row.date_end).toLocaleString(userLocale)}</td>

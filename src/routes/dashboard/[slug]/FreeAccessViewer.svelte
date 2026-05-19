@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { page } from "$app/state"
 	import TableHeader from "$lib/components/TableHeader.svelte"
-	import { Dialog, Portal } from "@skeletonlabs/skeleton-svelte"
+	import { Avatar, Dialog, Portal } from "@skeletonlabs/skeleton-svelte"
 	import UserRoundPlus from "@lucide/svelte/icons/user-round-plus"
 	import { TicketPlus } from "@lucide/svelte"
+	import UUID from "$lib/components/UUID.svelte"
 
 	let {
 		id,
@@ -16,11 +17,13 @@
 	} = $props()
 
 	async function getFreeAccess(id: string) {
-		const { data, error } = await page.data.supabaseClient
+		const { supabaseClient } = page.data
+		const { data, error } = await supabaseClient
 			.schema("profiles")
 			.from("free_access")
-			.select("id, user_id, date_start, date_end, profiles(username)")
+			.select("id, user_id, date_start, date_end, profiles(username, avatar)")
 			.eq("product", id)
+			.gte("date_end", new Date().toISOString())
 
 		if (error) {
 			console.error(error)
@@ -33,7 +36,8 @@
 				user_id: access.user_id,
 				date_start: access.date_start,
 				date_end: access.date_end,
-				username: access.profiles?.username ?? "Null"
+				username: access.profiles.username,
+				avatar: access.profiles.avatar
 			}
 		})
 	}
@@ -72,8 +76,18 @@
 									{:then freeAccess}
 										{#each freeAccess as row (row.id)}
 											<tr>
-												<td>{row.user_id}</td>
-												<td class="text-center">{row.username}</td>
+												<td>
+													<UUID uuid={row.user_id}></UUID>
+												</td>
+												<td class="flex justify-start gap-2">
+													<Avatar class="h-8 w-8">
+														<Avatar.Image src={row.avatar} alt={row.username} loading="eager" />
+														<Avatar.Fallback>{row.username}</Avatar.Fallback>
+													</Avatar>
+													<span class="my-auto">
+														{row.username}
+													</span>
+												</td>
 
 												<td class="text-center">{new Date(row.date_start).toLocaleString(userLocale)}</td>
 												<td class="text-center">{new Date(row.date_end).toLocaleString(userLocale)}</td>

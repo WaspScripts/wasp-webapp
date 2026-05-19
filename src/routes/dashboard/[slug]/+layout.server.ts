@@ -1,6 +1,5 @@
 import { getScripter } from "$lib/client/supabase"
-import { getPublishedScripts } from "$lib/server/scripts.server.js"
-import type { Price, ProductEx } from "$lib/types/collection"
+import { getPublishedScripts } from "$lib/server/scripts.server"
 import { formatError, UUID_V4_REGEX } from "$lib/utils"
 import { error } from "@sveltejs/kit"
 
@@ -47,7 +46,6 @@ export const load = async ({
 			.order("amount", { ascending: true })
 			.filter("active", "eq", true)
 			.in("product", products)
-			.overrideTypes<Price[]>()
 
 		if (err) {
 			error(
@@ -67,17 +65,21 @@ export const load = async ({
 	}
 
 	async function getData(products: string[]) {
+		const now = new Date().toISOString()
+
 		const promises = await Promise.all([
 			supabaseServer
 				.schema("profiles")
 				.from("subscriptions")
 				.select("user_id, product, price, cancel", { count: "exact" })
-				.in("product", products),
+				.in("product", products)
+				.gte("date_end", now),
 			supabaseServer
 				.schema("profiles")
 				.from("free_access")
 				.select("id, product", { count: "exact" })
 				.in("product", products)
+				.gte("date_end", now)
 		])
 
 		const { data, count, error: err } = promises[0]
@@ -116,7 +118,6 @@ export const load = async ({
 			.select(`id, user_id, name, bundle, script, username, active`)
 			.order("id", { ascending: true })
 			.eq("user_id", slug)
-			.overrideTypes<ProductEx[]>()
 
 		if (err) {
 			error(

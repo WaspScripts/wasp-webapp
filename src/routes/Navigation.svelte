@@ -41,9 +41,7 @@
 		return "/" + route.toLowerCase().replace("home", "")
 	}
 
-	function randomString() {
-		return (Math.random() + 1).toString(36).substring(7)
-	}
+	const randomStr = (Math.random() + 1).toString(36).substring(7)
 </script>
 
 <nav class="col-span-12 row-span-1 w-full flex-col text-sm xl:text-base">
@@ -110,27 +108,28 @@
 					<span class="my-auto hidden group-hover:text-primary-500 md:block lg:hidden xl:block">
 						{profile.username}
 					</span>
-				{/if}
-				<Avatar class="my-2 size-11 min-w-fit md:size-10 lg:size-11">
-					<Avatar.Image
-						height="2.75rem"
-						width="2.75rem"
-						class="h-full w-full"
-						src={profile?.avatar}
-						alt="..."
-						loading="eager"
-					/>
-					<Avatar.Fallback>
-						<img
+					<Avatar class="my-2 size-11 min-w-fit md:size-10 lg:size-11">
+						<Avatar.Image
 							height="2.75rem"
 							width="2.75rem"
-							src={"https://api.dicebear.com/6.x/bottts/svg?seed=" + randomString()}
-							alt="..."
-							loading="lazy"
 							class="h-full w-full"
+							src={profile.avatar}
+							alt="..."
+							loading="eager"
 						/>
-					</Avatar.Fallback>
-				</Avatar>
+					</Avatar>
+				{:else}
+					<Avatar class="my-2 size-11 min-w-fit md:size-10 lg:size-11">
+						<Avatar.Image
+							height="2.75rem"
+							width="2.75rem"
+							class="h-full w-full"
+							src={"https://api.dicebear.com/6.x/bottts/svg?seed=" + randomStr}
+							alt="..."
+							loading="eager"
+						/>
+					</Avatar>
+				{/if}
 			</button>
 
 			<div class="hidden gap-1 lg:flex">
