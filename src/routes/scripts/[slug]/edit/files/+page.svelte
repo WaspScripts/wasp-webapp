@@ -109,7 +109,7 @@
 				maxFiles={1}
 				maxFileSize={1024 * 1024 * 50}
 				onFileReject={console.error}
-				class="w-full {cStyle === 0 ? '' : cStyle === 1 ? 'text-success-500' : 'text-error-500'}"
+				class={cStyle === 0 ? "" : cStyle === 1 ? "text-success-500" : "text-error-500"}
 				allowDrop
 				onFileChange={async (details) => {
 					cStyle = details.rejectedFiles.length > 0 ? 2 : 0
@@ -121,9 +121,9 @@
 				<FileUpload.Dropzone
 					class="preset-filled-surface-100-900 text-center hover:preset-filled-surface-200-800"
 				>
-					<ImagePlus class="mx-auto " />
-					<span class="my-2">Cover Image</span>
-					<span class="text-xs opacity-60">
+					<ImagePlus class="pointer-events-none" />
+					<span class="pointer-events-none my-2">Cover Image</span>
+					<span class="pointer-events-none text-xs opacity-60">
 						{$errors.cover == null
 							? "Must be exactly 300x200 pixels and JPG format."
 							: $errors.cover.toString()}</span
@@ -152,7 +152,7 @@
 				maxFiles={1}
 				maxFileSize={1024 * 1024 * 50}
 				onFileReject={console.error}
-				class="w-full {bStyle === 0 ? '' : bStyle === 1 ? 'text-success-500' : 'text-error-500'}"
+				class={bStyle === 0 ? "" : bStyle === 1 ? "text-success-500" : "text-error-500"}
 				allowDrop
 				onFileChange={async (details) => {
 					bStyle = details.rejectedFiles.length > 0 ? 2 : 0
@@ -164,9 +164,9 @@
 				<FileUpload.Dropzone
 					class="preset-filled-surface-100-900 text-center hover:preset-filled-surface-200-800"
 				>
-					<ImagePlus class="mx-auto " />
-					<span class="my-2">Banner Image</span>
-					<span class="text-xs opacity-60">
+					<ImagePlus class="pointer-events-none" />
+					<span class="pointer-events-none my-2">Banner Image</span>
+					<span class="pointer-events-none text-xs opacity-60">
 						{$errors.banner == null
 							? "Must be exactly 1920x768 pixels and JPG format."
 							: $errors.banner.toString()}</span
@@ -195,7 +195,7 @@
 				maxFiles={20}
 				maxFileSize={1024 * 1024 * 50}
 				onFileReject={console.error}
-				class="w-full {sStyle === 0 ? '' : sStyle === 1 ? 'text-success-500' : 'text-error-500'}"
+				class={sStyle === 0 ? "" : sStyle === 1 ? "text-success-500" : "text-error-500"}
 				allowDrop
 				onFileChange={async (details) => {
 					sStyle = details.rejectedFiles.length > 0 ? 2 : 0
@@ -220,9 +220,9 @@
 				<FileUpload.Dropzone
 					class="preset-filled-surface-100-900 text-center hover:preset-filled-surface-200-800"
 				>
-					<FileCode class="mx-auto" />
-					<span class="my-2">Script Files</span>
-					<span class="text-xs opacity-60">
+					<FileCode class="pointer-events-none" />
+					<span class="pointer-events-none my-2">Script Files</span>
+					<span class="pointer-events-none text-xs opacity-60">
 						{$errors.script == null
 							? "Must be exactly 1920x768 pixels and JPG format."
 							: $errors.script.toString()}</span
