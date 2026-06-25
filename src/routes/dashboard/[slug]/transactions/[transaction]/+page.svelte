@@ -16,20 +16,24 @@
 	}
 	const transactionURL = url + "transactions/"
 
-	onMount(() => dialog.showModal())
+	let userLocale = $state("pt-PT")
+	onMount(() => {
+		userLocale = navigator.language
+		dialog.showModal()
+	})
 </script>
 
 <dialog
 	bind:this={dialog}
-	class="outline-surface-500 bg-surface-100-900 backdrop:bg-surface-50/75 dark:backdrop:bg-surface-950/75 top-1/2 left-1/2 z-10 max-w-[640px] -translate-1/2 space-y-4 rounded-md p-4 text-inherit outline-1"
+	class="top-1/2 left-1/2 z-10 max-w-[640px] -translate-1/2 space-y-4 rounded-md bg-surface-100-900 p-4 text-inherit outline-1 outline-surface-500 backdrop:bg-surface-50/75 dark:backdrop:bg-surface-950/75"
 >
 	<div class="h-fit w-fit">
 		<div class="my-2 w-96 gap-3">
-			<h2 class="h2 my-2">
-				{currency(transaction.amount / 100, transaction.currency)}
+			<h2 class="my-2 h2">
+				{currency(transaction.amount / 100, transaction.currency, userLocale)}
 			</h2>
 
-			<div class="text-surface-800-200 flex flex-col text-sm">
+			<div class="flex flex-col text-sm text-surface-800-200">
 				<p>Started on {new SvelteDate(transaction.created * 1000).toLocaleString()}</p>
 				<p>Available on {new SvelteDate(transaction.available_on * 1000).toLocaleString()}</p>
 			</div>
@@ -37,7 +41,7 @@
 
 		<div class="flex h-fit max-h-96 flex-col gap-4 overflow-auto p-4">
 			<h3 class="h5">General View</h3>
-			<div class="text-surface-900-100 grid grid-cols-3 gap-x-4 text-sm">
+			<div class="grid grid-cols-3 gap-x-4 text-sm text-surface-900-100">
 				<span>Transaction ID</span>
 				<span class="col-span-2">{transaction.id}</span>
 				<span>Source ID</span>
@@ -46,25 +50,25 @@
 				<span class="col-span-2">{charge}</span>
 			</div>
 
-			<div class="text-surface-900-100 grid grid-cols-3 gap-x-4 text-sm">
+			<div class="grid grid-cols-3 gap-x-4 text-sm text-surface-900-100">
 				<span>WSID</span>
 				<span class="col-span-2">{user.waspscripts}</span>
 				<span>Discord ID</span>
 				<span class="col-span-2">{user.discord}</span>
 			</div>
 
-			<div class="text-surface-900-100 grid grid-cols-3 gap-x-4 text-sm">
+			<div class="grid grid-cols-3 gap-x-4 text-sm text-surface-900-100">
 				<span>Amount</span>
 				<span class="col-span-2">
-					{currency(transaction.amount / 100, transaction.currency)}
+					{currency(transaction.amount / 100, transaction.currency, userLocale)}
 				</span>
 				<span>Fee</span>
 				<span class="col-span-2">
-					{currency(transaction.fee / 100, transaction.currency)}
+					{currency(transaction.fee / 100, transaction.currency, userLocale)}
 				</span>
 				<span>Net</span>
 				<span class="col-span-2">
-					{currency(transaction.net / 100, transaction.currency)}
+					{currency(transaction.net / 100, transaction.currency, userLocale)}
 				</span>
 
 				<span>Country</span>

@@ -1,8 +1,12 @@
 <script lang="ts">
+	import { onMount } from "svelte"
+
 	const { form } = $props()
 
+	let userLocale = $state("pt-PT")
+
 	function toUnit(value: number) {
-		return `"${value.toLocaleString(navigator.language, { minimumFractionDigits: 2 })}"`
+		return `"${value.toLocaleString(userLocale, { minimumFractionDigits: 2 })}"`
 	}
 
 	function formatDate(n: number) {
@@ -51,4 +55,6 @@
 		a.click()
 		URL.revokeObjectURL(url)
 	})
+
+	onMount(() => (userLocale = navigator.language))
 </script>

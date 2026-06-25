@@ -1,15 +1,11 @@
-import { newScriptSchema, scriptArraySchema } from "$lib/client/schemas"
+import { newScriptSchema, scriptArraySchema, type NewScriptSchema } from "$lib/client/schemas"
 import { getScripter } from "$lib/client/supabase"
-import {
-	createPrice,
-	createScriptProduct,
-	stripe,
-	updatePrice,
-	updateProduct
-} from "$lib/server/stripe.server"
+import { stripe, createPrice, updatePrice, updateProduct, createPriceEx } from "$lib/server/stripe.server"
 import { addFreeAccess, addFreeAccessRole, cancelFreeAccess, doLogin } from "$lib/server/supabase.server"
+import type { Interval } from "$lib/types/collection"
 import { formatError, UUID_V4_REGEX } from "$lib/utils"
 import { error, redirect } from "@sveltejs/kit"
+import type Stripe from "stripe"
 import { fail, setError, superValidate } from "sveltekit-superforms"
 import { zod } from "sveltekit-superforms/adapters"
 
@@ -92,6 +88,41 @@ export const load = async ({ params: { slug }, parent }) => {
 	}
 }
 
+async function createScriptProduct(script: NewScriptSchema, name: string, user_id: string) {
+	script.prices = script.prices.filter((price) => price.amount > 0)
+	if (script.prices.length === 0) return { message: null }
+
+	let product: Stripe.Product
+	try {
+		product = await stripe.products.create({
+			name: name,
+			tax_code: "txcd_10202000",
+			metadata: { user_id: user_id, script: script.id }
+		})
+	} catch (err) {
+		console.error(
+			`createScriptProduct error on stripe.products.create with script: ${JSON.stringify(script)} and error: ${JSON.stringify(err)}`
+		)
+		return { message: "Failed to create script product in Stripe" }
+	}
+
+	const stripePromises = []
+
+	for (let i = 0; i < script.prices.length; i++) {
+		const price = script.prices[i]
+		if (price.amount > 0) {
+			stripePromises.push(createPriceEx(product.id, price.amount, price.interval as Interval))
+		}
+	}
+
+	const results = await Promise.all(stripePromises)
+	for (let i = 0; i < results.length; i++) {
+		if (!results[i]) return { message: "Failed to create a price" }
+	}
+
+	return { message: null }
+}
+
 export const actions = {
 	scriptEdit: async ({
 		request,
@@ -141,7 +172,10 @@ export const actions = {
 			.single()
 
 		if (errProducts) return setError(form, "", errProducts.message)
-		if (product.name !== productsData.name) await updateProduct(product.id, product.name)
+		if (product.name !== productsData.name) {
+			const updated = await updateProduct(product.id, product.name)
+			if (!updated) return setError(form, "", "Failed to update product name!")
+		}
 
 		const { data: pricesData, error: errPrices } = await supabaseServer
 			.schema("stripe")
@@ -159,7 +193,7 @@ export const actions = {
 			const newPrice = product.prices[j]
 
 			const updatePricesPromises = []
-			if (Math.round(newPrice.amount * 100) !== currentPrice.amount)
+			if (Math.round(newPrice.amount * 100) !== currentPrice.amount) {
 				updatePricesPromises.push(
 					updatePrice({
 						active: true,
@@ -170,8 +204,13 @@ export const actions = {
 						product: product.id
 					})
 				)
+			}
 
-			await Promise.all(updatePricesPromises)
+			const promises = await Promise.all(updatePricesPromises)
+			for (let idx = 0; idx < promises.length; idx++) {
+				if (!promises[idx]) return setError(form, "", "Failed to update a price!")
+			}
+
 			product.prices.splice(j, 1)
 		}
 
@@ -186,7 +225,11 @@ export const actions = {
 			createPricePromises.push(createPrice(currentPrice, product.id))
 		}
 
-		await Promise.all(createPricePromises)
+		const promises = await Promise.all(createPricePromises)
+		for (let i = 0; i < promises.length; i++) {
+			if (!promises[i]) return setError(form, "", "Failed to create a price.")
+		}
+
 		redirect(303, pathname)
 	},
 
@@ -239,7 +282,8 @@ export const actions = {
 
 		if (errProtected) return setError(form, "", formatError(errProtected))
 
-		await createScriptProduct(form.data, data.scripts.title, data.author)
+		const { message: createScriptErr } = await createScriptProduct(form.data, data.scripts.title, data.author)
+		if (createScriptErr) return setError(form, "", createScriptErr)
 
 		redirect(303, pathname)
 	},

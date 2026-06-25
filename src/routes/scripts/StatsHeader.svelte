@@ -3,7 +3,6 @@
 	import { formatTime, formatNumber } from "$lib/utils"
 
 	let { id = undefined } = $props()
-
 	const { supabaseClient } = $derived(page.data)
 
 	async function getStats(id: string | undefined) {
@@ -31,7 +30,7 @@
 	}
 </script>
 
-<header class="text-center">
+<div class="h-24 text-center">
 	{#await getStats(id) then stats}
 		{#if stats}
 			{#if stats.experience > 0 || stats.gold > 0 || stats.runtime > 0}
@@ -45,4 +44,4 @@
 			<h4>Total Runtime: Loading...</h4>
 		{/if}
 	{/await}
-</header>
+</div>

@@ -1,15 +1,13 @@
-import { bundleArraySchema, newBundleSchema } from "$lib/client/schemas"
+import { bundleArraySchema, newBundleSchema, type BundleSchema } from "$lib/client/schemas"
 import { getScripter } from "$lib/client/supabase"
-import {
-	createBundleProduct,
-	createPrice,
-	stripe,
-	updatePrice,
-	updateProduct
-} from "$lib/server/stripe.server"
+import { stripe, createPrice, createPriceEx, updatePrice, updateProduct } from "$lib/server/stripe.server"
 import { addFreeAccess, cancelFreeAccess, doLogin } from "$lib/server/supabase.server"
+import type { Interval } from "$lib/types/collection"
+import type { Database } from "$lib/types/supabase"
 import { formatError, UUID_V4_REGEX } from "$lib/utils"
+import type { SupabaseClient } from "@supabase/supabase-js"
 import { error, redirect } from "@sveltejs/kit"
+import type Stripe from "stripe"
 import { fail, setError, superValidate } from "sveltekit-superforms"
 import { zod } from "sveltekit-superforms/adapters"
 
@@ -116,6 +114,61 @@ export const load = async ({ locals: { supabaseServer }, params: { slug }, paren
 	}
 }
 
+async function createBundleProduct(supabase: SupabaseClient<Database>, bundle: BundleSchema) {
+	const scripts = bundle.bundledScripts.reduce((acc: string[], script) => {
+		if (script.active) acc.push(script.id)
+		return acc
+	}, [])
+
+	bundle.prices = bundle.prices.filter((price) => price.amount > 0)
+
+	if (bundle.prices.length === 0) return { message: null }
+
+	const { data, error: err } = await supabase
+		.schema("scripts")
+		.from("bundles")
+		.insert({ name: bundle.name, author: bundle.user_id, scripts: scripts })
+		.select()
+		.single()
+
+	if (err) {
+		console.error(
+			`createBundleProduct error on supabase insert with bundle: ${JSON.stringify(bundle)} and error: ${JSON.stringify(err)}`
+		)
+		return err
+	}
+
+	let product: Stripe.Product
+
+	try {
+		product = await stripe.products.create({
+			name: data.name,
+			tax_code: "txcd_10202000",
+			metadata: { user_id: data.author, bundle: data.id }
+		})
+	} catch (err) {
+		console.error(
+			`createBundleProduct error on stripe.products.create with data: ${JSON.stringify(data)} and error: ${JSON.stringify(err)}`
+		)
+		return { message: "Failed to create bundle product in Stripe" }
+	}
+
+	const stripePromises: Promise<boolean>[] = []
+
+	for (let i = 0; i < bundle.prices.length; i++) {
+		const price = bundle.prices[i]
+		if (price.amount > 0) {
+			stripePromises.push(createPriceEx(product.id, price.amount, price.interval as Interval))
+		}
+	}
+
+	const results = await Promise.all(stripePromises)
+	for (let i = 0; i < results.length; i++) {
+		if (!results[i]) return { message: "Failed to create a price" }
+	}
+	return { message: null }
+}
+
 export const actions = {
 	bundleEdit: async ({
 		request,
@@ -171,7 +224,10 @@ export const actions = {
 		if (errProducts) return setError(form, "", formatError(errProducts))
 		if (!productsData.bundle) return setError(form, "", "That product is missing a bundle ID!")
 
-		if (product.name !== productsData.name) await updateProduct(product.id, product.name)
+		if (product.name !== productsData.name) {
+			const updated = await updateProduct(product.id, product.name)
+			if (!updated) return setError(form, "", "Failed to update product name!")
+		}
 
 		const { data: pricesData, error: errPrices } = await supabaseServer
 			.schema("stripe")
@@ -189,7 +245,7 @@ export const actions = {
 			const newPrice = product.prices[j]
 
 			const updatePricesPromises = []
-			if (Math.round(newPrice.amount * 100) !== currentPrice.amount)
+			if (Math.round(newPrice.amount * 100) !== currentPrice.amount) {
 				updatePricesPromises.push(
 					updatePrice({
 						active: true,
@@ -200,8 +256,13 @@ export const actions = {
 						product: product.id
 					})
 				)
+			}
 
-			await Promise.all(updatePricesPromises)
+			const promises = await Promise.all(updatePricesPromises)
+			for (let idx = 0; idx < promises.length; idx++) {
+				if (!promises[idx]) return setError(form, "", "Failed to update a price!")
+			}
+
 			product.prices.splice(j, 1)
 		}
 
@@ -216,7 +277,10 @@ export const actions = {
 			createPricePromises.push(createPrice(currentPrice, product.id))
 		}
 
-		await Promise.all(createPricePromises)
+		const promises = await Promise.all(createPricePromises)
+		for (let i = 0; i < promises.length; i++) {
+			if (!promises[i]) return setError(form, "", "Failed to create a price.")
+		}
 
 		const scripts = product.bundledScripts.reduce((acc: string[], script) => {
 			if (script.active) acc.push(script.id)
@@ -257,9 +321,9 @@ export const actions = {
 		if (!form.valid) return setError(form, "", "The form is not valid!")
 		if (!["administrator", "moderator"].includes(profile.role)) form.data.user_id = user.id
 
-		const err = await createBundleProduct(supabaseServer, form.data)
+		const { message: err } = await createBundleProduct(supabaseServer, form.data)
 
-		if (err) return setError(form, "", err.message)
+		if (err) return setError(form, "", err)
 
 		redirect(303, pathname)
 	},

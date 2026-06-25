@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from "$app/state"
 	import UUID from "$lib/components/UUID.svelte"
+	import { onMount } from "svelte"
 	import { SvelteDate } from "svelte/reactivity"
 	const { id } = $props()
 
@@ -25,6 +26,9 @@
 
 	let show = $state(false)
 	let timeframe: number = $state(5)
+
+	let userLocale = $state("pt-PT")
+	onMount(() => (userLocale = navigator.language))
 </script>
 
 <header class="my-8 flex flex-col gap-8 text-center">
@@ -52,7 +56,7 @@
 					{#each data as user (user.user_id)}
 						<small class="mx-auto my-1 w-fit rounded-md preset-outlined-surface-500 p-2">
 							<UUID uuid={user.user_id}></UUID> Last seen:
-							{new Date(user.last_seen).toLocaleString(navigator.language)}
+							{new Date(user.last_seen).toLocaleString(userLocale)}
 						</small>
 					{/each}
 				{/await}

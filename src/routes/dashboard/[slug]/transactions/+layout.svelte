@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { goto } from "$app/navigation"
 	import { page } from "$app/state"
-	import { transactionDaysSchema } from "$lib/client/schemas.js"
+	import { transactionDaysSchema } from "$lib/client/schemas"
 	import Head from "$lib/components/Head.svelte"
-	import { currency } from "$lib/utils.js"
+	import { currency } from "$lib/utils"
 	import Stripe from "stripe"
 	import ArrowLeft from "@lucide/svelte/icons/arrow-left"
 	import ArrowRight from "@lucide/svelte/icons/arrow-right"
 	import { SvelteDate } from "svelte/reactivity"
 	import { superForm } from "sveltekit-superforms"
 	import { zodClient } from "sveltekit-superforms/adapters"
+	import { onMount } from "svelte"
 
 	const { data, children } = $props()
 	let { transactionsPromise, direction, cursor } = $derived(data)
@@ -48,6 +49,9 @@
 		validators: zodClient(transactionDaysSchema),
 		resetForm: true
 	})
+
+	let userLocale = $state("pt-PT")
+	onMount(() => (userLocale = navigator.language))
 </script>
 
 <Head
@@ -110,13 +114,13 @@
 							{/if}
 						</td>
 						<td>
-							{currency(transaction.amount / 100, transaction.currency)}
+							{currency(transaction.amount / 100, transaction.currency, userLocale)}
 						</td>
 						<td>
-							{currency(transaction.fee / 100, transaction.currency)}
+							{currency(transaction.fee / 100, transaction.currency, userLocale)}
 						</td>
 						<td>
-							{currency((transaction.amount - transaction.fee) / 100, transaction.currency)}
+							{currency((transaction.amount - transaction.fee) / 100, transaction.currency, userLocale)}
 						</td>
 					</tr>
 				{/each}

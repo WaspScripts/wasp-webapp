@@ -5,7 +5,7 @@
 	import ScriptData from "./ScriptData.svelte"
 	import { page } from "$app/state"
 	import TableHeader from "$lib/components/TableHeader.svelte"
-	import { getCurrentPrice, getPriceIntervalEx, scriptStages, setPriceInterval } from "$lib/utils"
+	import { getCurrentPrice, getPriceIntervalEx, setPriceInterval } from "$lib/utils"
 	import ScriptArticle from "../ScriptArticle.svelte"
 	import { replaceScriptContent } from "$lib/client/utils"
 	import Head from "$lib/components/Head.svelte"
@@ -69,7 +69,6 @@
 			class="rounded-md"
 			src={PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/banner.jpg"}
 			alt="Script banner"
-			loading="lazy"
 		/>
 	</ScriptHeader>
 

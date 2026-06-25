@@ -180,8 +180,8 @@ export function base64ToBytes(base64: string) {
 	return Uint8Array.from(binString, (m) => m.codePointAt(0)!)
 }
 
-export function currency(value: number, code: string) {
-	return value.toLocaleString(navigator.language, {
+export function currency(value: number, code: string, lang: string) {
+	return value.toLocaleString(lang, {
 		style: "currency",
 		currency: code.toUpperCase()
 	})

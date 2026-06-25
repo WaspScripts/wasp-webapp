@@ -3,6 +3,7 @@
 	import type { BundleProduct, FreeAccess, ScriptProduct } from "$lib/types/collection"
 	import ExternalLink from "@lucide/svelte/icons/external-link"
 	import ScriptLinks from "./ScriptLinks.svelte"
+	import { onMount } from "svelte"
 
 	let {
 		freeAccess,
@@ -22,12 +23,13 @@
 		return scripts.find((script) => script.id === id)
 	}
 
-	let userLocale = navigator.language ?? "pt-PT"
-
 	let bundleArray: (BundleProduct | undefined)[] = $state([])
 	freeAccess.forEach((access) => {
 		bundleArray.push(getBundle(access.product))
 	})
+
+	let userLocale = $state("pt-PT")
+	onMount(() => (userLocale = navigator.language))
 </script>
 
 <div class="mx-auto w-screen max-w-fit">

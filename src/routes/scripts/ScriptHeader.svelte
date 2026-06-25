@@ -15,11 +15,11 @@
 	let stage: TScriptStages = $derived(data.stage)
 </script>
 
-<header class="my-4 flex w-full flex-col justify-between lg:flex-row">
-	<div class="my-auto lg:mx-4">
+<header class="my-4 flex w-full flex-col justify-between gap-4 lg:flex-row">
+	<div class="m-auto lg:w-2/3">
 		{@render children()}
 	</div>
-	<div class="my-auto text-center lg:mx-4">
+	<div class="m-auto text-center lg:w-1/3">
 		<h1 class="my-4 font-bold">
 			{title ? title : "Loading..."} by
 

@@ -1,20 +1,16 @@
 <script lang="ts">
 	import { page } from "$app/state"
+	import { currency } from "$lib/utils"
 	import { onMount } from "svelte"
 	import { SvelteDate } from "svelte/reactivity"
 
 	const { data } = $props()
 	let { payoutPromise, transactionsPromise } = $derived(data)
 
-	function currency(value: number, code: string) {
-		return value.toLocaleString(navigator.language, {
-			style: "currency",
-			currency: code.toUpperCase()
-		})
-	}
+	let userLocale = $state("pt-PT")
 
 	function toUnit(value: number) {
-		return `"${value.toLocaleString(navigator.language, { minimumFractionDigits: 2 })}"`
+		return `"${value.toLocaleString(userLocale, { minimumFractionDigits: 2 })}"`
 	}
 
 	function formatDate(n: number) {
@@ -67,7 +63,6 @@
 	}
 
 	let loading = $state(true)
-	let fees = $state(0)
 	const charges = $state({ name: "Charges", amount: 0, gross: 0, fees: 0, total: 0 })
 	const refunds = $state({ name: "Refunds", amount: 0, gross: 0, fees: 0, total: 0 })
 	const adjusts = $state({
@@ -78,9 +73,10 @@
 		total: 0
 	})
 
+	let fees = $state(0)
 	$effect(() => {
 		transactionsPromise.then((txs) => {
-			for (let i = 0; i < txs.length - 1; i++) {
+			for (let i = 0; i < txs.length; i++) {
 				const tx = txs[i]
 				fees += tx.fee
 				if (tx.type == "payout") continue
@@ -122,7 +118,10 @@
 	const payoutURL = $derived(url + "payouts/")
 	const transactionURL = $derived(url + "transactions/")
 
-	onMount(() => dialog.showModal())
+	onMount(() => {
+		userLocale = navigator.language
+		dialog.showModal()
+	})
 </script>
 
 <dialog
@@ -135,7 +134,7 @@
 		{:then payout}
 			<div class="my-2 w-96 gap-3">
 				<h2 class="my-2 h2">
-					{currency(payout.amount / 100, payout.currency)}
+					{currency(payout.amount / 100, payout.currency, userLocale)}
 				</h2>
 
 				<div class="flex flex-col text-sm text-surface-800-200">
@@ -158,7 +157,12 @@
 						</span>
 						<span>Amount</span>
 						<span>
-							{currency(payout.amount / 100, payout.currency)}
+							{currency(payout.amount / 100, payout.currency, userLocale)}
+						</span>
+
+						<span>Fees</span>
+						<span>
+							{currency(fees / 100, payout.currency, userLocale)}
 						</span>
 
 						<span>Type</span>
@@ -209,9 +213,9 @@
 								<tr>
 									<td>{entry.name}</td>
 									<td class="text-right">{entry.amount}</td>
-									<td class="text-right">{currency(entry.gross / 100, payout.currency)}</td>
-									<td class="text-right">{currency(entry.fees / 100, payout.currency)}</td>
-									<td class="text-right">{currency(entry.total / 100, payout.currency)}</td>
+									<td class="text-right">{currency(entry.gross / 100, payout.currency, userLocale)}</td>
+									<td class="text-right">{currency(entry.fees / 100, payout.currency, userLocale)}</td>
+									<td class="text-right">{currency(entry.total / 100, payout.currency, userLocale)}</td>
 								</tr>
 							{/each}
 						</tbody>
@@ -244,7 +248,7 @@
 										<span class="text-xs text-surface-700-300">{transaction.description}</span>
 									</div>
 									<span class="my-auto text-right">
-										{currency(transaction.amount / 100, transaction.currency)}
+										{currency(transaction.amount / 100, transaction.currency, userLocale)}
 									</span>
 								</a>
 							{/each}

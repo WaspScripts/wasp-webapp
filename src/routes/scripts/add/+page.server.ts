@@ -9,7 +9,7 @@ import type { TScriptStages, TScriptStatus, TScriptTypes } from "$lib/types/coll
 import { pad } from "$lib/client/utils"
 import { updateScript } from "$lib/server/scripts.server"
 import { DISCORD_WEBHOOK } from "$env/static/private"
-import { getSimbaVersions, getWaspLibVersions } from "$lib/server/versions.server.js"
+import { getSimbaVersions, getWaspLibVersions } from "$lib/server/versions.server"
 
 const scriptDefaultContent = `### {$title} by {$author}
 

@@ -85,7 +85,7 @@
 							class="flex h-full place-content-center place-items-center hover:text-primary-700-300"
 							class:text-primary-800={route === currentPage}
 							class:dark:text-primary-500={route === currentPage}
-							aria-label="Navigate to {route.toLowerCase()} page"
+							aria-label="Navigate to the {route.toLowerCase()} page"
 						>
 							{route}
 						</a>

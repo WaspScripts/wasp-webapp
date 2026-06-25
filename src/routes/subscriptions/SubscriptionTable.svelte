@@ -8,6 +8,7 @@
 	import ScriptLinks from "./ScriptLinks.svelte"
 	import ExternalLink from "@lucide/svelte/icons/external-link"
 	import RefundModal from "./RefundModal.svelte"
+	import { onMount } from "svelte"
 
 	let {
 		data,
@@ -43,8 +44,6 @@
 		return scripts.find((script) => script.id === id)
 	}
 
-	let userLocale = navigator.language ?? "pt-PT"
-
 	let bundleArray: (BundleProduct | undefined)[] = $state([])
 	subscriptions.forEach((sub) => {
 		bundleArray.push(getBundle(sub.product))
@@ -53,6 +52,9 @@
 	function getPrice(id: string, prices: Price[]) {
 		return prices.find((price) => price.id === id)
 	}
+
+	let userLocale = $state("pt-PT")
+	onMount(() => (userLocale = navigator.language))
 </script>
 
 <div class="mx-auto w-screen max-w-fit">

@@ -8,11 +8,7 @@ export const load = async ({ url: { searchParams }, parent }) => {
 
 	const params = {
 		limit: 10,
-		...(cursor
-			? direction === "prev"
-				? { ending_before: cursor }
-				: { starting_after: cursor }
-			: {}),
+		...(cursor ? (direction === "prev" ? { ending_before: cursor } : { starting_after: cursor }) : {}),
 		expand: ["data.destination"]
 	}
 

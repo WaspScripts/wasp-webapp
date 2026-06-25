@@ -1,10 +1,25 @@
 import { PUBLIC_SUPER_USER_ID } from "$env/static/public"
-import { stripe, createCheckoutSession, createCustomerPortal } from "$lib/server/stripe.server"
+import { stripe, createCheckoutSession } from "$lib/server/stripe.server"
 import { subscriptionsSchema, checkoutSchema } from "$lib/client/schemas"
 import { doLogin } from "$lib/server/supabase.server"
 import { error, redirect } from "@sveltejs/kit"
 import { setError, superValidate } from "sveltekit-superforms/server"
 import { zod } from "sveltekit-superforms/adapters"
+
+async function createCustomerPortal(customer: string, origin: string) {
+	try {
+		const portal = await stripe.billingPortal.sessions.create({
+			customer: customer,
+			return_url: origin + "/subscriptions"
+		})
+		return portal.url
+	} catch (err) {
+		console.error(
+			"createCustomerPortal error on stripe.billingPortal.sessions.create: " + JSON.stringify(err)
+		)
+		return null
+	}
+}
 
 export const load = async ({ locals: { getSubscriptions, getFreeAccess } }) => {
 	const subscriptions = await getSubscriptions()

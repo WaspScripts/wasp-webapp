@@ -4,6 +4,7 @@
 	import { currency } from "$lib/utils"
 	import ArrowLeft from "@lucide/svelte/icons/arrow-left"
 	import ArrowRight from "@lucide/svelte/icons/arrow-right"
+	import { onMount } from "svelte"
 	import { SvelteDate } from "svelte/reactivity"
 
 	const { data, children } = $props()
@@ -27,6 +28,9 @@
 
 	const next = $derived(payoutsURL + "?cursor=" + nextCursor + "&dir=next")
 	const prev = $derived(payoutsURL + "?cursor=" + prevCursor + "&dir=prev")
+
+	let userLocale = $state("pt-PT")
+	onMount(() => (userLocale = navigator.language))
 </script>
 
 <Head
@@ -63,7 +67,7 @@
 							{/if}
 						</td>
 						<td>
-							{currency(payout.amount / 100, payout.currency)}
+							{currency(payout.amount / 100, payout.currency, userLocale)}
 						</td>
 					</tr>
 				{/each}

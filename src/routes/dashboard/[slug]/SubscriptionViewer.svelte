@@ -4,6 +4,7 @@
 	import { Avatar, Dialog, Portal } from "@skeletonlabs/skeleton-svelte"
 	import UserCheck from "@lucide/svelte/icons/user-check"
 	import UUID from "$lib/components/UUID.svelte"
+	import { onMount } from "svelte"
 
 	let {
 		id,
@@ -88,9 +89,11 @@
 		"Action"
 	]
 
-	let userLocale = navigator.language ?? "pt-PT"
 	let open = $state(false)
 	let allOpen = $state(false)
+
+	let userLocale = $state("pt-PT")
+	onMount(() => (userLocale = navigator.language))
 </script>
 
 <Dialog {open} onOpenChange={(e) => (open = e.open)}>

@@ -11,6 +11,7 @@
 	import type { ScriptMetaData, ScriptPublic, TScriptStages } from "$lib/types/collection"
 	import FileCode from "@lucide/svelte/icons/file-code"
 	import ImagePlus from "@lucide/svelte/icons/image-plus"
+	import { onMount } from "svelte"
 
 	const { data } = $props()
 	let profile = $derived(data.profile!)
@@ -60,6 +61,8 @@
 	let dialog: HTMLDialogElement
 	let newStage = $state($form.stage)
 	let oldStage = $state($form.stage)
+	let userLocale = $state("pt-PT")
+	onMount(() => (userLocale = navigator.language))
 </script>
 
 <main>
@@ -99,7 +102,7 @@
 							gp_max: 0
 						},
 						profile.username ?? "",
-						navigator.language
+						userLocale
 					)}
 				/>
 			</div>

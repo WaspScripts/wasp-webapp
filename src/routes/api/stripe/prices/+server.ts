@@ -1,6 +1,6 @@
 import { STRIPE_WEBHOOK_SECRET_PRICES } from "$env/static/private"
 import { stripe } from "$lib/server/stripe.server"
-import { supabaseAdmin } from "$lib/server/supabase.server.js"
+import { supabaseAdmin } from "$lib/server/supabase.server"
 import type { Interval } from "$lib/types/collection"
 import { formatError } from "$lib/utils"
 import { error, json } from "@sveltejs/kit"

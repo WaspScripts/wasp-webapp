@@ -7,7 +7,7 @@ import { formatError, UUID_V4_REGEX } from "$lib/utils"
 import { zod } from "sveltekit-superforms/adapters"
 import { getScriptByID, getScriptByURL, updateScript } from "$lib/server/scripts.server"
 import { pad } from "$lib/client/utils"
-import { getScriptVersion, getSimbaVersions, getWaspLibVersions } from "$lib/server/versions.server.js"
+import { getScriptVersion, getSimbaVersions, getWaspLibVersions } from "$lib/server/versions.server"
 
 export const load = async ({ locals: { supabaseServer, user, session }, parent }) => {
 	if (!user || !session) {

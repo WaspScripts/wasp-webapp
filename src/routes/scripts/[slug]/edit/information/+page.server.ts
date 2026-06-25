@@ -4,8 +4,8 @@ import { doLogin } from "$lib/server/supabase.server"
 import { UUID_V4_REGEX } from "$lib/utils"
 import { zod } from "sveltekit-superforms/adapters"
 import { getScriptByID, getScriptByURL, updateScript } from "$lib/server/scripts.server"
-import { scriptInfoSchema } from "$lib/client/schemas.js"
-import type { TScriptStages } from "$lib/types/collection.js"
+import { scriptInfoSchema } from "$lib/client/schemas"
+import type { TScriptStages } from "$lib/types/collection"
 
 export const load = async ({ locals: { supabaseServer, user, session }, parent }) => {
 	if (!user || !session) {

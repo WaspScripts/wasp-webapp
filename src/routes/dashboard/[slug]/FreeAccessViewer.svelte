@@ -5,6 +5,7 @@
 	import UserRoundPlus from "@lucide/svelte/icons/user-round-plus"
 	import { TicketPlus } from "@lucide/svelte"
 	import UUID from "$lib/components/UUID.svelte"
+	import { onMount } from "svelte"
 
 	let {
 		id,
@@ -43,9 +44,10 @@
 	}
 
 	const headers = ["WaspScripts ID", "Username", "Start Date", "End Date", "Action"]
-
-	let userLocale = navigator.language ?? "pt-PT"
 	let open = $state(false)
+
+	let userLocale = $state("pt-PT")
+	onMount(() => (userLocale = navigator.language))
 </script>
 
 <Dialog {open} onOpenChange={(e) => (open = e.open)}>
