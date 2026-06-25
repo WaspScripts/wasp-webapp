@@ -43,10 +43,10 @@ const config = {
 
 				"frame-src": [
 					"self",
-					"https://stripe-data-exports.s3.amazonaws.com/",
+					"https://stripe-data-exports.s3.amazonaws.com",
 					"https://js.stripe.com",
 					"https://connect-js.stripe.com",
-					"https://www.youtube.com/"
+					"https://www.youtube.com"
 				],
 				"script-src": [
 					"self",
