@@ -21,6 +21,7 @@
 		class="my-auto btn px-2 py-0.5 hover:preset-tonal xl:px-4"
 		title="Toggle dark mode."
 		type="submit"
+		aria-label="Light/Dark mode"
 	>
 		<SunMoon />
 	</button>

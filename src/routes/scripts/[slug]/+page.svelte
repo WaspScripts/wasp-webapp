@@ -69,6 +69,7 @@
 			class="rounded-md"
 			src={PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/banner.jpg"}
 			alt="Script banner"
+			fetchpriority="high"
 		/>
 	</ScriptHeader>
 
