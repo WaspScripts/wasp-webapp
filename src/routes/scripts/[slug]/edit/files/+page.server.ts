@@ -3,9 +3,9 @@ import { error } from "@sveltejs/kit"
 import { scriptFilesServerSchema } from "$lib/server/schemas.server"
 import { canEdit } from "$lib/client/supabase"
 import { doLogin, reuseFile, supabaseAdmin, updateImgFile, uploadFile } from "$lib/server/supabase.server"
-import { formatError, UUID_V4_REGEX } from "$lib/utils"
+import { formatError } from "$lib/utils"
 import { zod } from "sveltekit-superforms/adapters"
-import { getScriptByID, getScriptByURL, updateScript } from "$lib/server/scripts.server"
+import { getScript, updateScript } from "$lib/server/scripts.server"
 import { pad } from "$lib/client/utils"
 import { getScriptVersion, getSimbaVersions, getWaspLibVersions } from "$lib/server/versions.server"
 
@@ -69,9 +69,7 @@ export const actions = {
 			return setError(form, "", "Form is not valid \n" + JSON.stringify(form.errors))
 		}
 
-		const isUUID = UUID_V4_REGEX.test(slug)
-		const script = isUUID ? await getScriptByID(slug) : await getScriptByURL(slug)
-
+		const script = await getScript(slug)
 		if (!script) {
 			return setError(form, "", "Script not found!")
 		}

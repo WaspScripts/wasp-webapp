@@ -1,9 +1,8 @@
 import { superValidate, setError, message } from "sveltekit-superforms/server"
 import { canEdit } from "$lib/client/supabase"
 import { doLogin } from "$lib/server/supabase.server"
-import { UUID_V4_REGEX } from "$lib/utils"
 import { zod } from "sveltekit-superforms/adapters"
-import { getScriptByID, getScriptByURL, updateScript } from "$lib/server/scripts.server"
+import { getScript, updateScript } from "$lib/server/scripts.server"
 import { scriptInfoSchema } from "$lib/client/schemas"
 import type { TScriptStages } from "$lib/types/collection"
 
@@ -51,9 +50,7 @@ export const actions = {
 			return setError(form, "", "Form is not valid \n" + JSON.stringify(form.errors))
 		}
 
-		const isUUID = UUID_V4_REGEX.test(slug)
-		const script = isUUID ? await getScriptByID(slug) : await getScriptByURL(slug)
-
+		const script = await getScript(slug)
 		if (!script) {
 			return setError(form, "", "Script not found!")
 		}

@@ -2,6 +2,7 @@ import FlexSearch from "flexsearch"
 import type { Script } from "$lib/types/collection"
 import { supabaseAdmin } from "./supabase.server"
 import { fetchScriptByID } from "$lib/client/supabase"
+import { UUID_V4_REGEX } from "$lib/utils"
 
 let scriptsIndex: FlexSearch.Index
 let scripts: Script[] = []
@@ -60,14 +61,26 @@ export async function getPublishedScripts() {
 
 export async function getScriptByID(id: string) {
 	const scripts = await getScripts()
-	for (let i = 0; i < scripts.length; i++) if (scripts[i].id === id) return scripts[i]
-	return null
+	return scripts.find((s) => s.id === id) ?? null
 }
 
 export async function getScriptByURL(url: string) {
 	const scripts = await getScripts()
-	for (let i = 0; i < scripts.length; i++) if (scripts[i].url === url) return scripts[i]
-	return null
+	const script = scripts.find((s) => s.url === url)
+	return script ?? null
+}
+
+const scriptsMap = new Map<string, Script>()
+
+export async function getScript(slug: string) {
+	const mapped = scriptsMap.get(slug)
+	if (mapped) return mapped
+
+	const isUUID = UUID_V4_REGEX.test(slug)
+	const script = await (isUUID ? getScriptByID(slug) : getScriptByURL(slug))
+	if (script) scriptsMap.set(slug, script)
+
+	return script
 }
 
 export async function updateScript(id: string) {
