@@ -1,7 +1,7 @@
 import { superValidate, setError, message } from "sveltekit-superforms/server"
 import { canEdit } from "$lib/client/supabase"
 import { doLogin } from "$lib/server/supabase.server"
-import { zod } from "sveltekit-superforms/adapters"
+import { zod4 } from "sveltekit-superforms/adapters"
 import { getScript, updateScript } from "$lib/server/scripts.server"
 import { scriptInfoSchema } from "$lib/client/schemas"
 import type { TScriptStages } from "$lib/types/collection"
@@ -24,7 +24,7 @@ export const load = async ({ locals: { supabaseServer, user, session }, parent }
 			content: script.content,
 			categories: script.metadata.categories
 		},
-		zod(scriptInfoSchema)
+		zod4(scriptInfoSchema)
 	)
 
 	return { form }
@@ -36,7 +36,7 @@ export const actions = {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		}
 
-		const promises = await Promise.all([getProfile(), superValidate(request, zod(scriptInfoSchema))])
+		const promises = await Promise.all([getProfile(), superValidate(request, zod4(scriptInfoSchema))])
 
 		const profile = promises[0]
 		const form = promises[1]

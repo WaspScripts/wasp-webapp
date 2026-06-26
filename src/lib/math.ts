@@ -74,7 +74,6 @@ function nearestEdgeTo(p: TPoint, rect: TRectangle) {
 
 	if (dist < best) {
 		finalResult = x
-		best = dist
 	}
 
 	return finalResult

@@ -10,8 +10,6 @@
 	import Zod from "./logos/Zod.svelte"
 	import Supabase from "./logos/Supabase.svelte"
 	import Svelte from "./logos/Svelte.svelte"
-	import Github from "@lucide/svelte/icons/github"
-	import Globe from "@lucide/svelte/icons/globe"
 </script>
 
 <footer class="z-40 my-auto h-fit preset-filled-surface-100-900">
@@ -97,18 +95,15 @@
 		<footer class="my-8 flex flex-col sm:flex-row">
 			<span class="mx-auto my-auto text-sm sm:text-center">
 				This webapp is open source, checkout
-				<a class="anchor" href="https://github.com/torwent/wasp-webapp" target="_blank">
+				<a
+					class="anchor"
+					href="https://github.com/WaspScripts/wasp-webapp"
+					target="_blank"
+					aria-label="WaspScripts source code"
+				>
 					WaspScripts source code
 				</a>
 			</span>
-			<div class="mx-auto my-auto flex space-x-6 sm:mt-0 sm:justify-center">
-				<a href="https://github.com/torwent" target="_blank" aria-label="Navigate to GitHub" class="anchor">
-					<Github />
-				</a>
-				<a href="https://waspscripts.dev" aria-label="Navigate to main site" class="anchor">
-					<Globe />
-				</a>
-			</div>
 		</footer>
 	</div>
 </footer>

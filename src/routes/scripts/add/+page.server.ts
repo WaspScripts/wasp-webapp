@@ -4,7 +4,7 @@ import { addScriptServerSchema } from "$lib/server/schemas.server"
 import { scriptExists } from "$lib/client/supabase"
 import { doLogin, uploadFile } from "$lib/server/supabase.server"
 import { encodeSEO, formatError } from "$lib/utils"
-import { zod } from "sveltekit-superforms/adapters"
+import { zod4 } from "sveltekit-superforms/adapters"
 import type { TScriptStages, TScriptStatus, TScriptTypes } from "$lib/types/collection"
 import { pad } from "$lib/client/utils"
 import { updateScript } from "$lib/server/scripts.server"
@@ -63,7 +63,7 @@ export const load = async ({ locals: { supabaseServer, user, session } }) => {
 				simba: simbaVersions[0].version,
 				wasplib: wasplibVersions[0].version
 			},
-			zod(addScriptServerSchema),
+			zod4(addScriptServerSchema),
 			{
 				allowFiles: true,
 				errors: false
@@ -82,7 +82,7 @@ export const actions = {
 
 		const promises = await Promise.all([
 			getProfile(),
-			superValidate(request, zod(addScriptServerSchema), { allowFiles: true })
+			superValidate(request, zod4(addScriptServerSchema), { allowFiles: true })
 		])
 		const profile = promises[0]
 		const form = promises[1]

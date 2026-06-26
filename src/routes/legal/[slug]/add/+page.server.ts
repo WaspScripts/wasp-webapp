@@ -1,13 +1,13 @@
 import { setError, superValidate } from "sveltekit-superforms/server"
 import { fail, redirect } from "@sveltejs/kit"
 import { legalSchema } from "$lib/client/schemas"
-import { zod } from "sveltekit-superforms/adapters"
+import { zod4 } from "sveltekit-superforms/adapters"
 import { formatError } from "$lib/utils"
 
 export const load = async ({ parent }) => {
 	const { policies } = await parent()
 	return {
-		form: await superValidate({ content: policies[0].originalContent }, zod(legalSchema))
+		form: await superValidate({ content: policies[0].originalContent }, zod4(legalSchema))
 	}
 }
 
@@ -15,7 +15,7 @@ export const actions = {
 	default: async ({ request, locals: { supabaseServer, user, getProfile }, params }) => {
 		if (!user) return fail(403, { message: "You need to login to add a new legal document." })
 
-		const promises = await Promise.all([getProfile(), superValidate(request, zod(legalSchema))])
+		const promises = await Promise.all([getProfile(), superValidate(request, zod4(legalSchema))])
 		const profile = promises[0]
 		const form = promises[1]
 

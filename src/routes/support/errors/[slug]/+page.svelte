@@ -30,7 +30,7 @@
 </script>
 
 <a
-	href="/information/errors/"
+	href="/support/errors/"
 	class="mx-4 inline-flex justify-between border border-surface-200-800 px-4 py-2 text-left text-sm font-medium text-surface-900-100 shadow-sm hover:preset-outlined-primary-500"
 >
 	{meta.title}

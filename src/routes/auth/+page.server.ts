@@ -1,27 +1,31 @@
-import { loginAsSchema } from "$lib/client/schemas"
+import { loginAsSchema } from "$lib/client/schemas.js"
 import { doLogin } from "$lib/server/supabase.server"
 import { formatError } from "$lib/utils"
 import { error, redirect } from "@sveltejs/kit"
-import { zod } from "sveltekit-superforms/adapters"
-import { setError, superValidate } from "sveltekit-superforms/server"
+import { setError, superValidate } from "sveltekit-superforms"
+import { zod4 } from "sveltekit-superforms/adapters"
 
 export const load = async ({ locals: { user, getProfile } }) => {
 	if (!user) error(403, "You need to be logged in to access this page.")
+
 	const profile = await getProfile()
 	if (profile?.role != "administrator") error(403, "You need to be an admin to access this page.")
 
-	return { form: await superValidate(zod(loginAsSchema)) }
+	const form = await superValidate(zod4(loginAsSchema))
+
+	return { form }
 }
 
 export const actions = {
 	login: async ({ locals: { supabaseServer }, url: { origin, searchParams } }) => {
+		console.log("LOGIN ACTION!")
 		return await doLogin(supabaseServer, origin, searchParams)
 	},
 
 	loginas: async ({ request, locals: { user, getProfile, supabaseServer } }) => {
 		if (!user) error(403, "You need to be logged in to access this page.")
 
-		const promises = await Promise.all([getProfile(), superValidate(request, zod(loginAsSchema))])
+		const promises = await Promise.all([getProfile(), superValidate(request, zod4(loginAsSchema))])
 
 		const profile = promises[0]
 		const form = promises[1]

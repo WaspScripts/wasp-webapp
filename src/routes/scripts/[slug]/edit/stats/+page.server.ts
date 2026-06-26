@@ -3,7 +3,7 @@ import { error } from "@sveltejs/kit"
 import { canEdit } from "$lib/client/supabase"
 import { doLogin } from "$lib/server/supabase.server"
 import { formatError } from "$lib/utils"
-import { zod } from "sveltekit-superforms/adapters"
+import { zod4 } from "sveltekit-superforms/adapters"
 import { getScript, updateScript } from "$lib/server/scripts.server"
 import { scriptStatsSchema } from "$lib/client/schemas"
 
@@ -44,7 +44,7 @@ export const load = async ({ locals: { supabaseServer, user, session }, parent }
 			minima: promises[1].data!.minima,
 			maxima: promises[1].data!.maxima
 		},
-		zod(scriptStatsSchema)
+		zod4(scriptStatsSchema)
 	)
 
 	return { form }
@@ -58,7 +58,7 @@ export const actions = {
 
 		const promises = await Promise.all([
 			getProfile(),
-			superValidate(request, zod(scriptStatsSchema), { allowFiles: true })
+			superValidate(request, zod4(scriptStatsSchema), { allowFiles: true })
 		])
 
 		const profile = promises[0]

@@ -1,14 +1,13 @@
 <script lang="ts">
+	import { superForm } from "sveltekit-superforms"
 	import { loginAsSchema } from "$lib/client/schemas"
-	import { zodClient } from "sveltekit-superforms/adapters"
-	import { superForm } from "sveltekit-superforms/client"
+	import { zod4Client } from "sveltekit-superforms/adapters"
 
-	let { data } = $props()
-
+	const { data } = $props()
 	const { form, errors, enhance } = superForm(data.form, {
 		multipleSubmits: "prevent",
 		taintedMessage: "Are you sure you want to leave?",
-		validators: zodClient(loginAsSchema)
+		validators: zod4Client(loginAsSchema)
 	})
 </script>
 

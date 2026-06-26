@@ -9,7 +9,7 @@
 	import ArrowRight from "@lucide/svelte/icons/arrow-right"
 	import { SvelteDate } from "svelte/reactivity"
 	import { superForm } from "sveltekit-superforms"
-	import { zodClient } from "sveltekit-superforms/adapters"
+	import { zod4Client } from "sveltekit-superforms/adapters"
 	import { onMount } from "svelte"
 
 	const { data, children } = $props()
@@ -46,7 +46,7 @@
 		dataType: "json",
 		multipleSubmits: "prevent",
 		clearOnSubmit: "errors-and-message",
-		validators: zodClient(transactionDaysSchema),
+		validators: zod4Client(transactionDaysSchema),
 		resetForm: true
 	})
 

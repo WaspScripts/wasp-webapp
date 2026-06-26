@@ -7,7 +7,7 @@ import { formatError, UUID_V4_REGEX } from "$lib/utils"
 import { error, redirect } from "@sveltejs/kit"
 import type Stripe from "stripe"
 import { fail, setError, superValidate } from "sveltekit-superforms"
-import { zod } from "sveltekit-superforms/adapters"
+import { zod4 } from "sveltekit-superforms/adapters"
 
 const newPrices = [
 	{ amount: 4, currency: "eur", interval: "week" },
@@ -71,10 +71,10 @@ export const load = async ({ params: { slug }, parent }) => {
 	})
 
 	const promises = await Promise.all([
-		superValidate({ scripts: scriptData }, zod(scriptArraySchema), { id: "scripts" }),
+		superValidate({ scripts: scriptData }, zod4(scriptArraySchema), { id: "scripts" }),
 		superValidate(
 			{ id: available.length > 0 ? available[0].id : "", user_id: slug, prices: newPrices },
-			zod(newScriptSchema),
+			zod4(newScriptSchema),
 			{ id: "newscript", errors: false }
 		)
 	])
@@ -139,7 +139,7 @@ export const actions = {
 
 		const [scripter, form] = await Promise.all([
 			getScripter(supabaseServer, slug),
-			superValidate(request, zod(scriptArraySchema))
+			superValidate(request, zod4(scriptArraySchema))
 		])
 
 		if (scripter.stripe == scripter.id) return setError(form, "", "Stripe account is not setup!")
@@ -248,7 +248,7 @@ export const actions = {
 
 		const [scripter, form] = await Promise.all([
 			getScripter(supabaseServer, slug),
-			superValidate(request, zod(newScriptSchema))
+			superValidate(request, zod4(newScriptSchema))
 		])
 
 		if (scripter.stripe == scripter.id) return setError(form, "", "Stripe account is not setup!")

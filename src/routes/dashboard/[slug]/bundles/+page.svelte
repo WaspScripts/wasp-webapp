@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { bundleArraySchema, newBundleSchema } from "$lib/client/schemas"
 	import { superForm } from "sveltekit-superforms"
-	import { zodClient } from "sveltekit-superforms/adapters"
+	import { zod4Client } from "sveltekit-superforms/adapters"
 	import ScriptPicker from "./ScriptPicker.svelte"
 	import SubscriptionViewer from "../SubscriptionViewer.svelte"
 	import FreeAccessViewer from "../FreeAccessViewer.svelte"
@@ -18,7 +18,7 @@
 		dataType: "json",
 		multipleSubmits: "prevent",
 		clearOnSubmit: "errors-and-message",
-		validators: zodClient(bundleArraySchema),
+		validators: zod4Client(bundleArraySchema),
 		warnings: { duplicateId: false }
 	})
 
@@ -31,7 +31,7 @@
 		dataType: "json",
 		multipleSubmits: "prevent",
 		clearOnSubmit: "errors-and-message",
-		validators: zodClient(newBundleSchema),
+		validators: zod4Client(newBundleSchema),
 		warnings: { duplicateId: false }
 	})
 

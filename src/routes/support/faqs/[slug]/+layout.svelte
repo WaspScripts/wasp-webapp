@@ -12,7 +12,7 @@
 </script>
 
 <a
-	href="/information/"
+	href="/support/"
 	class="inline-flex w-full justify-between preset-outlined-surface-500 px-4 py-2 text-sm font-medium hover:preset-outlined-primary-500"
 >
 	❓ Frequently Asked Questions
@@ -37,7 +37,7 @@
 			{@render children()}
 		{:else}
 			<a
-				href="/information/faqs/{faq.url}"
+				href="/support/faqs/{faq.url}"
 				class="mx-4 inline-flex justify-between border border-surface-200-800 px-4 py-2 text-left text-sm font-medium text-surface-900-100 shadow-sm hover:preset-outlined-primary-500"
 			>
 				{faq.title} <ChevronsUpDown class="h-4" /></a
@@ -47,7 +47,7 @@
 </div>
 
 <a
-	href="/information/errors"
+	href="/support/errors"
 	class="inline-flex w-full justify-between preset-outlined-surface-500 px-4 py-2 text-sm font-medium hover:preset-outlined-primary-500"
 >
 	⚠️ Common Errors

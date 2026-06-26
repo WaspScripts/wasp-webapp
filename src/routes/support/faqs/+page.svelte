@@ -6,23 +6,16 @@
 	import ChevronsUpDown from "@lucide/svelte/icons/chevrons-up-down"
 
 	const { data } = $props()
-	const { errors } = $derived(data)
+	const { faqs } = $derived(data)
 
 	let search = $state(decodeURIComponent(page.url.searchParams.get("search") || "").trim())
 </script>
 
 <a
-	href="/information/faqs"
+	href="/support/"
 	class="inline-flex w-full justify-between preset-outlined-surface-500 px-4 py-2 text-sm font-medium hover:preset-outlined-primary-500"
 >
 	❓ Frequently Asked Questions
-	<ChevronsUpDown class="h-5" />
-</a>
-<a
-	href="/information"
-	class="inline-flex w-full justify-between preset-outlined-surface-500 px-4 py-2 text-sm font-medium hover:preset-outlined-primary-500"
->
-	⚠️ Common Errors
 	<ChevronsDownUp class="h-5" />
 </a>
 
@@ -30,7 +23,7 @@
 	<form onchange={(e) => e.currentTarget.requestSubmit()} class="mx-4">
 		<input
 			type="text"
-			placeholder="🔍Search for common errors"
+			placeholder="🔍Search for frequently asked questions"
 			class="mx-auto input max-w-3xl"
 			bind:value={search}
 			oninput={() => replaceQuery(page.url, { search: search })}
@@ -39,13 +32,21 @@
 
 	<GitHubButton link="new/main/faq" text="Add a FAQ on GitHub!"></GitHubButton>
 
-	{#each errors as err (err)}
+	{#each faqs as faq (faq)}
 		<a
-			href="/information/errors/{err.url}"
+			href="/support/faqs/{faq.url}"
 			class="mx-4 inline-flex justify-between border border-surface-200-800 px-4 py-2 text-left text-sm font-medium text-surface-900-100 shadow-sm hover:preset-outlined-primary-500"
 		>
-			{err.title}
+			{faq.title}
 			<ChevronsUpDown class="h-4" />
 		</a>
 	{/each}
 </div>
+
+<a
+	href="/support/errors"
+	class="inline-flex w-full justify-between preset-outlined-surface-500 px-4 py-2 text-sm font-medium hover:preset-outlined-primary-500"
+>
+	⚠️ Common Errors
+	<ChevronsUpDown class="h-5" />
+</a>

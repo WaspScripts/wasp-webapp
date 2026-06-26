@@ -48,9 +48,7 @@
 	</p>
 	<p class="my-6 text-center">
 		For more information, help and/or questions look through the
-		<a href="/information" class="decoration-transparent" aria-label="Open frequently asked questions page">
-			Information page
-		</a>
+		<a href="/support" class="decoration-transparent" aria-label="Open support page"> Support page </a>
 		or join the discord community!
 	</p>
 </main>

@@ -4,7 +4,7 @@ import { subscriptionsSchema, checkoutSchema } from "$lib/client/schemas"
 import { doLogin } from "$lib/server/supabase.server"
 import { error, redirect } from "@sveltejs/kit"
 import { setError, superValidate } from "sveltekit-superforms/server"
-import { zod } from "sveltekit-superforms/adapters"
+import { zod4 } from "sveltekit-superforms/adapters"
 
 async function createCustomerPortal(customer: string, origin: string) {
 	try {
@@ -30,8 +30,8 @@ export const load = async ({ locals: { getSubscriptions, getFreeAccess } }) => {
 	}))
 
 	const promises = await Promise.all([
-		superValidate({ subscriptions: states }, zod(subscriptionsSchema)),
-		superValidate(zod(checkoutSchema))
+		superValidate({ subscriptions: states }, zod4(subscriptionsSchema)),
+		superValidate(zod4(checkoutSchema))
 	])
 
 	return {
@@ -56,7 +56,7 @@ export const actions = {
 			getProfile(),
 			getSubscriptions(),
 			getFreeAccess(),
-			superValidate(request, zod(checkoutSchema))
+			superValidate(request, zod4(checkoutSchema))
 		])
 		const profile = promises[0]
 		const subs = promises[1]
@@ -164,7 +164,7 @@ export const actions = {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		}
 
-		const promises = await Promise.all([getProfile(), superValidate(request, zod(subscriptionsSchema))])
+		const promises = await Promise.all([getProfile(), superValidate(request, zod4(subscriptionsSchema))])
 
 		const profile = promises[0]
 		const form = promises[1]

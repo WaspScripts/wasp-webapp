@@ -10,6 +10,7 @@
 	import GitHub from "./GitHub.svelte"
 	import YouTube from "./YouTube.svelte"
 	import UserCog from "@lucide/svelte/icons/user-cog"
+	import LayoutDashboard from "@lucide/svelte/icons/layout-dashboard"
 	import Menu from "@lucide/svelte/icons/menu"
 	import X from "@lucide/svelte/icons/x"
 	import LogOut from "@lucide/svelte/icons/log-out"
@@ -20,11 +21,7 @@
 
 	const { profile } = $derived(page.data)
 
-	const routes = $derived(
-		profile?.role == "scripter" || profile?.role == "moderator" || profile?.role == "administrator"
-			? ["Home", "Setup", "Scripts", "Stats", "Subscriptions", "Information", "Tutorials", "Dashboard"]
-			: ["Home", "Setup", "Scripts", "Stats", "Subscriptions", "Information", "Tutorials"]
-	)
+	const routes = ["Home", "Setup", "Scripts", "Stats", "Subscriptions", "Support", "Tutorials"]
 
 	function setCurrentPage(currentPath: string) {
 		const path = currentPath.split("/")[1]
@@ -65,7 +62,7 @@
 			<Logo selected={false} />
 		</button>
 
-		<ul class="my-auto hidden w-9/12 justify-evenly lg:flex lg:text-xs xl:w-7/12 xl:text-base">
+		<ul class="my-auto hidden w-9/12 justify-evenly gap-4 md:text-base lg:flex xl:w-7/12">
 			<li class="h-12">
 				<a
 					href="/"
@@ -82,10 +79,10 @@
 					<li class="h-12">
 						<a
 							href={getLink(route)}
-							class="flex h-full place-content-center place-items-center hover:text-primary-700-300"
+							class="flex h-full place-content-center place-items-center whitespace-nowrap hover:text-primary-700-300"
 							class:text-primary-800={route === currentPage}
 							class:dark:text-primary-500={route === currentPage}
-							aria-label="Navigate to the {route.toLowerCase()} page"
+							aria-label={route}
 						>
 							{route}
 						</a>
@@ -105,7 +102,7 @@
 				}}
 			>
 				{#if profile}
-					<span class="my-auto hidden group-hover:text-primary-500 md:block lg:hidden xl:block">
+					<span class="my-auto hidden overflow-clip group-hover:text-primary-500 md:flex lg:hidden xl:flex">
 						{profile.username}
 					</span>
 					<Avatar class="my-2 size-11 min-w-fit md:size-10 lg:size-11">
@@ -142,116 +139,138 @@
 		</div>
 	</div>
 
-	<ul
-		class="absolute z-50 w-full bg-surface-200/30 backdrop-blur-md lg:hidden dark:bg-surface-800/30 {showMenu
-			? 'flex flex-col'
-			: 'hidden'}"
-	>
-		{#each routes as route (route)}
-			<li class="h-12">
-				<a
-					href={getLink(route)}
-					class="flex h-full place-content-center place-items-center hover:text-primary-700-300"
-					class:text-primary-800={route === currentPage}
-					class:dark:text-primary-500={route === currentPage}
-					aria-label="Navigate to {route.toLowerCase()} page"
-					onclick={() => (showMenu = !showMenu)}
-				>
-					{route}
-				</a>
-			</li>
-		{/each}
-
-		<li class="my-2 flex h-12 lg:hidden">
-			<div class="flex w-full justify-evenly">
-				<ThemeSwitcher />
-				<div class="flex">
-					<Lightswitch />
-					<GitHub />
-					<Discord />
-					<YouTube />
-				</div>
-			</div>
-		</li>
-	</ul>
-
-	<form
-		method="POST"
-		class="absolute z-50 w-full bg-surface-200/30 py-14 backdrop-blur-md dark:bg-surface-800/30 {showProfile
-			? 'flex flex-col'
-			: 'hidden'}"
-		use:enhance
-	>
-		{#if profile}
-			<header class="card-header flex">
-				<div class="mx-auto">
-					<h3 class="my-6 text-center">{profile.username}</h3>
-
+	{#if showMenu}
+		<ul
+			class="absolute z-50 flex w-full flex-col bg-surface-200/30 backdrop-blur-md lg:hidden dark:bg-surface-800/30"
+		>
+			{#each routes as route (route)}
+				<li class="h-12">
 					<a
-						href="/user/{profile.id}"
-						class="mx-auto my-2 btn flex preset-filled-primary-500"
-						aria-label="Open profile page"
-						onclick={() => (showProfile = false)}
+						href={getLink(route)}
+						class="flex h-full place-content-center place-items-center hover:text-primary-700-300"
+						class:text-primary-800={route === currentPage}
+						class:dark:text-primary-500={route === currentPage}
+						aria-label="Navigate to {route.toLowerCase()} page"
+						onclick={() => (showMenu = !showMenu)}
 					>
-						<UserRound />
-						Profile
+						{route}
 					</a>
+				</li>
+			{/each}
 
-					{#if profile.role == "administrator"}
-						<a
-							href="/auth"
-							class="mx-auto btn flex preset-filled-primary-500"
-							aria-label="Login as a different user"
-							onclick={() => (showProfile = false)}
-						>
-							<UserCog />
-							Login As
-						</a>
-					{/if}
+			<li class="my-2 flex h-12 lg:hidden">
+				<div class="flex w-full justify-evenly">
+					<ThemeSwitcher />
+					<div class="flex">
+						<Lightswitch />
+						<GitHub />
+						<Discord />
+						<YouTube />
+					</div>
 				</div>
-			</header>
+			</li>
+		</ul>
+	{/if}
 
-			<section class="flex flex-col p-4">
-				<h3 class="mx-auto my-4 text-center">Role</h3>
-				<div class="flex pt-2 pb-8">
-					<RoleBadge />
-				</div>
-			</section>
-			<footer class="card-footer flex flex-col">
-				<button
-					name="Logout"
-					aria-label="Logout"
-					class="mx-auto btn preset-filled-primary-500"
-					formaction="/auth?/logout"
-				>
-					<LogOut />
-					Logout
-				</button>
-			</footer>
-		{:else}
-			<header class="card-header my-8">
-				<h3 class="text-2x1 md:text-3x1 text-center font-bold">Log In</h3>
-			</header>
+	{#if showProfile}
+		<form
+			method="POST"
+			class="flex,flex-col absolute z-50 w-full bg-surface-200/30 py-14 backdrop-blur-md dark:bg-surface-800/30"
+			use:enhance
+		>
+			{#if profile}
+				<header class="card-header flex">
+					<div class="mx-auto flex flex-col gap-8">
+						<h3 class="text-center text-nowrap">{profile.username}</h3>
 
-			<footer class="card-footer my-4 flex justify-evenly">
-				<button
-					name="Login"
-					aria-label="Login to your account mx-auto"
-					class="btn preset-filled-primary-500"
-					formaction="/auth?/login&provider=discord&path={page.url.pathname.replaceAll('/', '_-_')}"
-				>
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="h-4 w-4">
-						<path
-							fill="currentColor"
-							d="M524.531,69.836a1.5,1.5,0,0,0-.764-.7A485.065,485.065,0,0,0,404.081,32.03a1.816,1.816,0,0,0-1.923.91,337.461,337.461,0,0,0-14.9,30.6,447.848,447.848,0,0,0-134.426,0,309.541,309.541,0,0,0-15.135-30.6,1.89,1.89,0,0,0-1.924-.91A483.689,483.689,0,0,0,116.085,69.137a1.712,1.712,0,0,0-.788.676C39.068,183.651,18.186,294.69,28.43,404.354a2.016,2.016,0,0,0,.765,1.375A487.666,487.666,0,0,0,176.02,479.918a1.9,1.9,0,0,0,2.063-.676A348.2,348.2,0,0,0,208.12,430.4a1.86,1.86,0,0,0-1.019-2.588,321.173,321.173,0,0,1-45.868-21.853,1.885,1.885,0,0,1-.185-3.126c3.082-2.309,6.166-4.711,9.109-7.137a1.819,1.819,0,0,1,1.9-.256c96.229,43.917,200.41,43.917,295.5,0a1.812,1.812,0,0,1,1.924.233c2.944,2.426,6.027,4.851,9.132,7.16a1.884,1.884,0,0,1-.162,3.126,301.407,301.407,0,0,1-45.89,21.83,1.875,1.875,0,0,0-1,2.611,391.055,391.055,0,0,0,30.014,48.815,1.864,1.864,0,0,0,2.063.7A486.048,486.048,0,0,0,610.7,405.729a1.882,1.882,0,0,0,.765-1.352C623.729,277.594,590.933,167.465,524.531,69.836ZM222.491,337.58c-28.972,0-52.844-26.587-52.844-59.239S193.056,219.1,222.491,219.1c29.665,0,53.306,26.82,52.843,59.239C275.334,310.993,251.924,337.58,222.491,337.58Zm195.38,0c-28.971,0-52.843-26.587-52.843-59.239S388.437,219.1,417.871,219.1c29.667,0,53.307,26.82,52.844,59.239C470.715,310.993,447.538,337.58,417.871,337.58Z"
-						/>
-					</svg>
+						<div class="flex flex-col gap-4 lg:flex-row">
+							<a
+								href="/user/{profile.id}"
+								class="btn flex w-full preset-filled-primary-500"
+								aria-label="Open profile page"
+								onclick={() => (showProfile = false)}
+							>
+								<UserRound />
+								Profile
+							</a>
 
-					<span class="px-2">Login with Discord</span>
-				</button>
-			</footer>
-		{/if}
-	</form>
+							{#if profile.role == "administrator"}
+								<a
+									href="/dashboard"
+									class="mx-auto btn flex w-full preset-filled-primary-500"
+									aria-label="Open the scripter dashboard"
+									onclick={() => (showProfile = false)}
+								>
+									<LayoutDashboard />
+									Dashboard
+								</a>
+
+								<a
+									href="/auth"
+									class=" btn flex w-full preset-filled-primary-500"
+									aria-label="Login as a different user"
+									onclick={() => (showProfile = false)}
+								>
+									<UserCog />
+									Login As
+								</a>
+							{:else if profile.role == "scripter" || profile.role == "moderator"}
+								<a
+									href="/dashboard"
+									class="btn flex w-full preset-filled-primary-500"
+									aria-label="Open the scripter dashboard"
+									onclick={() => (showProfile = false)}
+								>
+									<UserCog />
+									Dashboard
+								</a>
+							{/if}
+						</div>
+					</div>
+				</header>
+
+				<section class="flex flex-col p-4">
+					<h3 class="mx-auto my-4 text-center">Role</h3>
+					<div class="flex pt-2 pb-8">
+						<RoleBadge />
+					</div>
+				</section>
+				<footer class="card-footer flex flex-col">
+					<button
+						name="Logout"
+						aria-label="Logout"
+						class="mx-auto btn preset-filled-primary-500"
+						formaction="/auth?/logout"
+					>
+						<LogOut />
+						Logout
+					</button>
+				</footer>
+			{:else}
+				<header class="card-header my-8">
+					<h3 class="text-2x1 md:text-3x1 text-center font-bold">Log In</h3>
+				</header>
+
+				<footer class="card-footer my-4 flex justify-evenly">
+					<button
+						name="Login"
+						aria-label="Login to your account mx-auto"
+						class="btn preset-filled-primary-500"
+						formaction="/auth?/login&provider=discord&path={page.url.pathname.replaceAll('/', '_-_')}"
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="h-4 w-4">
+							<path
+								fill="currentColor"
+								d="M524.531,69.836a1.5,1.5,0,0,0-.764-.7A485.065,485.065,0,0,0,404.081,32.03a1.816,1.816,0,0,0-1.923.91,337.461,337.461,0,0,0-14.9,30.6,447.848,447.848,0,0,0-134.426,0,309.541,309.541,0,0,0-15.135-30.6,1.89,1.89,0,0,0-1.924-.91A483.689,483.689,0,0,0,116.085,69.137a1.712,1.712,0,0,0-.788.676C39.068,183.651,18.186,294.69,28.43,404.354a2.016,2.016,0,0,0,.765,1.375A487.666,487.666,0,0,0,176.02,479.918a1.9,1.9,0,0,0,2.063-.676A348.2,348.2,0,0,0,208.12,430.4a1.86,1.86,0,0,0-1.019-2.588,321.173,321.173,0,0,1-45.868-21.853,1.885,1.885,0,0,1-.185-3.126c3.082-2.309,6.166-4.711,9.109-7.137a1.819,1.819,0,0,1,1.9-.256c96.229,43.917,200.41,43.917,295.5,0a1.812,1.812,0,0,1,1.924.233c2.944,2.426,6.027,4.851,9.132,7.16a1.884,1.884,0,0,1-.162,3.126,301.407,301.407,0,0,1-45.89,21.83,1.875,1.875,0,0,0-1,2.611,391.055,391.055,0,0,0,30.014,48.815,1.864,1.864,0,0,0,2.063.7A486.048,486.048,0,0,0,610.7,405.729a1.882,1.882,0,0,0,.765-1.352C623.729,277.594,590.933,167.465,524.531,69.836ZM222.491,337.58c-28.972,0-52.844-26.587-52.844-59.239S193.056,219.1,222.491,219.1c29.665,0,53.306,26.82,52.843,59.239C275.334,310.993,251.924,337.58,222.491,337.58Zm195.38,0c-28.971,0-52.843-26.587-52.843-59.239S388.437,219.1,417.871,219.1c29.667,0,53.307,26.82,52.844,59.239C470.715,310.993,447.538,337.58,417.871,337.58Z"
+							/>
+						</svg>
+
+						<span class="px-2">Login with Discord</span>
+					</button>
+				</footer>
+			{/if}
+		</form>
+	{/if}
 </nav>
 <a
 	href="https://waspscripts.com"

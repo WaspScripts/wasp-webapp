@@ -14,13 +14,13 @@
 		<h2>Welcome to the Frequently Asked Questions and Common Errors section.</h2>
 	</header>
 
-	{@render children()}
-
 	<header class="py-12 text-center">
 		<p class="py-6">
-			Hopefully you found what you were looking for here, if not feel free to join the discord server and ask
-			around!
+			If you can't find what you need here it's highly recommended you join our discord server as that's the
+			best place for you to get help.
 		</p>
 		<Discord />
 	</header>
+
+	{@render children()}
 </main>

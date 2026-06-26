@@ -3,7 +3,7 @@
 </script>
 
 <a
-	href="/information/faqs"
+	href="/support/faqs"
 	class="inline-flex w-full justify-between preset-outlined-surface-500 px-4 py-2 text-sm font-medium hover:preset-outlined-primary-500"
 >
 	❓ Frequently Asked Questions
@@ -11,7 +11,7 @@
 </a>
 
 <a
-	href="/information/errors"
+	href="/support/errors"
 	class="inline-flex w-full justify-between preset-outlined-surface-500 px-4 py-2 text-sm font-medium hover:preset-outlined-primary-500"
 >
 	⚠️ Common Errors

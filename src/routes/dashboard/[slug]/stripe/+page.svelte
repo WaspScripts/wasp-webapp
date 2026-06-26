@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { countryCodeSchema, dbaSchema } from "$lib/client/schemas"
 	import { superForm } from "sveltekit-superforms"
-	import { zodClient } from "sveltekit-superforms/adapters"
+	import { zod4Client } from "sveltekit-superforms/adapters"
 
 	const { data } = $props()
 	const { scripter, account } = $derived(data)
@@ -15,7 +15,7 @@
 		dataType: "json",
 		multipleSubmits: "prevent",
 		clearOnSubmit: "errors-and-message",
-		validators: zodClient(countryCodeSchema),
+		validators: zod4Client(countryCodeSchema),
 		resetForm: true
 	})
 
@@ -27,7 +27,7 @@
 		dataType: "json",
 		multipleSubmits: "prevent",
 		clearOnSubmit: "errors-and-message",
-		validators: zodClient(dbaSchema),
+		validators: zod4Client(dbaSchema),
 		resetForm: true
 	})
 </script>

@@ -50,7 +50,7 @@ const getScripters = async (supabase: SupabaseClient<Database>) => {
 }
 
 const getLoc = async (supabase: SupabaseClient<Database>, loc: string) => {
-	let data: string[] = []
+	let data: string[]
 	if (loc === "scripts") {
 		data = (await getScripts()) as string[]
 	} else if (loc === "tutorials") {
@@ -92,11 +92,10 @@ export const GET = async ({ locals: { supabaseServer } }) => {
 
 For setup instructions you visit the setup [page](${website}/setup)
 
-## Docs
+## Documentation
 
 - [Simba](https://villavu.github.io/Simba/): Simba documentation
-- [SRL-T](https://Torwent.github.io/SRL-T/): SRL-T documentation
-- [WaspLib](https://Torwent.github.io/WaspLib/): SRL-T documentation
+- [WaspLib](https://docs.waspscripts.dev/): WaspLib documentation
 - [Wasp Stats API](https://api.waspscripts.dev/docs): Stats API documentation
 - [Map](https://map.waspscripts.com/): Interactive OSRS map
 
@@ -115,7 +114,7 @@ Subscriptions for WaspScripts can be managed on the [subscriptions page](${websi
 
 ## FAQ
 
-Find the solution to your problem in our [information page](${website}/information).
+Find the solution to your problem in our [support page](${website}/support).
 
 ## Tutorials
 

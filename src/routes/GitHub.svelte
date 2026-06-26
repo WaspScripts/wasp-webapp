@@ -1,5 +1,5 @@
 <a
-	href="https://github.com/torwent/wasp-webapp"
+	href="https://github.com/WaspScripts/wasp-webapp"
 	class="my-auto btn flex px-2 hover:preset-tonal xl:px-4"
 	aria-label="GitHub Link"
 	target="_blank"

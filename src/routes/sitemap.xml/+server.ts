@@ -47,7 +47,7 @@ const getScripters = async (supabase: SupabaseClient<Database>) => {
 }
 
 const buildLoc = async (supabase: SupabaseClient<Database>, loc: string) => {
-	let data: string[] = []
+	let data: string[]
 	if (loc === "scripts") {
 		data = (await getScripts()) as string[]
 	} else if (loc === "tutorials") {
@@ -121,7 +121,7 @@ export const GET = async ({ locals: { supabaseServer } }) => {
         <priority>0.7</priority>
       </url>
       <url>
-        <loc>${website}/information</loc>
+        <loc>${website}/support</loc>
         <changefreq>daily</changefreq>
         <priority>0.7</priority>
       </url>

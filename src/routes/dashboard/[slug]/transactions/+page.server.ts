@@ -4,7 +4,7 @@ import { stripe } from "$lib/server/stripe.server"
 import { UUID_V4_REGEX } from "$lib/utils"
 import { error } from "@sveltejs/kit"
 import { setError, superValidate } from "sveltekit-superforms"
-import { zod } from "sveltekit-superforms/adapters"
+import { zod4 } from "sveltekit-superforms/adapters"
 
 const regions = new Intl.DisplayNames(["en"], { type: "region" })
 
@@ -18,7 +18,7 @@ export const actions = {
 		}
 
 		const promises = await Promise.all([
-			superValidate(request, zod(transactionDaysSchema)),
+			superValidate(request, zod4(transactionDaysSchema)),
 			getScripter(supabaseServer, slug)
 		])
 

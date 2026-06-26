@@ -4,7 +4,7 @@ import { scriptFilesServerSchema } from "$lib/server/schemas.server"
 import { canEdit } from "$lib/client/supabase"
 import { doLogin, reuseFile, supabaseAdmin, updateImgFile, uploadFile } from "$lib/server/supabase.server"
 import { formatError } from "$lib/utils"
-import { zod } from "sveltekit-superforms/adapters"
+import { zod4 } from "sveltekit-superforms/adapters"
 import { getScript, updateScript } from "$lib/server/scripts.server"
 import { pad } from "$lib/client/utils"
 import { getScriptVersion, getSimbaVersions, getWaspLibVersions } from "$lib/server/versions.server"
@@ -35,7 +35,7 @@ export const load = async ({ locals: { supabaseServer, user, session }, parent }
 			simba: scriptVersions.simba,
 			wasplib: scriptVersions.wasplib
 		},
-		zod(scriptFilesServerSchema),
+		zod4(scriptFilesServerSchema),
 		{ allowFiles: true, errors: false }
 	)
 
@@ -54,7 +54,7 @@ export const actions = {
 
 		const promises = await Promise.all([
 			getProfile(),
-			superValidate(request, zod(scriptFilesServerSchema), { allowFiles: true })
+			superValidate(request, zod4(scriptFilesServerSchema), { allowFiles: true })
 		])
 
 		const profile = promises[0]

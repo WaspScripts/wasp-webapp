@@ -17,6 +17,7 @@
 		price: Price
 		date_end: string
 	} = $props()
+
 	let open = $state(false)
 
 	const value = price!.amount - Math.min(price!.amount * 0.15, 500)

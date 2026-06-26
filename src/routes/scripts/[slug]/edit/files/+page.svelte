@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { superForm } from "sveltekit-superforms"
-	import { zodClient } from "sveltekit-superforms/adapters"
+	import { zod4Client } from "sveltekit-superforms/adapters"
 	import FileCode from "@lucide/svelte/icons/file-code"
 	import ImagePlus from "@lucide/svelte/icons/image-plus"
 	import { scriptFilesSchema } from "$lib/client/schemas"
@@ -12,7 +12,7 @@
 		dataType: "json",
 		multipleSubmits: "prevent",
 		taintedMessage: "Are you sure you want to leave?",
-		validators: zodClient(scriptFilesSchema),
+		validators: zod4Client(scriptFilesSchema),
 		scrollToError: true,
 		onSubmit: () => (waitingReply = true),
 		onUpdated: () => (waitingReply = false),

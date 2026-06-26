@@ -1,6 +1,6 @@
 import { countryCodeSchema, dbaSchema } from "$lib/client/schemas"
 import { setError, superValidate } from "sveltekit-superforms/server"
-import { zod } from "sveltekit-superforms/adapters"
+import { zod4 } from "sveltekit-superforms/adapters"
 import { doLogin, supabaseAdmin } from "$lib/server/supabase.server"
 import { UUID_V4_REGEX } from "$lib/utils"
 import { error, redirect } from "@sveltejs/kit"
@@ -24,8 +24,8 @@ async function getConnectAccount(scripter: Scripter) {
 export const load = async ({ parent }) => {
 	const { scripter } = await parent()
 	const promises = await Promise.all([
-		superValidate(zod(countryCodeSchema)),
-		superValidate(zod(dbaSchema)),
+		superValidate(zod4(countryCodeSchema)),
+		superValidate(zod4(dbaSchema)),
 		getConnectAccount(scripter)
 	])
 
@@ -165,7 +165,7 @@ export const actions = {
 
 		const promises = await Promise.all([
 			getScripter(supabaseServer, slug),
-			superValidate(request, zod(countryCodeSchema))
+			superValidate(request, zod4(countryCodeSchema))
 		])
 		const [scripter, form] = promises
 
@@ -212,7 +212,7 @@ export const actions = {
 
 		const [scripter, form] = await Promise.all([
 			getScripter(supabaseServer, slug),
-			superValidate(request, zod(dbaSchema))
+			superValidate(request, zod4(dbaSchema))
 		])
 
 		if (scripter.stripe == scripter.id) return setError(form, "", "The user is missing a stripe profile!")

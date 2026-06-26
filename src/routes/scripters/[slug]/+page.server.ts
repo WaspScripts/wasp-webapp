@@ -5,7 +5,7 @@ import { getPublishedScripts, getScripts, searchScriptsIndex } from "$lib/server
 import type { Script } from "$lib/types/collection"
 import { formatError } from "$lib/utils"
 import { redirect } from "@sveltejs/kit"
-import { zod } from "sveltekit-superforms/adapters"
+import { zod4 } from "sveltekit-superforms/adapters"
 import { setError, superValidate } from "sveltekit-superforms/server"
 import DOMPurify from "isomorphic-dompurify"
 
@@ -52,13 +52,13 @@ export const load = async ({
 		scripts: filteredScripts,
 		amount,
 		count: scripts.length,
-		form: await superValidate(scripter, zod(scripterSchema))
+		form: await superValidate(scripter, zod4(scripterSchema))
 	}
 }
 
 export const actions = {
 	default: async ({ request, locals: { supabaseServer, user, getProfile }, url: { pathname } }) => {
-		const promises = await Promise.all([getProfile(), superValidate(request, zod(scripterSchema))])
+		const promises = await Promise.all([getProfile(), superValidate(request, zod4(scripterSchema))])
 		const profile = promises[0]
 		const form = promises[1]
 

@@ -142,7 +142,6 @@ export const load = async ({ parent, data }) => {
 						if (currentBundle.scripts[l] !== tmpScripts[j].id) continue
 						bundledScripts.push(tmpScripts[j])
 						tmpScripts.splice(j, 1)
-						j--
 						break
 					}
 					currentBundle.scripts.splice(l, 1)
@@ -153,7 +152,6 @@ export const load = async ({ parent, data }) => {
 					if (product.script !== tmpScripts[j].id) continue
 					scriptURL = tmpScripts[j].url as string
 					tmpScripts.splice(j, 1)
-					j--
 					break
 				}
 			}

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import RoleBadge from "$lib/components/RoleBadges.svelte"
 	import { profileSchema } from "$lib/client/schemas"
-	import { zodClient } from "sveltekit-superforms/adapters"
+	import { zod4Client } from "sveltekit-superforms/adapters"
 	import Head from "$lib/components/Head.svelte"
 	import { superForm } from "sveltekit-superforms"
 	import UUID from "$lib/components/UUID.svelte"
@@ -18,7 +18,7 @@
 		clearOnSubmit: "errors",
 		taintedMessage: null,
 		dataType: "json",
-		validators: zodClient(profileSchema)
+		validators: zod4Client(profileSchema)
 	})
 </script>
 

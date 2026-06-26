@@ -2,19 +2,19 @@ import { profileSchema } from "$lib/client/schemas"
 import { doLogin } from "$lib/server/supabase.server"
 import { formatError } from "$lib/utils"
 import { setError, superValidate } from "sveltekit-superforms"
-import { zod } from "sveltekit-superforms/adapters"
+import { zod4 } from "sveltekit-superforms/adapters"
 
 export const load = async ({ locals: { supabaseServer, user }, url: { origin } }) => {
 	if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 
 	return {
-		form: await superValidate({ email: user?.email }, zod(profileSchema))
+		form: await superValidate({ email: user?.email }, zod4(profileSchema))
 	}
 }
 
 export const actions = {
 	default: async ({ request, locals: { user, supabaseServer } }) => {
-		const form = await superValidate(request, zod(profileSchema))
+		const form = await superValidate(request, zod4(profileSchema))
 
 		if (!user) return setError(form, "", "You need to login to add a script.")
 		if (!form.valid) return setError(form, "", "Form is not valid!")

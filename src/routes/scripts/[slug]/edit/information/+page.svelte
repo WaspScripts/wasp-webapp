@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { superForm } from "sveltekit-superforms"
-	import { zodClient } from "sveltekit-superforms/adapters"
+	import { zod4Client } from "sveltekit-superforms/adapters"
 	import { scriptCategories, scriptStages, scriptStatus, scriptTypes } from "$lib/utils"
 	import { scriptInfoSchema } from "$lib/client/schemas"
 	import { Switch } from "@skeletonlabs/skeleton-svelte"
@@ -12,7 +12,7 @@
 		dataType: "json",
 		multipleSubmits: "prevent",
 		taintedMessage: "Are you sure you want to leave?",
-		validators: zodClient(scriptInfoSchema),
+		validators: zod4Client(scriptInfoSchema),
 		scrollToError: true,
 		onSubmit: () => (waitingReply = true),
 		onUpdated: () => (waitingReply = false),
@@ -204,9 +204,7 @@
 					name="description"
 					class="textarea"
 					class:ring-error-500={$errors.description != null}
-					bind:value={$form.description}
-				>
-				</textarea>
+					bind:value={$form.description}></textarea>
 			</label>
 			{#if $errors.description}
 				{#each $errors.description as err (err)}
@@ -223,9 +221,7 @@
 					name="content"
 					class="textarea h-64"
 					class:ring-error-500={$errors.content != null}
-					bind:value={$form.content}
-				>
-				</textarea>
+					bind:value={$form.content}></textarea>
 			</label>
 			{#if $errors.content}
 				{#each $errors.content as err (err)}

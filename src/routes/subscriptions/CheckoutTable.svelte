@@ -6,7 +6,7 @@
 	import { getCurrentPrice, getPriceIntervalEx, setPriceInterval } from "$lib/utils"
 	import ExternalLink from "@lucide/svelte/icons/external-link"
 	import ScriptLinks from "./ScriptLinks.svelte"
-	import { zodClient } from "sveltekit-superforms/adapters"
+	import { zod4 } from "sveltekit-superforms/adapters"
 	import { Loader } from "@lucide/svelte"
 
 	let {
@@ -19,14 +19,16 @@
 		scripts: ScriptProduct[]
 	} = $props()
 
-	let { form, errors, enhance } = superForm(data, {
-		id: bundles.length === 0 && scripts.length === 0 ? "checkout-loading" : "checkout",
-		dataType: "json",
-		multipleSubmits: "prevent",
-		clearOnSubmit: "errors",
-		taintedMessage: null,
-		validators: zodClient(checkoutSchema)
-	})
+	let { form, errors, enhance } = $derived(
+		superForm(data, {
+			id: bundles.length === 0 && scripts.length === 0 ? "checkout-loading" : "checkout",
+			dataType: "json",
+			multipleSubmits: "prevent",
+			clearOnSubmit: "errors",
+			taintedMessage: null,
+			validators: zod4(checkoutSchema)
+		})
+	)
 
 	function changePriceInterval(prices: Price[], index: number, productIndex: number) {
 		setPriceInterval(index, prices)
@@ -37,7 +39,9 @@
 	let type = $state("all")
 	let author = $state("all")
 	let code = $state("")
+	//svelte-ignore state_referenced_locally
 	let bundleArray: BundleProduct[] = $state(bundles)
+	//svelte-ignore state_referenced_locally
 	let scriptArray: ScriptProduct[] = $state(scripts)
 
 	async function getAuthors() {

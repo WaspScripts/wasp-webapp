@@ -9,7 +9,7 @@ import type { SupabaseClient } from "@supabase/supabase-js"
 import { error, redirect } from "@sveltejs/kit"
 import type Stripe from "stripe"
 import { fail, setError, superValidate } from "sveltekit-superforms"
-import { zod } from "sveltekit-superforms/adapters"
+import { zod4 } from "sveltekit-superforms/adapters"
 
 const newPrices = [
 	{ amount: 4, currency: "eur", interval: "week" },
@@ -99,8 +99,8 @@ export const load = async ({ locals: { supabaseServer }, params: { slug }, paren
 	const bundles = await getBundles()
 
 	const [bundlesForm, newBundleForm] = await Promise.all([
-		superValidate({ bundles }, zod(bundleArraySchema), { id: "bundles" }),
-		superValidate({ user_id: slug, prices: newPrices, bundledScripts: scripts }, zod(newBundleSchema), {
+		superValidate({ bundles }, zod4(bundleArraySchema), { id: "bundles" }),
+		superValidate({ user_id: slug, prices: newPrices, bundledScripts: scripts }, zod4(newBundleSchema), {
 			id: "newbundle",
 			errors: false
 		})
@@ -185,7 +185,7 @@ export const actions = {
 
 		const [scripter, form] = await Promise.all([
 			getScripter(supabaseServer, slug),
-			superValidate(request, zod(bundleArraySchema))
+			superValidate(request, zod4(bundleArraySchema))
 		])
 
 		if (scripter.stripe == scripter.id) return setError(form, "", "Stripe account is not setup!")
@@ -310,7 +310,7 @@ export const actions = {
 		const [profile, scripter, form] = await Promise.all([
 			getProfile(),
 			getScripter(supabaseServer, slug),
-			superValidate(request, zod(newBundleSchema))
+			superValidate(request, zod4(newBundleSchema))
 		])
 
 		if (!profile || !profile.role) error(403, "Invalid profile or role.")

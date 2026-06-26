@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { superForm } from "sveltekit-superforms"
-	import { zodClient } from "sveltekit-superforms/adapters"
+	import { zod4Client } from "sveltekit-superforms/adapters"
 	import { scriptStatsSchema } from "$lib/client/schemas"
 	const { data } = $props()
 
@@ -8,7 +8,7 @@
 		dataType: "json",
 		multipleSubmits: "prevent",
 		taintedMessage: "Are you sure you want to leave?",
-		validators: zodClient(scriptStatsSchema),
+		validators: zod4Client(scriptStatsSchema),
 		scrollToError: true,
 		onSubmit: () => (waitingReply = true),
 		onUpdated: () => (waitingReply = false),

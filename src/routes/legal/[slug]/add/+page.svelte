@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { superForm } from "sveltekit-superforms"
-	import { zodClient } from "sveltekit-superforms/adapters"
+	import { zod4Client } from "sveltekit-superforms/adapters"
 	import { legalSchema } from "$lib/client/schemas"
 	import Head from "$lib/components/Head.svelte"
 
@@ -12,7 +12,7 @@
 		multipleSubmits: "prevent",
 		clearOnSubmit: "errors",
 		taintedMessage: "Are you sure you want to leave?",
-		validators: zodClient(legalSchema)
+		validators: zod4Client(legalSchema)
 	})
 </script>
 
@@ -46,9 +46,7 @@
 					name="content"
 					class="textarea h-64 overflow-y-scroll rounded-md"
 					class:input-error={$errors.content}
-					bind:value={$form.content}
-				>
-				</textarea>
+					bind:value={$form.content}></textarea>
 				{#if $errors.content}
 					<small class="text-error-500">{$errors.content}</small>
 				{/if}

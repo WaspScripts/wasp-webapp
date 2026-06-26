@@ -70,6 +70,8 @@
 			src={PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/banner.jpg"}
 			alt="Script banner"
 			fetchpriority="high"
+			width="1920"
+			height="768"
 		/>
 	</ScriptHeader>
 

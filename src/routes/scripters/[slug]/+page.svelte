@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Head from "$lib/components/Head.svelte"
-	import Github from "@lucide/svelte/icons/github"
 	import PayPal from "./PayPal.svelte"
 	import { page } from "$app/state"
 	import { Tabs } from "@skeletonlabs/skeleton-svelte"
@@ -8,9 +7,10 @@
 	import ScriptCard from "$lib/components/ScriptCard.svelte"
 	import Paginator from "$lib/components/Paginator.svelte"
 	import { superForm } from "sveltekit-superforms/client"
-	import { zodClient } from "sveltekit-superforms/adapters"
+	import { zod4Client } from "sveltekit-superforms/adapters"
 	import { scripterSchema } from "$lib/client/schemas"
 	import DOMPurify from "isomorphic-dompurify"
+	import GitFork from "@lucide/svelte/icons/git-fork"
 
 	const { data } = $props()
 	const { profile, count, scripts, scripter } = $derived(data)
@@ -29,7 +29,7 @@
 		multipleSubmits: "prevent",
 		clearOnSubmit: "errors",
 		taintedMessage: false,
-		validators: zodClient(scripterSchema),
+		validators: zod4Client(scripterSchema),
 		resetForm: true
 	})
 </script>
@@ -63,7 +63,7 @@
 						href={$form.github}
 						class="mx-5 btn h-full preset-filled-surface-300-700 hover:text-secondary-500"
 					>
-						<Github />
+						<GitFork />
 					</a>
 				{/if}
 				{#if $form.paypal && $form.paypal != ""}
@@ -146,7 +146,7 @@
 					</label>
 					<label class="my-4 label">
 						<span class="label-text">Content:</span>
-						<textarea class="textarea h-44" bind:value={$form.content}> </textarea>
+						<textarea class="textarea h-44" bind:value={$form.content}></textarea>
 						{#if $errors.content}
 							{#each $errors.content as err (err)}
 								<small class="text-error-500">{err}</small>

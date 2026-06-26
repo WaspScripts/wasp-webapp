@@ -1,6 +1,5 @@
 <script lang="ts">
-	let props = $props()
-	let selected: boolean = props.selected
+	let { selected }: { selected: boolean } = $props()
 </script>
 
 <!-- Website Logo -->
