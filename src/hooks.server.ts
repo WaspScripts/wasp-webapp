@@ -1,4 +1,4 @@
-import { type Handle, redirect } from "@sveltejs/kit"
+import { type Handle, type HandleServerError, redirect } from "@sveltejs/kit"
 import { createServerClient } from "@supabase/ssr"
 import { sequence } from "@sveltejs/kit/hooks"
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from "$env/static/public"
@@ -170,3 +170,18 @@ const performanceCheck: Handle = async ({ event, resolve }) => {
 }
 
 export const handle: Handle = sequence(redirects, darkMode, theme, supabase, authGuard, performanceCheck)
+
+export const handleError: HandleServerError = ({ error }) => {
+	if (
+		error instanceof Error &&
+		error.constructor.name === "SvelteKitError" &&
+		"status" in error &&
+		error.status === 404
+	) {
+		console.log(error.message)
+		return
+	}
+
+	console.error("Unexpected error ocurred: ", error)
+	return { message: "An unexpected error occurred" }
+}
