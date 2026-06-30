@@ -243,7 +243,7 @@ async function getBundles(supabase: SupabaseClient<Database>, script: string) {
 		.contains("scripts", [script])
 
 	if (err) {
-		throw error(
+		error(
 			500,
 			"Server error, this is probably not an issue on your end!\n" +
 				"SELECT scripts.bundles failed!\n\n" +
@@ -278,7 +278,7 @@ export async function getProducts(supabase: SupabaseClient<Database>, script: st
 	const { data: bundleData, error: bundleErr } = promises[1]
 
 	if (scriptErr) {
-		throw error(
+		error(
 			500,
 			"Server error, this is probably not an issue on your end!\n" +
 				"SELECT scripts.products failed!\n\n" +
@@ -287,7 +287,7 @@ export async function getProducts(supabase: SupabaseClient<Database>, script: st
 	}
 
 	if (bundleErr) {
-		throw error(
+		error(
 			500,
 			"Server error, this is probably not an issue on your end!\n" +
 				"SELECT scripts.products failed!\n\n" +
