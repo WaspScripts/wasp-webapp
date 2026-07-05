@@ -51,7 +51,7 @@
 
 <Head
 	title="{script.title} - Scripts"
-	description="The best open source OSRS botting scripts."
+	description="The best open source botting scripts."
 	keywords="Premium, Free, Automation, ComputerVision"
 	author={script.protected.username}
 	img={PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/banner.jpg"}

@@ -25,7 +25,7 @@
 
 <Head
 	title="Edit {script.title} - Scripts"
-	description="The best open source OSRS botting scripts."
+	description="The best open source botting scripts."
 	keywords="Premium, Free, Automation, ComputerVision"
 	author={script.protected.username}
 	img={PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/banner.jpg"}
@@ -95,7 +95,7 @@
 				</div>
 				<div>
 					<span class="text-lg font-semibold text-blue-400">{script.title} - WaspScripts</span>
-					<p>{cropString("RuneScape OSRS Color Bot - " + script.description, 160)}</p>
+					<p>{cropString("Color Bot - " + script.description, 160)}</p>
 				</div>
 			</div>
 			<div class="mx-auto my-8 w-160">

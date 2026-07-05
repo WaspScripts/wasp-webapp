@@ -12,7 +12,7 @@
 		administrator: { label: "Administrator", class: "bg-orange-500" }
 	}
 
-	const roleInfo = $derived(roles[role ?? ""] ?? { label: "OSRS Botter", class: "bg-stone-500" })
+	const roleInfo = $derived(roles[role ?? ""] ?? { label: "Botter", class: "bg-stone-500" })
 </script>
 
 <span class={`mx-auto rounded-lg px-4 py-2 ${roleInfo.class}`}>

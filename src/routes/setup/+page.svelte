@@ -4,7 +4,7 @@
 
 <Head
 	title="Setup"
-	description="Setup Simba and WaspScripts from scratch to bot OldSchool RuneScape. Start your road to max on osrs today!"
+	description="Setup Simba and WaspScripts from scratch to bot. Start your road to max today!"
 />
 
 <main class="container mx-auto my-6 min-h-screen max-w-2xl grow">

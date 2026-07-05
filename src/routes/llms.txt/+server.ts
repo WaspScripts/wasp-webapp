@@ -84,7 +84,7 @@ export const GET = async ({ locals: { supabaseServer } }) => {
 	return new Response(
 		`# WaspScripts
 
-> WaspScripts is a OSRS (OldSchool RuneScape) botting platform built on top of Simba and SRL.
+> WaspScripts is a botting platform built on top of Simba.
 
 - Everything is open source, from Simba itself, to the libraries to the scripts.
 - Extremely advanced computer vision systems, everything uses colour only to function.
@@ -97,7 +97,7 @@ For setup instructions you visit the setup [page](${website}/setup)
 - [Simba](https://villavu.github.io/Simba/): Simba documentation
 - [WaspLib](https://docs.waspscripts.dev/): WaspLib documentation
 - [Wasp Stats API](https://api.waspscripts.dev/docs): Stats API documentation
-- [Map](https://map.waspscripts.com/): Interactive OSRS map
+- [Map](https://map.waspscripts.com/): Interactive game map
 
 ## Scripts
 
@@ -118,7 +118,7 @@ Find the solution to your problem in our [support page](${website}/support).
 
 ## Tutorials
 
-Learn programming and how you can make your own runescape colour bots.
+Learn programming and how you can make your own color bots.
 
 - [Tutorials](${website}/tutorials): All tutorials
 ${tutorials}
