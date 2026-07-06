@@ -90,7 +90,10 @@
 							</div>
 							{#if canEdit(profile?.id, profile?.role, script.protected.author)}
 								<div class="my-8 grid place-items-center">
-									<a href="{page.url.pathname}/edit" class="btn preset-filled-primary-500 font-bold">Edit</a>
+									<a
+										href="{page.url.pathname}/edit/information"
+										class="btn preset-filled-primary-500 font-bold">Edit</a
+									>
 								</div>
 							{/if}
 						</div>

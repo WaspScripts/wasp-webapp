@@ -6,5 +6,5 @@ export const load = async ({ parent, params: { slug }, locals: { supabaseServer 
 	if (!user || !session) {
 		return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 	}
-	redirect(303, "/scripts/" + slug + "/edit/information/")
+	redirect(303, "/scripts/" + encodeURI(slug) + "/edit/information/")
 }
