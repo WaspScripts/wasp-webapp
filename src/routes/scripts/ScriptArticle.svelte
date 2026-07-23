@@ -10,6 +10,7 @@
 
 <div class="mx-auto my-8 max-h-200 w-full max-w-4xl overflow-auto rounded-md preset-outlined-surface-500 p-8">
 	<article class="text-md m-8 prose mb-12 max-w-lg md:max-w-7xl md:text-xl dark:prose-invert">
+		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 		{@html DOMPurify.sanitize(mardownRenderer.render(content))}
 	</article>
 </div>

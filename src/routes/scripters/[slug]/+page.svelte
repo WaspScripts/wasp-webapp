@@ -91,6 +91,7 @@
 			</h4>
 			<article class="mx-auto my-24 prose dark:prose-invert">
 				{#if $form.content}
+					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 					{@html DOMPurify.sanitize($form.content)}
 				{:else}
 					This scripter did not add information about him.

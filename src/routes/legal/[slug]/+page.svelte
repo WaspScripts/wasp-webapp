@@ -43,6 +43,7 @@
 		{/if}
 	</div>
 	<article class="mx-auto prose max-w-md py-6 md:max-w-4xl dark:prose-invert">
+		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 		{@html DOMPurify.sanitize(currentPolicy.content)}
 	</article>
 </main>

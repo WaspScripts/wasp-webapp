@@ -1,7 +1,7 @@
 import { bundleArraySchema, newBundleSchema, type BundleSchema } from "$lib/client/schemas"
 import { getScripter } from "$lib/client/supabase"
 import { stripe, createPrice, createPriceEx, updatePrice, updateProduct } from "$lib/server/stripe.server"
-import { addFreeAccess, cancelFreeAccess, doLogin } from "$lib/server/supabase.server"
+import { addFreeAccess, cancelFreeAccess, doLogin, supabaseAdmin } from "$lib/server/supabase.server"
 import type { Interval } from "$lib/types/collection"
 import type { Database } from "$lib/types/supabase"
 import { formatError, UUID_V4_REGEX } from "$lib/utils"
@@ -411,13 +411,13 @@ export const actions = {
 
 		if (!success) error(503, "Failed to update subscription on stripe side.")
 
-		const { error: err } = await supabaseServer
+		const { error: err } = await supabaseAdmin
 			.schema("profiles")
 			.from("subscriptions")
 			.update({ disabled: true })
 			.eq("id", subscription)
 
-		if (err)
+		if (err) {
 			fail(503, {
 				message:
 					"Please contact Torwent and give him this message, Error: " +
@@ -425,6 +425,7 @@ export const actions = {
 					" sub: " +
 					subscription
 			})
+		}
 
 		return { success: true }
 	},
@@ -444,7 +445,7 @@ export const actions = {
 		const product = searchParams.get("product")
 		if (!product) error(403, "Product not specified.")
 
-		const { data, error: err } = await supabaseServer
+		const { data, error: err } = await supabaseAdmin
 			.schema("profiles")
 			.from("subscriptions")
 			.update({ disabled: true })

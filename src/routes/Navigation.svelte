@@ -272,9 +272,8 @@
 		</form>
 	{/if}
 </nav>
-<a
-	href="https://waspscripts.com"
-	class="bg-surface-300-700/70 py-2 text-center backdrop-blur-lg hover:text-primary-900-100"
+<div
+	class="bg-surface-300-700/70 py-2 text-center backdrop-blur-lg text-error-500 hover:bg-surface-200-800/70 font-bold cursor-default"
 >
-	This website is for <b>Simba 2000</b>. Click here to visit the legacy version of the website.
-</a>
+	Subscriptions are temporarily disabled, read announcements on discord!
+</div>
