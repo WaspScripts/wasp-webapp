@@ -415,7 +415,7 @@ export const actions = {
 			.schema("profiles")
 			.from("subscriptions")
 			.update({ disabled: true })
-			.eq("subscription", subscription)
+			.eq("id", subscription)
 
 		if (err)
 			fail(503, {
