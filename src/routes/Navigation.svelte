@@ -282,7 +282,7 @@
 >
 	<small>
 		By using this platform, you acknowledge that botting is usually against a game's Terms of Service and/or
-		EULA (End User License Agreement).
+		End User License Agreement's'.
 	</small>
 	<small>
 		This software is provided "as is," with no warranties. Do not use it if your EULA prohibits botting.
