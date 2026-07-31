@@ -28,7 +28,7 @@
 	description="The best open source botting scripts."
 	keywords="Premium, Free, Automation, ComputerVision"
 	author={script.protected.username}
-	img={PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/banner.jpg"}
+	img={PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/banner.webp"}
 />
 <main>
 	{#if show[0]}
@@ -42,7 +42,7 @@
 				<img
 					class="rounded-md {!script ? 'animate-pulse' : ''}"
 					src={bannerURL ??
-						PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/banner.jpg"}
+						PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/banner.webp"}
 					alt="Script banner"
 					loading="lazy"
 				/>

@@ -70,12 +70,12 @@ export const scriptStatsSchema = z
 export const coverImage = z
 	.instanceof(File, { message: "Please upload a file." })
 	.refine((file) => file.size <= 3 * MB_SIZE, "Max image size is 3MB.")
-	.refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), "Only .jpg formats are allwoed.")
+	.refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), "Only .webp formats are allwoed.")
 
 export const bannerImage = z
 	.instanceof(File, { message: "Please upload a file." })
 	.refine((file) => file.size <= 5 * MB_SIZE, "Max image size is 5MB.")
-	.refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), "Only .jpg formats are allowed.")
+	.refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), "Only .webp formats are allowed.")
 
 export const scriptFile = z
 	.instanceof(File, { message: "Please upload a file." })

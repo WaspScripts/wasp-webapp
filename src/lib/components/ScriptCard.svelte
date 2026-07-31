@@ -15,7 +15,7 @@
 	let { script, customCover, link }: { script: Script; customCover?: string; link?: string } = $props()
 
 	let imgLink = $derived(
-		customCover ?? PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/cover.jpg"
+		customCover ?? PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/cover.webp"
 	)
 
 	const categoriesTooltip: boolean[] = $state(new Array(script?.metadata.categories.length).fill(false))

@@ -6,7 +6,7 @@ export const UUID_V4_REGEX =
 	/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89AB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/i
 
 export const MB_SIZE = 1000000
-export const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg"]
+export const ACCEPTED_IMAGE_TYPES = ["image/webp"]
 
 export function formatError(err: AuthError | PostgrestError) {
 	console.error(err)

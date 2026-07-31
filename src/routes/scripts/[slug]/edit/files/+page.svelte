@@ -105,7 +105,7 @@
 		<div class="flex flex-col justify-between gap-4 2xl:flex-row">
 			<FileUpload
 				name="cover"
-				accept="image/jpeg"
+				accept="image/webp"
 				maxFiles={1}
 				maxFileSize={1024 * 1024 * 50}
 				onFileReject={console.error}
@@ -125,7 +125,7 @@
 					<span class="pointer-events-none my-2">Cover Image</span>
 					<span class="pointer-events-none text-xs opacity-60">
 						{$errors.cover == null
-							? "Must be exactly 300x200 pixels and JPG format."
+							? "Must be exactly 300x200 pixels and webp format."
 							: $errors.cover.toString()}</span
 					>
 					<FileUpload.HiddenInput />
@@ -148,7 +148,7 @@
 
 			<FileUpload
 				name="banner"
-				accept="image/jpeg"
+				accept="image/webp"
 				maxFiles={1}
 				maxFileSize={1024 * 1024 * 50}
 				onFileReject={console.error}
@@ -168,7 +168,7 @@
 					<span class="pointer-events-none my-2">Banner Image</span>
 					<span class="pointer-events-none text-xs opacity-60">
 						{$errors.banner == null
-							? "Must be exactly 1920x768 pixels and JPG format."
+							? "Must be exactly 1920x768 pixels and webp format."
 							: $errors.banner.toString()}</span
 					>
 					<FileUpload.HiddenInput />
@@ -224,7 +224,7 @@
 					<span class="pointer-events-none my-2">Script Files</span>
 					<span class="pointer-events-none text-xs opacity-60">
 						{$errors.script == null
-							? "Must be exactly 1920x768 pixels and JPG format."
+							? "Must be exactly 1920x768 pixels and webp format."
 							: $errors.script.toString()}</span
 					>
 					<FileUpload.HiddenInput />

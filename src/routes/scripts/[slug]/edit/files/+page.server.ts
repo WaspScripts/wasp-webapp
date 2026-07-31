@@ -128,14 +128,14 @@ export const actions = {
 		if (form.data.cover) {
 			console.log("Updating script cover")
 			storagePromises.push(
-				updateImgFile(supabaseServer, "imgs", "scripts/" + script.id + "/cover.jpg", form.data.cover)
+				updateImgFile(supabaseServer, "imgs", "scripts/" + script.id + "/cover.webp", form.data.cover)
 			)
 		}
 
 		if (form.data.banner) {
 			console.log("Updating script banner")
 			storagePromises.push(
-				updateImgFile(supabaseServer, "imgs", "scripts/" + script.id + "/banner.jpg", form.data.banner)
+				updateImgFile(supabaseServer, "imgs", "scripts/" + script.id + "/banner.webp", form.data.banner)
 			)
 		}
 

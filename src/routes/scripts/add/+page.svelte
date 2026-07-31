@@ -31,8 +31,8 @@
 
 	const categories = Object.values(scriptCategories)
 
-	let coverURL: string = $state("/cover.jpg")
-	let bannerURL: string = $state("/banner.jpg")
+	let coverURL: string = $state("/cover.webp")
+	let bannerURL: string = $state("/banner.webp")
 
 	let cStyle: 0 | 1 | 2 = $state(0)
 	let bStyle: 0 | 1 | 2 = $state(0)
@@ -478,7 +478,7 @@
 				<div class="flex flex-col justify-between gap-4 2xl:flex-row">
 					<FileUpload
 						name="cover"
-						accept="image/jpeg"
+						accept="image/webp"
 						maxFiles={1}
 						maxFileSize={1024 * 1024 * 50}
 						onFileReject={console.error}
@@ -486,7 +486,7 @@
 						allowDrop
 						onFileChange={async (details) => {
 							cStyle = 0
-							coverURL = "/cover.jpg"
+							coverURL = "/cover.webp"
 							if (details.acceptedFiles.length === 0) {
 								if (details.rejectedFiles.length > 0) cStyle = 2
 								return
@@ -516,7 +516,7 @@
 							<span class="pointer-events-none my-2">Cover Image</span>
 							<span class="pointer-events-none text-xs opacity-60">
 								{$errors.cover == null
-									? "Must be exactly 300x200 pixels and JPG format."
+									? "Must be exactly 300x200 pixels and webp format."
 									: $errors.cover.toString()}</span
 							>
 							<FileUpload.HiddenInput />
@@ -539,7 +539,7 @@
 
 					<FileUpload
 						name="banner"
-						accept="image/jpeg"
+						accept="image/webp"
 						maxFiles={1}
 						maxFileSize={1024 * 1024 * 50}
 						onFileReject={console.error}
@@ -547,7 +547,7 @@
 						allowDrop
 						onFileChange={async (details) => {
 							bStyle = 0
-							bannerURL = "/banner.jpg"
+							bannerURL = "/banner.webp"
 							if (details.acceptedFiles.length === 0) {
 								if (details.rejectedFiles.length > 0) bStyle = 2
 								return
@@ -577,7 +577,7 @@
 							<span class="pointer-events-none my-2">Banner Image</span>
 							<span class="pointer-events-none text-xs opacity-60">
 								{$errors.banner == null
-									? "Must be exactly 1920x768 pixels and JPG format."
+									? "Must be exactly 1920x768 pixels and webp format."
 									: $errors.banner.toString()}</span
 							>
 							<FileUpload.HiddenInput />
@@ -633,7 +633,7 @@
 							<span class="pointer-events-none my-2">Script Files</span>
 							<span class="pointer-events-none text-xs opacity-60">
 								{$errors.script == null
-									? "Must be exactly 1920x768 pixels and JPG format."
+									? "Must be exactly 1920x768 pixels and webp format."
 									: $errors.script.toString()}</span
 							>
 							<FileUpload.HiddenInput />

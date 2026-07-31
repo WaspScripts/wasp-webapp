@@ -54,7 +54,7 @@
 	description="The best open source botting scripts."
 	keywords="Premium, Free, Automation, ComputerVision"
 	author={script.protected.username}
-	img={PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/banner.jpg"}
+	img={PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/banner.webp"}
 />
 
 <main class="mx-auto flex w-[90%] flex-col">
@@ -67,7 +67,7 @@
 	>
 		<img
 			class="rounded-md"
-			src={PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/banner.jpg"}
+			src={PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/banner.webp"}
 			alt="Script banner"
 			fetchpriority="high"
 			width="1920"

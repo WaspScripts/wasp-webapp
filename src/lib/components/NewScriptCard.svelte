@@ -10,7 +10,7 @@
 		customCover = $bindable(undefined)
 	}: { script: ScriptPublic; metadata: ScriptMetaData; customCover: string | undefined } = $props()
 
-	let imgLink = $derived(customCover ?? "/cover.jpg")
+	let imgLink = $derived(customCover ?? "/cover.webp")
 	const username = page.data.profile?.username ?? "USERNAME"
 
 	const categoriesTooltip: boolean[] = $state(new Array(metadata.categories.length).fill(false))

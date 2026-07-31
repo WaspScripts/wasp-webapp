@@ -162,10 +162,10 @@ export const actions = {
 		}
 
 		filePromises.push(
-			uploadFile(supabaseServer, "imgs", "scripts/" + data.id + "/cover.jpg", form.data.cover)
+			uploadFile(supabaseServer, "imgs", "scripts/" + data.id + "/cover.webp", form.data.cover)
 		)
 		filePromises.push(
-			uploadFile(supabaseServer, "imgs", "scripts/" + data.id + "/banner.jpg", form.data.banner)
+			uploadFile(supabaseServer, "imgs", "scripts/" + data.id + "/banner.webp", form.data.banner)
 		)
 
 		const awaitedFiles = await Promise.all(filePromises)
