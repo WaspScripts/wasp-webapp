@@ -272,18 +272,19 @@
 		</form>
 	{/if}
 </nav>
-<div
+<small
 	class="bg-surface-300-700/70 py-2 text-center backdrop-blur-lg text-error-500 hover:bg-surface-200-800/70 font-bold cursor-default"
 >
 	Subscriptions are temporarily disabled, read announcements on discord!
-</div>
+</small>
 <div
-	class="bg-surface-300-700/70 py-2 text-center backdrop-blur-lg text-error-500 hover:bg-surface-200-800/70 font-bold cursor-default"
+	class="bg-surface-300-700/70 py-2 text-center backdrop-blur-lg text-error-500 hover:bg-surface-200-800/70 font-bold cursor-default flex flex-col"
 >
-    <div>
-    By using this platform, you acknowledge that botting is usually against a game's Terms of Service and/or EULA (End User License Agreement).
-    </div>
-    <div>
-    This software is provided "as is," with no warranties. Do not use it if your EULA prohibits botting.
-    </div>
+	<small>
+		By using this platform, you acknowledge that botting is usually against a game's Terms of Service and/or
+		EULA (End User License Agreement).
+	</small>
+	<small>
+		This software is provided "as is," with no warranties. Do not use it if your EULA prohibits botting.
+	</small>
 </div>

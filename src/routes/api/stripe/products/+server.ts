@@ -27,18 +27,26 @@ export const POST = async ({ request }) => {
 	}
 
 	switch (type) {
-		case "product.deleted": {
-			const productDeleted = data.object as Stripe.Product
-			console.log("DELETE stripe.products: ", productDeleted.id)
+		case "product.created": {
+			console.log(data)
+			const productCreated = data.object as Stripe.Product
+			const { name } = productCreated
+			const metadata = productCreated.metadata as unknown as ProductMetadata
 
+			console.log("INSERT stripe.products: ", productCreated.id)
 			const { error: err } = await supabaseAdmin
 				.schema("stripe")
 				.from("products")
-				.delete()
-				.eq("id", productDeleted.id)
+				.insert({
+					id: productCreated.id,
+					bundle: metadata.bundle ?? null,
+					script: metadata.script ?? null,
+					user_id: metadata.user_id,
+					name: name
+				})
 
 			if (err) {
-				error(500, "object: " + JSON.stringify(productDeleted) + "\r\n" + formatError(err))
+				error(500, "object: " + JSON.stringify(productCreated) + "\r\n" + formatError(err))
 			}
 
 			break
@@ -64,30 +72,23 @@ export const POST = async ({ request }) => {
 			break
 		}
 
-		case "product.created": {
-			console.log(data)
-			const productCreated = data.object as Stripe.Product
-			const { name } = productCreated
-			const metadata = productCreated.metadata as unknown as ProductMetadata
+		case "product.deleted": {
+			const productDeleted = data.object as Stripe.Product
+			console.log("DELETE stripe.products: ", productDeleted.id)
 
-			console.log("INSERT stripe.products: ", productCreated.id)
 			const { error: err } = await supabaseAdmin
 				.schema("stripe")
 				.from("products")
-				.insert({
-					id: productCreated.id,
-					bundle: metadata.bundle ?? null,
-					script: metadata.script ?? null,
-					user_id: metadata.user_id,
-					name: name
-				})
+				.delete()
+				.eq("id", productDeleted.id)
 
 			if (err) {
-				error(500, "object: " + JSON.stringify(productCreated) + "\r\n" + formatError(err))
+				error(500, "object: " + JSON.stringify(productDeleted) + "\r\n" + formatError(err))
 			}
 
 			break
 		}
+
 
 		default:
 			error(404, "Product event doesn't have a valid type! Type: " + type)

@@ -99,16 +99,38 @@ export const POST = async ({ request }) => {
 				.eq("id", subscriptionDeleted.id)
 
 			if (err) {
+				console.error(
+					"Error updating supabase with object: " +
+						JSON.stringify(subscriptionDeleted) +
+						"\r\n" +
+						formatError(err)
+				)
 				error(500, "object: " + JSON.stringify(subscriptionDeleted) + "\r\n" + formatError(err))
 			}
 
 			const last_invoice = subscriptionDeleted.latest_invoice
 			if (last_invoice) {
 				const invoiceId = last_invoice.toString()
-				const invoice = await stripe.invoices.retrieve(invoiceId)
+
+				let invoice: Stripe.Invoice
+				try {
+					invoice = await stripe.invoices.retrieve(invoiceId)
+				} catch (err) {
+					console.error(err)
+					error(
+						404,
+						"Failed to retrieve invoce: " +
+							last_invoice +
+							" for sub: " +
+							subscriptionDeleted.id +
+							"  Error: " +
+							err
+					)
+				}
+
 				if (invoice.status != "paid" && invoice.status != "void") {
 					try {
-						stripe.invoices.voidInvoice(invoiceId)
+						await stripe.invoices.voidInvoice(invoiceId)
 					} catch (err) {
 						console.error(err)
 						error(
