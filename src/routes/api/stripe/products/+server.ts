@@ -89,7 +89,6 @@ export const POST = async ({ request }) => {
 			break
 		}
 
-
 		default:
 			error(404, "Product event doesn't have a valid type! Type: " + type)
 	}

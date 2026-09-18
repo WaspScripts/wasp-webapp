@@ -9,7 +9,9 @@
 	}: { id?: string; title?: string; username?: string | null } = $props()
 
 	const src = $derived(
-		id ? PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + id + "/banner.webp" : "/banner.webp"
+		id
+			? PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + id + "/banner.webp"
+			: "/banner.webp"
 	)
 </script>
 
