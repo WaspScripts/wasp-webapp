@@ -14,14 +14,15 @@ function getScriptString(script: Script) {
 
 function createScriptsIndex(data: Script[]) {
 	scriptsIndex = new FlexSearch.Index({ tokenize: "full", cache: true, language: "en" })
-	data.forEach((script, i) => scriptsIndex.add(i, getScriptString(script)))
+	data.forEach((script) => scriptsIndex.add(script.id, getScriptString(script)))
 }
 
 export async function searchScriptsIndex(searchTerm: string) {
 	if (scripts.length === 0 || publishedScripts.length === 0) await getPublishedScripts()
 	const match = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") //escape special regex characters
-	const indices = scriptsIndex.search(match) as number[]
-	return indices.map((index) => publishedScripts[index])
+	const ids = scriptsIndex.search(match) as string[]
+	const byID = new Map(publishedScripts.map((script) => [script.id, script]))
+	return ids.map((id) => byID.get(id)).filter((script): script is Script => script !== undefined)
 }
 
 export async function getScripts(): Promise<Script[]> {
@@ -89,22 +90,25 @@ export async function updateScript(id: string) {
 	const script = await fetchScriptByID(supabaseAdmin, id)
 	if (script == null) return
 
-	let index = scripts.findIndex((s) => s.id === id)
-	if (index === -1) {
-		scripts.push(script)
-		if (script.published) publishedScripts.push(script)
-		scriptsIndex.add(publishedScripts.length, getScriptString(script))
-		return
+	// Drop cached lookups for this script (its url may have changed too).
+	for (const [slug, cached] of scriptsMap) {
+		if (cached.id === id) scriptsMap.delete(slug)
 	}
 
-	scripts[index] = script
+	const index = scripts.findIndex((s) => s.id === id)
+	if (index === -1) scripts.push(script)
+	else scripts[index] = script
 
-	if (!scriptsIndex || publishedScripts.length === 0) {
-		return
+	// Indexes are keyed by script id, so the index and published list can't drift apart.
+	const wasPublished = publishedScripts.some((s) => s.id === id)
+	publishedScripts = scripts.filter((s) => s.published)
+
+	if (!scriptsIndex) return
+
+	if (script.published) {
+		if (wasPublished) scriptsIndex.update(id, getScriptString(script))
+		else scriptsIndex.add(id, getScriptString(script))
+	} else if (wasPublished) {
+		scriptsIndex.remove(id)
 	}
-
-	index = publishedScripts.findIndex((s) => s.id === id)
-	publishedScripts[index] = script
-
-	scriptsIndex.update(index, getScriptString(script))
 }
