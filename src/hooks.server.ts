@@ -132,31 +132,26 @@ const authGuard: Handle = async ({ event, resolve }) => {
 	return response
 }
 
-const darkMode: Handle = async ({ event, resolve }) => {
+const appearance: Handle = async ({ event, resolve }) => {
 	let dark = event.cookies.get("darkMode")
-
 	if (!dark) {
 		dark = "true"
 		event.cookies.set("darkMode", dark, { path: "/", maxAge: 60 * 60 * 24 * 7 * 360 })
 	}
 
-	const darkMode = dark === "true"
-	if (!darkMode) return await resolve(event)
-
-	return await resolve(event, {
-		transformPageChunk: ({ html }) => html.replace('class=""', `class="dark"`)
-	})
-}
-
-const theme: Handle = async ({ event, resolve }) => {
-	const cookieTheme = event.cookies.get("theme")
-
-	if (!cookieTheme) {
-		event.cookies.set("theme", "wasp", { path: "/" })
+	let theme = event.cookies.get("theme")
+	if (!theme) {
+		theme = "wasp"
+		event.cookies.set("theme", theme, { path: "/" })
 	}
 
+	const darkMode = dark === "true"
+
 	return await resolve(event, {
-		transformPageChunk: ({ html }) => html.replace('data-theme=""', `data-theme="${cookieTheme ?? "wasp"}"`)
+		transformPageChunk: ({ html }) => {
+			html = html.replace('data-theme=""', `data-theme="${theme}"`)
+			return darkMode ? html.replace('class=""', `class="dark"`) : html
+		}
 	})
 }
 
@@ -169,7 +164,7 @@ const performanceCheck: Handle = async ({ event, resolve }) => {
 	return response
 }
 
-export const handle: Handle = sequence(redirects, darkMode, theme, supabase, authGuard, performanceCheck)
+export const handle: Handle = sequence(redirects, appearance, supabase, authGuard, performanceCheck)
 
 export const handleError: HandleServerError = ({ error }) => {
 	if (
