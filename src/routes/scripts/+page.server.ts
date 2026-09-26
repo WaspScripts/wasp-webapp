@@ -2,13 +2,19 @@ import { getPublishedScripts, searchScriptsIndex } from "$lib/server/scripts.ser
 import { formatError } from "$lib/utils"
 import { error } from "@sveltejs/kit"
 
+const MAX_AMOUNT = 100
+const FEATURED_TTL = 5 * 60 * 1000
+
+let featuredIDs: Set<string> | null = null
+let featuredFetchedAt = 0
+
 export async function load({ depends, url, locals: { supabaseServer } }) {
 	depends("wasp:scripts")
 	const pageN = Number(url.searchParams.get("page") || "-1")
 	const page = pageN < 0 || Number.isNaN(pageN) ? 1 : pageN
 
 	const amountN = Number(url.searchParams.get("amount") || "12")
-	const amount = amountN < 0 || Number.isNaN(amountN) ? 1 : amountN
+	const amount = Number.isNaN(amountN) || amountN < 1 ? 1 : Math.min(Math.floor(amountN), MAX_AMOUNT)
 
 	const search = decodeURIComponent(url.searchParams.get("search") || "").trim()
 
@@ -26,6 +32,13 @@ export async function load({ depends, url, locals: { supabaseServer } }) {
 	let scripts = await (search !== "" ? searchScriptsIndex(search) : allScripts)
 
 	async function getFeatured() {
+		const scripts = await allScripts
+
+		if (featuredIDs && Date.now() - featuredFetchedAt < FEATURED_TTL) {
+			const cached = featuredIDs
+			return scripts.filter((script) => cached.has(script.id))
+		}
+
 		const { data, error: err } = await supabaseServer.schema("scripts").from("featured").select("id")
 
 		if (err) {
@@ -36,8 +49,10 @@ export async function load({ depends, url, locals: { supabaseServer } }) {
 					formatError(err)
 			)
 		}
-		const scripts = await allScripts
-		return scripts.filter((script) => data.some((scrpt) => script.id === scrpt.id))
+		const ids = new Set(data.flatMap((featured) => (featured.id ? [featured.id] : [])))
+		featuredIDs = ids
+		featuredFetchedAt = Date.now()
+		return scripts.filter((script) => ids.has(script.id))
 	}
 
 	if (statusFilter) scripts = scripts.filter((script) => script.metadata.status === statusFilter)
