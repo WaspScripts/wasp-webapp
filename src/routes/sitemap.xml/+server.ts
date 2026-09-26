@@ -56,21 +56,31 @@ const buildLoc = async (supabase: SupabaseClient<Database>, loc: string) => {
 		data = (await getScripters(supabase)) || []
 	}
 
-	let result = ""
-	data.forEach((el) => {
-		result += `
+	return data
+		.map(
+			(el) => `
       <url>
         <loc>${website}/${loc}/${el}</loc>
         <changefreq>daily</changefreq>
         <priority>0.7</priority>
       </url>
 `
-	})
+		)
+		.join("")
+}
 
-	return result
+const CACHE_TTL = 60 * 60 * 1000
+let cachedSitemap: { body: string; expires: number } | null = null
+
+const headers = {
+	"Cache-Control": "max-age=0, s-maxage=3600",
+	"Content-Type": "application/xml"
 }
 
 export const GET = async ({ locals: { supabaseServer } }) => {
+	if (cachedSitemap && cachedSitemap.expires > Date.now())
+		return new Response(cachedSitemap.body, { headers })
+
 	const promises = await Promise.all([
 		buildLoc(supabaseServer, "scripts"),
 		buildLoc(supabaseServer, "tutorials"),
@@ -80,12 +90,7 @@ export const GET = async ({ locals: { supabaseServer } }) => {
 	const tutorials = promises[1]
 	const scripters = promises[2]
 
-	const headers = {
-		"Cache-Control": "max-age=0, s-maxage=3600",
-		"Content-Type": "application/xml"
-	}
-	return new Response(
-		`<?xml version="1.0" encoding="UTF-8" ?>
+	const body = `<?xml version="1.0" encoding="UTF-8" ?>
     <urlset
       xmlns="https://www.sitemaps.org/schemas/sitemap/0.9"
       xmlns:news="https://www.google.com/schemas/sitemap-news/0.9"
@@ -152,7 +157,8 @@ export const GET = async ({ locals: { supabaseServer } }) => {
         <changefreq>daily</changefreq>
         <priority>0.6</priority>
       </url>
-    </urlset>`,
-		{ headers: headers }
-	)
+    </urlset>`
+
+	cachedSitemap = { body, expires: Date.now() + CACHE_TTL }
+	return new Response(body, { headers })
 }
