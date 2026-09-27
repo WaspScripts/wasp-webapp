@@ -34,9 +34,15 @@ const supabase: Handle = async ({ event, resolve }) => {
 		}
 	})
 
-	event.locals.safeGetSession = async () => {
-		const start = performance.now()
+	let sessionPromise: ReturnType<typeof fetchSession> | null = null
 
+	// Memoized per request so auth is only verified once, no matter how many loads ask for it.
+	event.locals.safeGetSession = () => (sessionPromise ??= fetchSession())
+	event.locals.resetSession = () => {
+		sessionPromise = null
+	}
+
+	async function fetchSession() {
 		const { supabaseServer } = event.locals
 
 		const promises = await Promise.all([supabaseServer.auth.getSession(), supabaseServer.auth.getUser()])

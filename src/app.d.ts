@@ -12,6 +12,7 @@ declare global {
 			theme: "wasp" | "cerberus" | "concord" | "fennec"
 			supabaseServer: SupabaseClient<Database>
 			safeGetSession: () => Promise<{ session: Session | null; user: User | null }>
+			resetSession: () => void
 			session: Session | null
 			user: User | null
 			getProfile: () => Promise<ProfileBase | null> | null

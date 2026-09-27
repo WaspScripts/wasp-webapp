@@ -41,9 +41,10 @@ export const actions = {
 		redirect(303, "/")
 	},
 
-	logout: async ({ locals: { supabaseServer } }) => {
+	logout: async ({ locals: { supabaseServer, resetSession } }) => {
 		const { error: err } = await supabaseServer.auth.signOut()
 		if (err) error(400, formatError(err))
+		resetSession()
 		return { success: true }
 	},
 
