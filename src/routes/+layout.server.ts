@@ -4,8 +4,7 @@ export const load = async ({ locals: { safeGetSession, mode, theme }, cookies, s
 		"X-Frame-Options": "SAMEORIGIN",
 		"X-Content-Type-Options": "nosniff",
 		"Referrer-Policy": "origin-when-cross-origin",
-		"Permissions-Policy":
-			"geolocation=(self), microphone=(self), camera=(self), fullscreen=(self), payment=(self), midi=(self)"
+		"Permissions-Policy": "geolocation=(), microphone=(), camera=(), fullscreen=(self), payment=(), midi=()"
 	})
 
 	const { session, user } = await safeGetSession()
