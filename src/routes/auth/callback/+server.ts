@@ -1,10 +1,17 @@
 import { error, redirect } from "@sveltejs/kit"
 import { formatError } from "$lib/utils"
+import { isSafePath, LOGIN_REDIRECT_COOKIE } from "$lib/server/supabase.server"
 import { createCustomer } from "$lib/server/stripe.server"
 
-export const GET = async ({ url: { searchParams }, locals: { supabaseServer } }) => {
+export const GET = async ({ url: { searchParams }, cookies, locals: { supabaseServer } }) => {
 	console.log("💻 Logging in")
 	const err = searchParams.get("error")
+
+	const takeLoginRedirect = () => {
+		const path = cookies.get(LOGIN_REDIRECT_COOKIE)
+		cookies.delete(LOGIN_REDIRECT_COOKIE, { path: "/" })
+		return path && isSafePath(path) ? path : "/"
+	}
 
 	if (err) {
 		let message = ""
@@ -36,7 +43,7 @@ export const GET = async ({ url: { searchParams }, locals: { supabaseServer } })
 			.eq("id", user.id)
 			.single()
 
-		if (count) redirect(303, searchParams.get("path") ?? "/")
+		if (count) redirect(303, takeLoginRedirect())
 
 		if (user.email && user.app_metadata.provider == "discord") {
 			const discord = user.user_metadata["provider_id"]
@@ -61,5 +68,5 @@ export const GET = async ({ url: { searchParams }, locals: { supabaseServer } })
 		}
 	}
 
-	redirect(303, searchParams.get("path") ?? "/")
+	redirect(303, takeLoginRedirect())
 }

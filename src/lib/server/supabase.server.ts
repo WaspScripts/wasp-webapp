@@ -11,16 +11,13 @@ export const supabaseAdmin = createClient<Database>(PUBLIC_SUPABASE_URL, SUPABAS
 
 export async function doLogin(supabase: SupabaseClient, origin: string, searchParams: URLSearchParams) {
 	const provider = searchParams.get("provider") as Provider
-	const path = searchParams.get("path")
 
 	if (!provider) error(403, "Failed to login! Provider not specified!")
-
-	const href = origin + "/auth/callback/" + (path?.slice(3) ?? "")
 
 	const { data, error: err } = await supabase.auth.signInWithOAuth({
 		provider: provider,
 		options: {
-			redirectTo: href,
+			redirectTo: origin + "/auth/callback/",
 			scopes: "identify email guilds guilds.members.read"
 		}
 	})
@@ -135,4 +132,11 @@ export async function cancelFreeAccess(id: string, product: string) {
 		.eq("product", product)
 
 	return err
+}
+
+export const LOGIN_REDIRECT_COOKIE = "login_redirect"
+
+/** Only same-origin absolute paths, so the post-login redirect can't leave the site. */
+export function isSafePath(path: string) {
+	return path.startsWith("/") && !path.startsWith("//") && !path.includes("\\")
 }

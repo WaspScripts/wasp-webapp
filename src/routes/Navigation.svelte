@@ -256,7 +256,7 @@
 						name="Login"
 						aria-label="Login to your account mx-auto"
 						class="btn preset-filled-primary-500"
-						formaction="/auth?/login&provider=discord&path={page.url.pathname.replaceAll('/', '_-_')}"
+						formaction="/auth?/login&provider=discord&path={encodeURIComponent(page.url.pathname + page.url.search)}"
 					>
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="h-4 w-4">
 							<path

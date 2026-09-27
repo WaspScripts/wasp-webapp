@@ -1,5 +1,5 @@
 import { loginAsSchema } from "$lib/client/schemas.js"
-import { doLogin } from "$lib/server/supabase.server"
+import { doLogin, isSafePath, LOGIN_REDIRECT_COOKIE } from "$lib/server/supabase.server"
 import { formatError } from "$lib/utils"
 import { error, redirect } from "@sveltejs/kit"
 import { setError, superValidate } from "sveltekit-superforms"
@@ -17,8 +17,19 @@ export const load = async ({ locals: { user, getProfile } }) => {
 }
 
 export const actions = {
-	login: async ({ locals: { supabaseServer }, url: { origin, searchParams } }) => {
+	login: async ({ locals: { supabaseServer }, cookies, url: { origin, searchParams } }) => {
 		console.log("LOGIN ACTION!")
+
+		const path = searchParams.get("path")
+		if (path && isSafePath(path)) {
+			cookies.set(LOGIN_REDIRECT_COOKIE, path, {
+				path: "/",
+				httpOnly: true,
+				sameSite: "lax",
+				maxAge: 60 * 10
+			})
+		}
+
 		return await doLogin(supabaseServer, origin, searchParams)
 	},
 

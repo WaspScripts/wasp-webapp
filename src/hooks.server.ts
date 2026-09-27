@@ -11,14 +11,6 @@ const redirects: Handle = async ({ event, resolve }) => {
 		return redirect(303, "/auth/refresh-token")
 	}
 
-	if (event.url.pathname.startsWith("/auth/callback")) {
-		const path = event.url.pathname.slice(14)
-		if (path === "") return resolve(event)
-
-		const searchParams = event.url.searchParams.toString() + "&path=" + encodeURI(path.replaceAll("_-_", "/"))
-
-		return redirect(303, "/auth/callback?" + searchParams)
-	}
 	return resolve(event)
 }
 
