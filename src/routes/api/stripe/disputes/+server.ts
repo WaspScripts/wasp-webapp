@@ -2,7 +2,8 @@ import { STRIPE_WEBHOOK_SECRET_DISPUTES } from "$env/static/private"
 import { stripe } from "$lib/server/stripe.server"
 import { supabaseAdmin } from "$lib/server/supabase.server"
 import { formatError } from "$lib/utils"
-import { error, json } from "@sveltejs/kit"
+import { webhookError } from "$lib/server/webhooks.server"
+import { json } from "@sveltejs/kit"
 import type Stripe from "stripe"
 
 export const POST = async ({ request }) => {
@@ -14,13 +15,13 @@ export const POST = async ({ request }) => {
 	try {
 		event = stripe.webhooks.constructEvent(body, sig, STRIPE_WEBHOOK_SECRET_DISPUTES)
 	} catch (err) {
-		console.log(err)
-		error(404, "Event is not valid! Body: " + body + " Error: " + err)
+		webhookError(404, "Event is not valid!", { body, err })
 	}
 
 	const { data, type } = event
 
-	if (type !== "charge.dispute.closed") error(404, "Dispute event doesn't have a valid type! Type: " + type)
+	if (type !== "charge.dispute.closed")
+		webhookError(404, "Dispute event doesn't have a valid type!", { type })
 
 	const dispute = data.object as Stripe.Dispute
 	if (dispute.status != "lost") return json({ success: "true" })
@@ -42,7 +43,7 @@ export const POST = async ({ request }) => {
 		.single()
 
 	if (err) {
-		error(500, "SELECT profiles.balances error" + formatError(err))
+		webhookError(500, "Failed to SELECT profiles.balances", { account, err: formatError(err) })
 	}
 
 	const urlBase = "https://api.fxratesapi.com/latest?base=eur&"
@@ -69,12 +70,12 @@ export const POST = async ({ request }) => {
 		const response = await fetch(url)
 		requestData = await response.json()
 	} catch (e) {
-		error(500, "Error:" + JSON.stringify(e))
+		webhookError(500, "Failed to fetch exchange rates", { url, e })
 	}
 
 	for (let i = 0; i < values.length; i++) {
 		const rate = requestData.rates[values[i].currency]
-		if (!rate) error(500, `No rate for ${values[i].currency}`)
+		if (!rate) webhookError(500, "No exchange rate for currency", { currency: values[i].currency })
 		balance.balance += values[i].amount / rate
 	}
 
@@ -85,7 +86,7 @@ export const POST = async ({ request }) => {
 		.eq("stripe", account)
 
 	if (errUpdate) {
-		error(500, "UPDATE profiles.balances error" + formatError(errUpdate))
+		webhookError(500, "Failed to UPDATE profiles.balances", { account, err: formatError(errUpdate) })
 	}
 
 	return json({ success: "true" })

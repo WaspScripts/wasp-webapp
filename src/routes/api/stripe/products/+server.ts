@@ -2,7 +2,8 @@ import { STRIPE_WEBHOOK_SECRET_PRODUCTS } from "$env/static/private"
 import { stripe } from "$lib/server/stripe.server"
 import { supabaseAdmin } from "$lib/server/supabase.server"
 import { formatError } from "$lib/utils"
-import { error, json } from "@sveltejs/kit"
+import { webhookError } from "$lib/server/webhooks.server"
+import { json } from "@sveltejs/kit"
 import type Stripe from "stripe"
 
 export const POST = async ({ request }) => {
@@ -14,8 +15,7 @@ export const POST = async ({ request }) => {
 	try {
 		event = stripe.webhooks.constructEvent(body, sig, STRIPE_WEBHOOK_SECRET_PRODUCTS)
 	} catch (err) {
-		console.log(err)
-		error(404, "Event is not valid! Body: " + body + " Error: " + err)
+		webhookError(404, "Event is not valid!", { body, err })
 	}
 
 	const { data, type } = event
@@ -46,7 +46,7 @@ export const POST = async ({ request }) => {
 				})
 
 			if (err) {
-				error(500, "object: " + JSON.stringify(productCreated) + "\r\n" + formatError(err))
+				webhookError(500, "Failed to INSERT stripe.products", { productCreated, err: formatError(err) })
 			}
 
 			break
@@ -66,7 +66,7 @@ export const POST = async ({ request }) => {
 				.eq("id", productUpdated.id)
 
 			if (err) {
-				error(500, "object: " + JSON.stringify(productUpdated) + "\r\n" + formatError(err))
+				webhookError(500, "Failed to UPDATE stripe.products", { productUpdated, err: formatError(err) })
 			}
 
 			break
@@ -83,14 +83,14 @@ export const POST = async ({ request }) => {
 				.eq("id", productDeleted.id)
 
 			if (err) {
-				error(500, "object: " + JSON.stringify(productDeleted) + "\r\n" + formatError(err))
+				webhookError(500, "Failed to DELETE stripe.products", { productDeleted, err: formatError(err) })
 			}
 
 			break
 		}
 
 		default:
-			error(404, "Product event doesn't have a valid type! Type: " + type)
+			webhookError(404, "Product event doesn't have a valid type!", { type })
 	}
 
 	return json({

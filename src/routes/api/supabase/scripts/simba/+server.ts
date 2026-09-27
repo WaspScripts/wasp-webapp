@@ -1,6 +1,7 @@
 import { error, json } from "@sveltejs/kit"
 import { SUPABASE_WEBHOOK_SECRET } from "$env/static/private"
 import { base64ToBytes } from "$lib/utils"
+import { webhookError } from "$lib/server/webhooks.server"
 import { getSimbaVersions, resetSimbaVersions } from "$lib/server/versions.server"
 
 export const POST = async ({ request }) => {
@@ -26,7 +27,7 @@ export const POST = async ({ request }) => {
 	}
 
 	const old = await resetSimbaVersions()
-	if (old.length > 0) error(500, "Failed to reset old versions.")
+	if (old.length > 0) webhookError(500, "Failed to reset old versions.", { old })
 
 	const versions = await getSimbaVersions()
 	return json({ success: versions.length > 0 })
