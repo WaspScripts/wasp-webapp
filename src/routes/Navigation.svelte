@@ -3,8 +3,8 @@
 	import { page } from "$app/state"
 	import { Avatar } from "@skeletonlabs/skeleton-svelte"
 	import Logo from "./Logo.svelte"
-	import Lightswitch from "./Lightswitch.svelte"
-	import ThemeSwitcher from "./ThemeSwitcher.svelte"
+	import SwitcherMode from "./SwitcherMode.svelte"
+	import SwitcherTheme from "./SwitcherTheme.svelte"
 	import RoleBadge from "$lib/components/RoleBadges.svelte"
 	import Discord from "./Discord.svelte"
 	import GitHub from "./GitHub.svelte"
@@ -130,8 +130,8 @@
 			</button>
 
 			<div class="hidden gap-1 lg:flex">
-				<Lightswitch />
-				<ThemeSwitcher />
+				<SwitcherMode />
+				<SwitcherTheme />
 				<GitHub />
 				<Discord />
 				<YouTube />
@@ -160,9 +160,9 @@
 
 			<li class="my-2 flex h-12 lg:hidden">
 				<div class="flex w-full justify-evenly">
-					<ThemeSwitcher />
+					<SwitcherTheme />
 					<div class="flex">
-						<Lightswitch />
+						<SwitcherMode />
 						<GitHub />
 						<Discord />
 						<YouTube />

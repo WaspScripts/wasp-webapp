@@ -12,7 +12,7 @@ export const load = async ({ parent, params: { slug } }) => {
 		const { data, error: err } = await supabaseClient
 			.schema("scripts")
 			.from("author_scripts")
-			.select("*")
+			.select("premium, scripts, total")
 			.eq("author", slug)
 			.maybeSingle()
 

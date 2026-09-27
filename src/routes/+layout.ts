@@ -44,7 +44,7 @@ export const load = async ({ data, depends, fetch }) => {
 	}
 
 	return {
-		darkMode: data.darkMode,
+		mode: data.mode,
 		theme: data.theme,
 		supabaseClient,
 		session,

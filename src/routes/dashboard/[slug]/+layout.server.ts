@@ -109,8 +109,6 @@ export const load = async ({
 		return { data, freeData, count: count ?? 0, cancelling, freeCount: freeCount ?? 0 }
 	}
 
-	const productIDs: string[] = []
-
 	async function getProducts() {
 		const { data, error: err } = await supabaseServer
 			.schema("stripe")
@@ -128,24 +126,20 @@ export const load = async ({
 			)
 		}
 
-		return await Promise.all(
-			data.map(async (product) => {
-				productIDs.push(product.id)
-				return {
-					id: product.id,
-					user_id: product.user_id,
-					name: product.name,
-					username: product.username,
-					bundle: product.bundle,
-					script: product.script,
-					active: product.active
-				}
-			})
-		)
+		return data.map((product) => ({
+			id: product.id,
+			user_id: product.user_id,
+			name: product.name,
+			username: product.username,
+			bundle: product.bundle,
+			script: product.script,
+			active: product.active
+		}))
 	}
 
 	const promises = await Promise.all([getScripts(), getScripter(supabaseServer, slug), getProducts()])
 
+	const productIDs = promises[2].map((product) => product.id)
 	const lastPromises = await Promise.all([getData(productIDs), getPrices(productIDs)])
 
 	return {

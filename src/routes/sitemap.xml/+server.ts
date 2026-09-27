@@ -36,7 +36,7 @@ const getScripters = async (supabase: SupabaseClient<Database>) => {
 		.select("profiles (username)")
 		.overrideTypes<ScripterProfile[]>()
 
-	if (error) return console.error("developers SELECT failed: " + error.message)
+	if (error) return console.error("scripters SELECT failed: " + error.message)
 
 	const result: string[] = []
 	data.forEach((developer) => {
@@ -84,7 +84,7 @@ export const GET = async ({ locals: { supabaseServer } }) => {
 	const promises = await Promise.all([
 		buildLoc(supabaseServer, "scripts"),
 		buildLoc(supabaseServer, "tutorials"),
-		buildLoc(supabaseServer, "developers")
+		buildLoc(supabaseServer, "scripters")
 	])
 	const scripts = promises[0]
 	const tutorials = promises[1]

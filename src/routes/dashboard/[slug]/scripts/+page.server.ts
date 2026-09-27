@@ -173,7 +173,7 @@ export const actions = {
 		const { data: productsData, error: errProducts } = await supabaseServer
 			.schema("stripe")
 			.from("products")
-			.select("*")
+			.select("name")
 			.eq("id", product.id)
 			.single()
 

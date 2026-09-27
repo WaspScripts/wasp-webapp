@@ -4,6 +4,8 @@ import { sequence } from "@sveltejs/kit/hooks"
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from "$env/static/public"
 import type { Database } from "$lib/types/supabase"
 
+const themes = new Set(["wasp", "cerberus", "concord", "fennec"])
+
 const redirects: Handle = async ({ event, resolve }) => {
 	if (event.url.pathname.startsWith("/refresh_token")) {
 		return redirect(303, "/auth/refresh-token")
@@ -41,20 +43,9 @@ const supabase: Handle = async ({ event, resolve }) => {
 
 		const session = promises[0].data.session
 		const user = promises[1].data.user
-		console.log(`└🔥 session and user took ${(performance.now() - start).toFixed(2)} ms to check!`)
 
 		if (!session || !user || promises[0].error || promises[1].error)
 			return { session: null, user: null, getProfile: null }
-
-		let ip: string
-
-		try {
-			ip = event.getClientAddress()
-		} catch {
-			ip = "NO IP"
-		}
-
-		console.log(`└😄 user ${user.id} accessing from ${ip}`)
 
 		const remadeSession = {
 			access_token: session.access_token,
@@ -133,24 +124,16 @@ const authGuard: Handle = async ({ event, resolve }) => {
 }
 
 const appearance: Handle = async ({ event, resolve }) => {
-	let dark = event.cookies.get("darkMode")
-	if (!dark) {
-		dark = "true"
-		event.cookies.set("darkMode", dark, { path: "/", maxAge: 60 * 60 * 24 * 7 * 360 })
-	}
-
-	let theme = event.cookies.get("theme")
-	if (!theme) {
-		theme = "wasp"
-		event.cookies.set("theme", theme, { path: "/" })
-	}
-
-	const darkMode = dark === "true"
+	event.locals.mode = event.cookies.get("mode") === "light" ? "light" : "dark"
+	const theme = event.cookies.get("theme")
+	event.locals.theme = themes.has(theme ?? "") ? (theme as typeof event.locals.theme) : "wasp"
 
 	return await resolve(event, {
 		transformPageChunk: ({ html }) => {
-			html = html.replace('data-theme=""', `data-theme="${theme}"`)
-			return darkMode ? html.replace('class=""', `class="dark"`) : html
+			return html.replace(
+				'lang="en" data-mode="%mode%" data-theme="%theme%"',
+				`lang="en" data-mode="${event.locals.mode}" data-theme="${event.locals.theme}"`
+			)
 		}
 	})
 }

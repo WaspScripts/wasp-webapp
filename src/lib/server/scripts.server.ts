@@ -25,9 +25,19 @@ export async function searchScriptsIndex(searchTerm: string) {
 	return ids.map((id) => byID.get(id)).filter((script): script is Script => script !== undefined)
 }
 
-export async function getScripts(): Promise<Script[]> {
-	if (scripts.length > 0) return scripts
+let scriptsLoading: Promise<Script[]> | null = null
 
+export function getScripts(): Promise<Script[]> {
+	if (scripts.length > 0) return Promise.resolve(scripts)
+
+	// Share one in-flight fetch between concurrent callers.
+	scriptsLoading ??= fetchScripts().finally(() => {
+		scriptsLoading = null
+	})
+	return scriptsLoading
+}
+
+async function fetchScripts(): Promise<Script[]> {
 	const { data, error } = await supabaseAdmin
 		.schema("scripts")
 		.from("scripts")
@@ -51,6 +61,7 @@ export async function getScripts(): Promise<Script[]> {
 export async function getPublishedScripts() {
 	if (publishedScripts.length > 0) return publishedScripts
 	await getScripts()
+	if (publishedScripts.length > 0) return publishedScripts // built by a concurrent caller
 	if (scripts.length === 0) return publishedScripts
 
 	publishedScripts = scripts.filter((script) => script.published)

@@ -1,7 +1,4 @@
-export const load = async ({ locals: { safeGetSession }, cookies, setHeaders }) => {
-	const darkMode = cookies.get("darkMode") === "true"
-	const theme = cookies.get("theme") ?? "wasp"
-
+export const load = async ({ locals: { safeGetSession, mode, theme }, cookies, setHeaders }) => {
 	setHeaders({
 		"Strict-Transport-Security": "max-age=31536000; includeSubDomains",
 		"X-Frame-Options": "SAMEORIGIN",
@@ -14,7 +11,7 @@ export const load = async ({ locals: { safeGetSession }, cookies, setHeaders }) 
 	const { session, user } = await safeGetSession()
 
 	return {
-		darkMode,
+		mode,
 		theme,
 		session,
 		user,

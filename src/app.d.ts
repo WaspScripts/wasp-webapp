@@ -8,6 +8,8 @@ declare global {
 	namespace App {
 		// interface Error {}
 		interface Locals {
+			mode: "dark" | "light"
+			theme: "wasp" | "cerberus" | "concord" | "fennec"
 			supabaseServer: SupabaseClient<Database>
 			safeGetSession: () => Promise<{ session: Session | null; user: User | null }>
 			session: Session | null
@@ -17,8 +19,8 @@ declare global {
 			getFreeAccess: () => Promise<FreeAccess[]>
 		}
 		interface PageData {
-			darkMode: boolean
-			theme: string
+			mode: "dark" | "light"
+			theme: "wasp" | "cerberus" | "concord" | "fennec"
 			supabaseClient: SupabaseClient<Database>
 			session: Session | null
 			user: User | null

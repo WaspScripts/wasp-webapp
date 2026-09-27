@@ -1,14 +1,15 @@
+const themes = new Set(["wasp", "cerberus", "concord", "fennec"])
+const cookieOpts = { path: "/", maxAge: 60 * 60 * 24 * 7 * 365 }
+
 export const actions = {
-	toggleDark: async (event) => {
-		let dark = event.cookies.get("darkMode")
-		if (!dark) dark = "true"
-		event.cookies.set("darkMode", dark === "true" ? "false" : "true", {
-			path: "/",
-			maxAge: 60 * 60 * 24 * 7 * 360
-		})
+	setMode: async ({ cookies, url: { searchParams }, locals }) => {
+		locals.mode = searchParams.get("mode") === "light" ? "light" : "dark"
+		cookies.set("mode", locals.mode, cookieOpts)
 	},
-	setTheme: async ({ cookies, url: { searchParams } }) => {
-		const theme = searchParams.get("/setTheme") || "wasp"
-		cookies.set("theme", theme, { path: "/", maxAge: 60 * 60 * 24 * 7 * 360 })
+
+	setTheme: async ({ cookies, url: { searchParams }, locals }) => {
+		const theme = searchParams.get("theme")
+		locals.theme = themes.has(theme ?? "") ? (theme as typeof locals.theme) : "wasp"
+		cookies.set("theme", locals.theme, cookieOpts)
 	}
 }

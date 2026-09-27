@@ -1,4 +1,4 @@
-import type { ProfileRole, Script, Scripter, SimpleScripter, StatsTotal } from "$lib/types/collection"
+import type { Price, ProfileRole, Script, Scripter, SimpleScripter, StatsTotal } from "$lib/types/collection"
 import type { Database } from "$lib/types/supabase"
 import { UUID_V4_REGEX, formatError } from "$lib/utils"
 import type { SupabaseClient } from "@supabase/supabase-js"
@@ -212,13 +212,15 @@ export async function getSignedURL(
 	return data.signedUrl
 }
 
-async function getPrices(supabase: SupabaseClient<Database>, product: string) {
-	console.log("💸 Fetching prices for ", product)
+async function getPrices(supabase: SupabaseClient<Database>, products: string[]) {
+	const grouped = new Map<string, Price[]>(products.map((product) => [product, []]))
+	if (products.length === 0) return grouped
+
 	const { data, error: err } = await supabase
 		.schema("stripe")
 		.from("prices")
 		.select(`id, product, amount, currency, interval, active`)
-		.eq("product", product)
+		.in("product", products)
 		.eq("active", true)
 		.order("amount", { ascending: true })
 
@@ -231,8 +233,14 @@ async function getPrices(supabase: SupabaseClient<Database>, product: string) {
 		)
 	}
 
-	for (let i = 1; i < data.length; i++) data[i].active = false
-	return data
+	for (const price of data) grouped.get(price.product)?.push(price)
+
+	// Only the cheapest price of each product is active.
+	for (const prices of grouped.values()) {
+		for (let i = 1; i < prices.length; i++) prices[i].active = false
+	}
+
+	return grouped
 }
 
 async function getBundles(supabase: SupabaseClient<Database>, script: string) {
@@ -295,30 +303,20 @@ export async function getProducts(supabase: SupabaseClient<Database>, script: st
 		)
 	}
 
-	let available: number = 0
-	const formatedScriptData = await Promise.all(
-		scriptData.map(async (product) => {
-			const prices = await getPrices(supabase, product.id)
-			available += prices.length
-			return {
-				id: product.id,
-				name: product.name,
-				prices: prices
-			}
-		})
+	const prices = await getPrices(
+		supabase,
+		[...scriptData, ...bundleData].map((product) => product.id)
 	)
 
-	const formatedBundleData = await Promise.all(
-		bundleData.map(async (product) => {
-			const prices = await getPrices(supabase, product.id)
-			available += prices.length
-			return {
-				id: product.id,
-				name: product.name,
-				prices: prices
-			}
-		})
-	)
+	let available = 0
+	const format = (product: { id: string; name: string }) => {
+		const productPrices = prices.get(product.id) ?? []
+		available += productPrices.length
+		return { id: product.id, name: product.name, prices: productPrices }
+	}
+
+	const formatedScriptData = scriptData.map(format)
+	const formatedBundleData = bundleData.map(format)
 
 	if (available === 0) return null
 	return { bundles: formatedBundleData, scripts: formatedScriptData }
