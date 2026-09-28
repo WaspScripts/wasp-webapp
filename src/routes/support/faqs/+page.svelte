@@ -13,6 +13,7 @@
 
 <a
 	href="/support/"
+	data-sveltekit-noscroll
 	class="inline-flex w-full justify-between preset-outlined-surface-500 px-4 py-2 text-sm font-medium hover:preset-outlined-primary-500"
 >
 	❓ Frequently Asked Questions
@@ -35,6 +36,7 @@
 	{#each faqs as faq (faq)}
 		<a
 			href="/support/faqs/{faq.url}"
+			data-sveltekit-noscroll
 			class="mx-4 inline-flex justify-between border border-surface-200-800 px-4 py-2 text-left text-sm font-medium text-surface-900-100 shadow-sm hover:preset-outlined-primary-500"
 		>
 			{faq.title}
@@ -45,6 +47,7 @@
 
 <a
 	href="/support/errors"
+	data-sveltekit-noscroll
 	class="inline-flex w-full justify-between preset-outlined-surface-500 px-4 py-2 text-sm font-medium hover:preset-outlined-primary-500"
 >
 	⚠️ Common Errors
