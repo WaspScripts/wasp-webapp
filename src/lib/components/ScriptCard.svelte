@@ -18,7 +18,7 @@
 		customCover ?? PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/cover.webp"
 	)
 
-	const categoriesTooltip: boolean[] = $state(new Array(script?.metadata.categories.length).fill(false))
+	let categoriesTooltip = $derived(new Array(script?.metadata.categories.length ?? 0).fill(false))
 	let status = $state(false)
 	let type = $state(false)
 </script>
