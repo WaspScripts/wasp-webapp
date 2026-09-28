@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from "$app/forms"
+	import { onMount } from "svelte"
 	import { page } from "$app/state"
 	import { Avatar } from "@skeletonlabs/skeleton-svelte"
 	import Logo from "./Logo.svelte"
@@ -38,7 +39,8 @@
 		return "/" + route.toLowerCase().replace("home", "")
 	}
 
-	const randomStr = (Math.random() + 1).toString(36).substring(7)
+	let randomStr = $state("guest")
+	onMount(() => (randomStr = (Math.random() + 1).toString(36).substring(7)))
 </script>
 
 <nav class="col-span-12 row-span-1 w-full flex-col text-sm xl:text-base">
@@ -95,7 +97,7 @@
 			<button
 				name="User panel"
 				aria-label="Open user panel"
-				class="group flex items-center justify-around gap-2"
+				class="group flex items-center justify-around"
 				onclick={() => {
 					showProfile = !showProfile
 					if (showProfile) showMenu = false
@@ -256,7 +258,9 @@
 						name="Login"
 						aria-label="Login to your account mx-auto"
 						class="btn preset-filled-primary-500"
-						formaction="/auth?/login&provider=discord&path={encodeURIComponent(page.url.pathname + page.url.search)}"
+						formaction="/auth?/login&provider=discord&path={encodeURIComponent(
+							page.url.pathname + page.url.search
+						)}"
 					>
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="h-4 w-4">
 							<path

@@ -6,14 +6,6 @@ import type { Database } from "$lib/types/supabase"
 
 const themes = new Set(["wasp", "cerberus", "concord", "fennec"])
 
-const redirects: Handle = async ({ event, resolve }) => {
-	if (event.url.pathname.startsWith("/refresh_token")) {
-		return redirect(303, "/auth/refresh-token")
-	}
-
-	return resolve(event)
-}
-
 const supabase: Handle = async ({ event, resolve }) => {
 	event.locals.supabaseServer = createServerClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 		cookies: {
@@ -28,11 +20,8 @@ const supabase: Handle = async ({ event, resolve }) => {
 
 	let sessionPromise: ReturnType<typeof fetchSession> | null = null
 
-	// Memoized per request so auth is only verified once, no matter how many loads ask for it.
 	event.locals.safeGetSession = () => (sessionPromise ??= fetchSession())
-	event.locals.resetSession = () => {
-		sessionPromise = null
-	}
+	event.locals.resetSession = () => (sessionPromise = null)
 
 	async function fetchSession() {
 		const { supabaseServer } = event.locals
@@ -145,7 +134,7 @@ const performanceCheck: Handle = async ({ event, resolve }) => {
 	return response
 }
 
-export const handle: Handle = sequence(redirects, appearance, supabase, authGuard, performanceCheck)
+export const handle: Handle = sequence(appearance, supabase, authGuard, performanceCheck)
 
 export const handleError: HandleServerError = ({ error }) => {
 	if (

@@ -23,8 +23,8 @@ declare global {
 			mode: "dark" | "light"
 			theme: "wasp" | "cerberus" | "concord" | "fennec"
 			supabaseClient: SupabaseClient<Database>
-			session: Session | null
-			user: User | null
+			user: string | null
+			expiresAt: number | null
 			profile: ProfileBase | null
 		}
 		// interface PageState {}

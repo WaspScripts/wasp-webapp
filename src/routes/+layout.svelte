@@ -6,12 +6,12 @@
 	import Footer from "./Footer.svelte"
 
 	let { data, children } = $props()
-	const { session, supabaseClient } = $derived(data)
+	const { user, expiresAt, supabaseClient } = $derived(data)
 
 	let callTimestamps: number[] = []
 	onMount(() => {
 		const { data } = supabaseClient.auth.onAuthStateChange((_, newSession) => {
-			if (newSession?.expires_at !== session?.expires_at) {
+			if (newSession?.user.id !== user || newSession?.expires_at !== expiresAt) {
 				const now = Date.now()
 				callTimestamps = callTimestamps.filter((ts) => now - ts < 10000)
 				if (callTimestamps.length >= 10) {
@@ -34,7 +34,6 @@
 
 	<main class="flex h-full w-full flex-col overflow-auto">
 		{@render children()}
-
 		<Footer />
 	</main>
 </div>

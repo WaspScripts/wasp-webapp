@@ -5,7 +5,7 @@ export const load = async ({ parent, params: { slug } }) => {
 	const { user, profile, supabaseClient, data } = await parent()
 	if (!user) error(403, "You need to be logged in.")
 	if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-	if (user.id !== slug && profile?.role != "administrator")
+	if (user !== slug && profile?.role != "administrator")
 		error(403, "You cannot access another scripter dashboard.")
 
 	async function getStats() {

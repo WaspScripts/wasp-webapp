@@ -1,4 +1,4 @@
-export const load = async ({ locals: { safeGetSession, mode, theme }, cookies, setHeaders }) => {
+export const load = async ({ locals: { safeGetSession, getProfile, mode, theme }, cookies, setHeaders }) => {
 	setHeaders({
 		"Strict-Transport-Security": "max-age=31536000; includeSubDomains",
 		"X-Frame-Options": "SAMEORIGIN",
@@ -12,8 +12,9 @@ export const load = async ({ locals: { safeGetSession, mode, theme }, cookies, s
 	return {
 		mode,
 		theme,
-		session,
-		user,
-		cookies: cookies.getAll()
+		user: user?.id ?? null,
+		expiresAt: session?.expires_at ?? null,
+		profile: await getProfile(),
+		cookies: cookies.getAll().filter(({ name }) => name.startsWith("sb-"))
 	}
 }
