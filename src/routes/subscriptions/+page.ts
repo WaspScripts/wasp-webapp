@@ -162,7 +162,7 @@ export const load = async ({ parent, data }) => {
 					id: product.id,
 					user_id: product.user_id,
 					name: product.name,
-					username: product.username,
+					username: Promise.resolve(product.username),
 					bundle: product.bundle,
 					prices: productPrices,
 					scripts: bundledScripts,
@@ -174,7 +174,7 @@ export const load = async ({ parent, data }) => {
 					id: product.id,
 					user_id: product.user_id,
 					name: product.name,
-					username: product.username,
+					username: Promise.resolve(product.username),
 					url: scriptURL,
 					prices: productPrices,
 					active: product.active && productPrices.length > 0

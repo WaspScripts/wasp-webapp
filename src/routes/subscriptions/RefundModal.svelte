@@ -4,57 +4,57 @@
 	import RotateCw from "@lucide/svelte/icons/rotate-cw"
 	import { SvelteDate } from "svelte/reactivity"
 
-	let {
-		name,
-		username,
-		id,
-		price,
-		date_end
-	}: {
+	interface Props {
 		name: string
 		username: Promise<string | null>
 		id: string
 		price: Price
 		date_end: string
-	} = $props()
+	}
+
+	let { name, username, id, price, date_end }: Props = $props()
 
 	let open = $state(false)
 
-	const value = price!.amount - Math.min(price!.amount * 0.15, 500)
+	const value = $derived(price!.amount - Math.min(price!.amount * 0.15, 500))
 
-	const priceStr = new Intl.NumberFormat("pt-PT", {
-		style: "currency",
-		currency: price?.currency ?? "eur"
-	}).format((value ?? 0) / 100)
+	const priceStr = $derived(
+		new Intl.NumberFormat("pt-PT", {
+			style: "currency",
+			currency: price?.currency ?? "eur"
+		}).format((value ?? 0) / 100)
+	)
 
-	const endDate = new Date(date_end)
-	const startDate = new SvelteDate(endDate)
+	const endDate = $derived(new SvelteDate(date_end))
+	const startDate = $derived.by(() => {
+		let result = new SvelteDate(endDate)
+		switch (price.interval) {
+			case "week":
+				startDate.setDate(startDate.getDate() - 7)
+				break
+			case "month":
+				startDate.setMonth(startDate.getMonth() - 1)
+				break
+			case "year":
+				startDate.setFullYear(startDate.getFullYear() - 1)
+				break
+			default:
+		}
+		return result
+	})
 
-	switch (price.interval) {
-		case "week":
-			startDate.setDate(startDate.getDate() - 7)
-			break
-		case "month":
-			startDate.setMonth(startDate.getMonth() - 1)
-			break
-		case "year":
-			startDate.setFullYear(startDate.getFullYear() - 1)
-			break
-		default:
-	}
-
-	const start_date = startDate.getTime()
-	const end_date = endDate.getTime()
+	const start_date = $derived(startDate.getTime())
+	const end_date = $derived(endDate.getTime())
 
 	const DAY = 24 * 3600000
 	const tenDayMS = 10 * DAY
-	const intervalMs = end_date - start_date
-	const tenPercentMs = intervalMs * 0.1
-	const windowMs = Math.min(tenPercentMs, tenDayMS)
+	const intervalMs = $derived(end_date - start_date)
+	const tenPercentMs = $derived(intervalMs * 0.1)
+	const windowMs = $derived(Math.min(tenPercentMs, tenDayMS))
 
-	const elapsedSinceStartMs = Date.now() - start_date
+	const elapsedSinceStartMs = $derived(Date.now() - start_date)
 
-	const endWindow = new Date(start_date + DAY + windowMs)
+	const endWindow = $derived(new SvelteDate(start_date + DAY + windowMs))
 </script>
 
 <Dialog {open} onOpenChange={(e) => (open = e.open)}>
