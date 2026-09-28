@@ -8,7 +8,7 @@
 	import ScriptLinks from "./ScriptLinks.svelte"
 	import ExternalLink from "@lucide/svelte/icons/external-link"
 	import RefundModal from "./RefundModal.svelte"
-	import { onMount } from "svelte"
+	import { onMount, untrack } from "svelte"
 
 	let {
 		data,
@@ -26,17 +26,20 @@
 
 	let formElement: HTMLFormElement
 
-	const isLoading = $derived(bundles.length === 0 && scripts.length === 0)
+	const isLoading = untrack(() => bundles.length === 0 && scripts.length === 0)
 
-	const { form, errors, enhance } = superForm(data, {
-		id: isLoading ? "subscriptions-loading" : "subscriptions",
-		dataType: "json",
-		multipleSubmits: "prevent",
-		clearOnSubmit: "errors",
-		resetForm: false,
-		invalidateAll: false,
-		timeoutMs: 5000
-	})
+	const { form, errors, enhance } = superForm(
+		untrack(() => data),
+		{
+			id: isLoading ? "subscriptions-loading" : "subscriptions",
+			dataType: "json",
+			multipleSubmits: "prevent",
+			clearOnSubmit: "errors",
+			resetForm: false,
+			invalidateAll: false,
+			timeoutMs: 5000
+		}
+	)
 
 	function getBundle(id: string) {
 		return bundles.find((bundle) => bundle.id === id)
@@ -46,7 +49,7 @@
 		return scripts.find((script) => script.id === id)
 	}
 
-	let bundleArray = $derived(subscriptions.map((sub) => getBundle(sub.product)))
+	const bundleArray = $derived(subscriptions.map((sub) => getBundle(sub.product)))
 
 	function getPrice(id: string, prices: Price[]) {
 		return prices.find((price) => price.id === id)
