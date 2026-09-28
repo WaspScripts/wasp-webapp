@@ -1,5 +1,4 @@
 <script lang="ts">
-	// html must already be sanitized (see renderMarkdown in $lib/markdown)
 	let { html = "" }: { html?: string } = $props()
 </script>
 

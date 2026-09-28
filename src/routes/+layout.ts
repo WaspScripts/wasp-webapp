@@ -14,7 +14,6 @@ export const load = async ({ data, depends, fetch }) => {
 			data: { session }
 		} = await supabaseClient.auth.getSession()
 
-		// The server already verified this user and loaded their profile, reuse it instead of refetching.
 		if ((session?.user.id ?? null) === data.user) {
 			return {
 				mode: data.mode,

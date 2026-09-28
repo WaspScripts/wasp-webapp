@@ -6,8 +6,6 @@ import { full } from "markdown-it-emoji"
 import { imgLazyload } from "@mdit/plugin-img-lazyload"
 import DOMPurify from "isomorphic-dompurify"
 
-// Fine-grained shiki: only the grammars/themes we use and the JS regex engine,
-// instead of the full bundle (every language + the ~600KB oniguruma wasm).
 const shikiHighlighter = await createHighlighterCore({
 	themes: [import("shiki/themes/github-light.mjs"), import("shiki/themes/github-dark.mjs")],
 	langs: [

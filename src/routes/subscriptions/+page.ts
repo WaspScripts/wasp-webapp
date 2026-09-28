@@ -89,9 +89,8 @@ export const load = async ({ parent, data }) => {
 		return data
 	}
 
-	// Start every query at once instead of waiting for the prices first.
 	const dataPromises = Promise.all([getProducts(), getBundles(), getScripts()])
-	dataPromises.catch(() => {}) // handled in getData(), avoids an unhandled rejection if getPrices() throws first
+	dataPromises.catch(() => {})
 	const prices = await getPrices()
 
 	async function getData() {

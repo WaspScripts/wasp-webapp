@@ -3,7 +3,6 @@
 
 	let { content = "" } = $props()
 
-	// The markdown renderer (markdown-it + shiki) is heavy, only load it when a preview is shown.
 	const renderer = import("$lib/markdown")
 </script>
 

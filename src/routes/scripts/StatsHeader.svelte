@@ -4,7 +4,6 @@
 	import type { ScriptStats } from "$lib/types/collection"
 	import { formatTime, formatNumber } from "$lib/utils"
 
-	// stats can be passed in already loaded (e.g. by a server load), otherwise they are fetched in the browser
 	let { id = undefined, stats = undefined }: { id?: string; stats?: ScriptStats | null } = $props()
 	const { supabaseClient } = $derived(page.data)
 

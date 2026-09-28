@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto } from "$app/navigation"
 	import { PUBLIC_SUPABASE_URL } from "$env/static/public"
 	import type { Script } from "$lib/types/collection"
 	import {
@@ -28,18 +27,12 @@
 </script>
 
 <div
-	class="mx-auto flex h-fit w-fit flex-col card preset-filled-surface-200-800 shadow-sm card-hover hover:outline-1"
-	class:cursor-pointer={link}
+	class="relative mx-auto flex h-fit w-fit flex-col card preset-filled-surface-200-800 shadow-sm card-hover hover:outline-1"
 >
-	<button
-		class="m-1"
-		onclick={() => {
-			if (link) goto(link)
-		}}
-	>
+	<div class="m-1">
 		{#if script.metadata.stage !== "stable"}
 			<div
-				class="absolute z-1 m-2 w-fit rounded-md preset-outlined-surface-600-400 preset-filled-surface-500 px-1"
+				class="pointer-events-none absolute z-1 m-2 w-fit rounded-md preset-outlined-surface-600-400 preset-filled-surface-500 px-1"
 			>
 				{scriptStages[script.metadata.stage].icon + scriptStages[script.metadata.stage].name}
 			</div>
@@ -52,20 +45,22 @@
 			height="200"
 			loading="lazy"
 		/>
-	</button>
-	<button
-		class="mx-auto my-2 flex h-44 w-64 flex-col"
-		onclick={() => {
-			if (link) goto(link)
-		}}
-	>
+	</div>
+	<div class="mx-auto my-2 flex h-44 w-64 flex-col text-center">
 		<header class="flex h-fit flex-col">
 			<span class="font-semibold whitespace-break-spaces text-primary-600 dark:text-primary-500">
-				{script.title}
+				{#if link}
+					<a href={link} class="after:absolute after:inset-0">{script.title}</a>
+				{:else}
+					{script.title}
+				{/if}
 			</span>
 			<span class="text-xs text-primary-700-300 drop-shadow">
 				by
-				<a href="/scripters/{encodeSEO(script.protected.username.replaceAll(' ', '-'))}" class="anchor">
+				<a
+					href="/scripters/{encodeSEO(script.protected.username.replaceAll(' ', '-'))}"
+					class="relative z-1 anchor"
+				>
 					{script.protected.username}
 				</a>
 				{#if !script.published}<small class="text-error-500">Unpublished</small>{/if}
@@ -76,9 +71,9 @@
 		>
 			{cropString(script.description, 80)}
 		</article>
-	</button>
+	</div>
 
-	<footer class="m-2 flex cursor-default justify-between">
+	<footer class="relative z-1 m-2 flex cursor-default justify-between">
 		<div class="flex">
 			<Tooltip
 				positioning={{ placement: "top" }}

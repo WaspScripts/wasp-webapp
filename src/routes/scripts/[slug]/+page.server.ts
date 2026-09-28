@@ -6,7 +6,6 @@ import { replaceScriptContent } from "$lib/client/utils"
 import { renderMarkdown } from "$lib/markdown"
 import { error, redirect } from "@sveltejs/kit"
 
-// Rendering markdown with syntax highlighting is expensive, reuse it while the content is unchanged.
 const htmlCache = new Map<string, { content: string; html: string }>()
 
 export const load = async ({ cookies, parent, locals: { supabaseServer } }) => {

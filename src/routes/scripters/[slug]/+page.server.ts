@@ -14,7 +14,6 @@ import { zod4 } from "sveltekit-superforms/adapters"
 import { setError, superValidate } from "sveltekit-superforms/server"
 import DOMPurify from "isomorphic-dompurify"
 
-// Compiled (and sanitized) scripter descriptions, reused while the markdown is unchanged.
 const compiled = new Map<string, { content: string; html: string }>()
 
 async function compile(id: string, content: string) {

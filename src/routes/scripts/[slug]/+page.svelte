@@ -23,7 +23,6 @@
 		return result
 	}
 
-	// Only check access in the browser, during SSR the result would be thrown away.
 	const hasAccess = $derived(browser && profile ? canDownloadScript() : null)
 </script>
 

@@ -41,7 +41,6 @@
 		{/if}
 	</div>
 	<article class="mx-auto prose max-w-md py-6 md:max-w-4xl dark:prose-invert">
-		<!-- content is sanitized on the server -->
 		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 		{@html currentPolicy.content}
 	</article>

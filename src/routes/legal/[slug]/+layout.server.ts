@@ -5,7 +5,6 @@ import DOMPurify from "isomorphic-dompurify"
 
 type validSlug = "privacy_policy" | "scripter_tos" | "user_tos"
 
-// Compiled (and sanitized) policies keyed by their markdown, policies are rarely added and never edited.
 const compiled = new Map<string, string>()
 
 async function compile(content: string) {

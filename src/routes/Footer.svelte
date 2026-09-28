@@ -13,7 +13,6 @@
 	import { browser } from "$app/environment"
 	import type { SimpleScripter } from "$lib/types/collection"
 
-	// SSR only renders the loading state, so only fetch in the browser.
 	const randomScripters: Promise<SimpleScripter[]> = browser
 		? WaspScripters.getRandomScripters(page.data.supabaseClient)
 		: new Promise(() => {})

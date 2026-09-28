@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from "$app/navigation"
 	import { PUBLIC_SUPABASE_URL } from "$env/static/public"
+	import { encodeSEO } from "$lib/utils"
 
 	const {
 		id,
@@ -33,7 +34,10 @@
 	<span class="lg:text-md text-xs xl:text-lg">
 		{#if username}
 			<button
-				onclick={async () => goto("/scripters/{username}")}
+				onclick={(e) => {
+					e.preventDefault()
+					goto("/scripters/" + encodeSEO(username.replaceAll(" ", "-")))
+				}}
 				class="text-shadow-strong m-2.5 font-semibold drop-shadow-2xl"
 			>
 				by {username}
