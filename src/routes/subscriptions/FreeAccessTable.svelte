@@ -23,10 +23,7 @@
 		return scripts.find((script) => script.id === id)
 	}
 
-	let bundleArray: (BundleProduct | undefined)[] = $state([])
-	freeAccess.forEach((access) => {
-		bundleArray.push(getBundle(access.product))
-	})
+	const bundleArray = $derived(freeAccess.map((access) => getBundle(access.product)))
 
 	let userLocale = $state("pt-PT")
 	onMount(() => (userLocale = navigator.language))

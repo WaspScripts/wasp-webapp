@@ -5,7 +5,7 @@
 	import SubscriptionsTable from "./SubscriptionTable.svelte"
 
 	const { data } = $props()
-	let { profile, pageData, prices, subscriptions, freeAccess } = $derived(data)
+	const { profile, pageData, prices, subscriptions, freeAccess } = $derived(data)
 </script>
 
 <Head

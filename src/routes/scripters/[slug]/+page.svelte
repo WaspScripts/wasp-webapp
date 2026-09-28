@@ -25,14 +25,17 @@
 
 	let tab = $state("info")
 
-	const { form, errors, enhance } = superForm(data.form, {
-		dataType: "json",
-		multipleSubmits: "prevent",
-		clearOnSubmit: "errors",
-		taintedMessage: false,
-		validators: zod4Client(scripterSchema),
-		resetForm: true
-	})
+	const { form, errors, enhance } = superForm(
+		untrack(() => data.form),
+		{
+			dataType: "json",
+			multipleSubmits: "prevent",
+			clearOnSubmit: "errors",
+			taintedMessage: false,
+			validators: zod4Client(scripterSchema),
+			resetForm: true
+		}
+	)
 </script>
 
 <Head

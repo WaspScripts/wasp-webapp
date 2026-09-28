@@ -4,20 +4,24 @@
 	import { scriptCategories, scriptStages, scriptStatus, scriptTypes } from "$lib/utils"
 	import { scriptInfoSchema } from "$lib/client/schemas"
 	import { Switch } from "@skeletonlabs/skeleton-svelte"
+	import { untrack } from "svelte"
 
 	const { data } = $props()
 	let profile = $derived(data.profile!)
 
-	const { form, errors, enhance, message } = superForm(data.form!, {
-		dataType: "json",
-		multipleSubmits: "prevent",
-		taintedMessage: "Are you sure you want to leave?",
-		validators: zod4Client(scriptInfoSchema),
-		scrollToError: true,
-		onSubmit: () => (waitingReply = true),
-		onUpdated: () => (waitingReply = false),
-		onError: () => (waitingReply = false)
-	})
+	const { form, errors, enhance, message } = superForm(
+		untrack(() => data.form),
+		{
+			dataType: "json",
+			multipleSubmits: "prevent",
+			taintedMessage: "Are you sure you want to leave?",
+			validators: zod4Client(scriptInfoSchema),
+			scrollToError: true,
+			onSubmit: () => (waitingReply = true),
+			onUpdated: () => (waitingReply = false),
+			onError: () => (waitingReply = false)
+		}
+	)
 
 	let waitingReply = $state(false)
 

@@ -5,8 +5,9 @@ import { setError, superValidate } from "sveltekit-superforms"
 import { zod4 } from "sveltekit-superforms/adapters"
 
 export const load = async ({ locals: { supabaseServer, user }, url: { origin } }) => {
-	if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
-
+	if (!user) {
+		return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
+	}
 	return {
 		form: await superValidate({ email: user?.email }, zod4(profileSchema))
 	}

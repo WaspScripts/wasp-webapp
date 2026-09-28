@@ -9,7 +9,11 @@ export const supabaseAdmin = createClient<Database>(PUBLIC_SUPABASE_URL, SUPABAS
 	auth: { autoRefreshToken: true, persistSession: false }
 })
 
-export async function doLogin(supabase: SupabaseClient, origin: string, searchParams: URLSearchParams) {
+export async function doLogin(
+	supabase: SupabaseClient,
+	origin: string,
+	searchParams: URLSearchParams
+): Promise<never> {
 	const provider = searchParams.get("provider") as Provider
 
 	if (!provider) error(403, "Failed to login! Provider not specified!")
@@ -22,7 +26,9 @@ export async function doLogin(supabase: SupabaseClient, origin: string, searchPa
 		}
 	})
 
-	if (err) error(400, formatError(err))
+	if (err) {
+		error(400, formatError(err))
+	}
 
 	redirect(303, data.url)
 }

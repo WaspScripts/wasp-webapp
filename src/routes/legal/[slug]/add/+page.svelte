@@ -3,17 +3,21 @@
 	import { zod4Client } from "sveltekit-superforms/adapters"
 	import { legalSchema } from "$lib/client/schemas"
 	import Head from "$lib/components/Head.svelte"
+	import { untrack } from "svelte"
 
 	let { data } = $props()
 	let show: boolean = $state(false)
 
-	const { form, errors, enhance } = superForm(data.form, {
-		dataType: "json",
-		multipleSubmits: "prevent",
-		clearOnSubmit: "errors",
-		taintedMessage: "Are you sure you want to leave?",
-		validators: zod4Client(legalSchema)
-	})
+	const { form, errors, enhance } = superForm(
+		untrack(() => data.form),
+		{
+			dataType: "json",
+			multipleSubmits: "prevent",
+			clearOnSubmit: "errors",
+			taintedMessage: "Are you sure you want to leave?",
+			validators: zod4Client(legalSchema)
+		}
+	)
 </script>
 
 <Head

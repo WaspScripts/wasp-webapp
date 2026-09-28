@@ -176,7 +176,9 @@ export const actions = {
 		url: { origin, searchParams, pathname },
 		params: { slug }
 	}) => {
-		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
+		if (!user) {
+			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
+		}
 		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
 		if (user.id !== slug) {
 			const profile = await getProfile()

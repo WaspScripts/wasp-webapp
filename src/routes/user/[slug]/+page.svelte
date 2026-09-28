@@ -5,6 +5,7 @@
 	import Head from "$lib/components/Head.svelte"
 	import { superForm } from "sveltekit-superforms"
 	import UUID from "$lib/components/UUID.svelte"
+	import { untrack } from "svelte"
 
 	const { data, form } = $props()
 	const profile = $derived(data.profile!)
@@ -13,13 +14,16 @@
 		form: authForm,
 		errors,
 		enhance
-	} = superForm(data.form!, {
-		multipleSubmits: "prevent",
-		clearOnSubmit: "errors",
-		taintedMessage: null,
-		dataType: "json",
-		validators: zod4Client(profileSchema)
-	})
+	} = superForm(
+		untrack(() => data.form),
+		{
+			multipleSubmits: "prevent",
+			clearOnSubmit: "errors",
+			taintedMessage: null,
+			dataType: "json",
+			validators: zod4Client(profileSchema)
+		}
+	)
 </script>
 
 <Head

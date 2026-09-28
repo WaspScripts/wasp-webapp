@@ -10,7 +10,7 @@
 	import { SvelteDate } from "svelte/reactivity"
 	import { superForm } from "sveltekit-superforms"
 	import { zod4Client } from "sveltekit-superforms/adapters"
-	import { onMount } from "svelte"
+	import { onMount, untrack } from "svelte"
 
 	const { data, children } = $props()
 	let { transactionsPromise, direction, cursor } = $derived(data)
@@ -42,13 +42,16 @@
 	const next = $derived(transactionsURL + "?cursor=" + nextCursor + "&dir=next")
 	const prev = $derived(transactionsURL + "?cursor=" + prevCursor + "&dir=prev")
 
-	const { form, errors, enhance, allErrors, delayed } = superForm(data.daysForm, {
-		dataType: "json",
-		multipleSubmits: "prevent",
-		clearOnSubmit: "errors-and-message",
-		validators: zod4Client(transactionDaysSchema),
-		resetForm: true
-	})
+	const { form, errors, enhance, allErrors, delayed } = superForm(
+		untrack(() => data.daysForm),
+		{
+			dataType: "json",
+			multipleSubmits: "prevent",
+			clearOnSubmit: "errors-and-message",
+			validators: zod4Client(transactionDaysSchema),
+			resetForm: true
+		}
+	)
 
 	let userLocale = $state("pt-PT")
 	onMount(() => (userLocale = navigator.language))

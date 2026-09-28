@@ -11,21 +11,24 @@
 	import type { ScriptMetaData, ScriptPublic, TScriptStages } from "$lib/types/collection"
 	import FileCode from "@lucide/svelte/icons/file-code"
 	import ImagePlus from "@lucide/svelte/icons/image-plus"
-	import { onMount } from "svelte"
+	import { onMount, untrack } from "svelte"
 
 	const { data } = $props()
 	let profile = $derived(data.profile!)
 
-	const { form, errors, enhance, validate } = superForm(data.form!, {
-		dataType: "json",
-		multipleSubmits: "prevent",
-		taintedMessage: "Are you sure you want to leave?",
-		validators: zod4Client(addScriptClientSchema),
-		scrollToError: true,
-		onSubmit: () => (waitingReply = true),
-		onUpdated: () => (waitingReply = false),
-		onError: () => (waitingReply = false)
-	})
+	const { form, errors, enhance, validate } = superForm(
+		untrack(() => data.form),
+		{
+			dataType: "json",
+			multipleSubmits: "prevent",
+			taintedMessage: "Are you sure you want to leave?",
+			validators: zod4Client(addScriptClientSchema),
+			scrollToError: true,
+			onSubmit: () => (waitingReply = true),
+			onUpdated: () => (waitingReply = false),
+			onError: () => (waitingReply = false)
+		}
+	)
 
 	let waitingReply = $state(false)
 

@@ -2,7 +2,7 @@
 	import { page } from "$app/state"
 	import { replaceQuery } from "$lib/client/utils"
 	import { scriptCategories, scriptStatus, scriptTypes } from "$lib/utils"
-	import { onMount } from "svelte"
+	import { onMount, untrack } from "svelte"
 	import ArrowRight from "@lucide/svelte/icons/arrow-right"
 	import CarouselEntry from "./CarouselEntry.svelte"
 	import { goto, invalidate } from "$app/navigation"
@@ -11,10 +11,9 @@
 	import Head from "$lib/components/Head.svelte"
 
 	const { data } = $props()
-	const { scripts, featuredPromise, profile } = $derived(data)
+	const { scripts, featuredPromise, profile, count } = $derived(data)
 
-	let { amount } = $state(data)
-	const { count } = $derived(data)
+	let amount = $state(untrack(() => data.amount))
 
 	const pageStr = $derived(page.url.searchParams.get("page") || "-1")
 	const currentPage = $derived(Number(pageStr) < 0 || Number.isNaN(Number(pageStr)) ? 1 : Number(pageStr))

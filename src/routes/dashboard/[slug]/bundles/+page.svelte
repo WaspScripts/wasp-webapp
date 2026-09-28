@@ -5,6 +5,7 @@
 	import ScriptPicker from "./ScriptPicker.svelte"
 	import SubscriptionViewer from "../SubscriptionViewer.svelte"
 	import FreeAccessViewer from "../FreeAccessViewer.svelte"
+	import { untrack } from "svelte"
 
 	const { data } = $props()
 	const { subscriptions, freeAccess } = $derived(data)
@@ -13,27 +14,33 @@
 		form: bundlesForm,
 		errors: bundlesErrors,
 		enhance: bundlesEnhance
-	} = superForm(data.bundlesForm, {
-		id: "bundles",
-		dataType: "json",
-		multipleSubmits: "prevent",
-		clearOnSubmit: "errors-and-message",
-		validators: zod4Client(bundleArraySchema),
-		warnings: { duplicateId: false }
-	})
+	} = superForm(
+		untrack(() => data.bundlesForm),
+		{
+			id: "bundles",
+			dataType: "json",
+			multipleSubmits: "prevent",
+			clearOnSubmit: "errors-and-message",
+			validators: zod4Client(bundleArraySchema),
+			warnings: { duplicateId: false }
+		}
+	)
 
 	const {
 		form: newBundleForm,
 		errors: newBundleErrors,
 		enhance: newBundleEnhance
-	} = superForm(data.newBundleForm, {
-		id: "newbundle",
-		dataType: "json",
-		multipleSubmits: "prevent",
-		clearOnSubmit: "errors-and-message",
-		validators: zod4Client(newBundleSchema),
-		warnings: { duplicateId: false }
-	})
+	} = superForm(
+		untrack(() => data.newBundleForm),
+		{
+			id: "newbundle",
+			dataType: "json",
+			multipleSubmits: "prevent",
+			clearOnSubmit: "errors-and-message",
+			validators: zod4Client(newBundleSchema),
+			warnings: { duplicateId: false }
+		}
+	)
 
 	const headers = [
 		"Title",

@@ -2,18 +2,22 @@
 	import { superForm } from "sveltekit-superforms"
 	import { zod4Client } from "sveltekit-superforms/adapters"
 	import { scriptStatsSchema } from "$lib/client/schemas"
+	import { untrack } from "svelte"
 	const { data } = $props()
 
-	const { form, errors, enhance, message } = superForm(data.form!, {
-		dataType: "json",
-		multipleSubmits: "prevent",
-		taintedMessage: "Are you sure you want to leave?",
-		validators: zod4Client(scriptStatsSchema),
-		scrollToError: true,
-		onSubmit: () => (waitingReply = true),
-		onUpdated: () => (waitingReply = false),
-		onError: () => (waitingReply = false)
-	})
+	const { form, errors, enhance, message } = superForm(
+		untrack(() => data.form),
+		{
+			dataType: "json",
+			multipleSubmits: "prevent",
+			taintedMessage: "Are you sure you want to leave?",
+			validators: zod4Client(scriptStatsSchema),
+			scrollToError: true,
+			onSubmit: () => (waitingReply = true),
+			onUpdated: () => (waitingReply = false),
+			onError: () => (waitingReply = false)
+		}
+	)
 
 	let waitingReply = $state(false)
 
