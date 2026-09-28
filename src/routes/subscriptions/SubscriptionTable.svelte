@@ -26,8 +26,10 @@
 
 	let formElement: HTMLFormElement
 
+	const isLoading = $derived(bundles.length === 0 && scripts.length === 0)
+
 	const { form, errors, enhance } = superForm(data, {
-		id: bundles.length === 0 && scripts.length === 0 ? "subscriptions-loading" : "subscriptions",
+		id: isLoading ? "subscriptions-loading" : "subscriptions",
 		dataType: "json",
 		multipleSubmits: "prevent",
 		clearOnSubmit: "errors",
@@ -44,10 +46,7 @@
 		return scripts.find((script) => script.id === id)
 	}
 
-	let bundleArray: (BundleProduct | undefined)[] = $state([])
-	subscriptions.forEach((sub) => {
-		bundleArray.push(getBundle(sub.product))
-	})
+	let bundleArray = $derived(subscriptions.map((sub) => getBundle(sub.product)))
 
 	function getPrice(id: string, prices: Price[]) {
 		return prices.find((price) => price.id === id)
