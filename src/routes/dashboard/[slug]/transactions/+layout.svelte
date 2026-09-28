@@ -97,9 +97,11 @@
 							{transaction.status.toLocaleUpperCase()}
 						</td>
 						<td>
-							{#if typeof transaction.source !== "string"}
+							{#if transaction.source == null}
+								&mdash;
+							{:else if typeof transaction.source !== "string" && "source" in transaction.source}
 								{#if transaction.source.source && typeof transaction.source.source !== "string"}
-									{#if "application_name" in transaction.source.source!}
+									{#if "application_name" in transaction.source.source}
 										{transaction.source.source.application_name}
 									{:else}
 										{transaction.source.source.id}
@@ -109,6 +111,8 @@
 								{:else}
 									{transaction.source.source}
 								{/if}
+							{:else if typeof transaction.source !== "string"}
+								{transaction.source.id}
 							{:else}
 								{transaction.source}
 							{/if}

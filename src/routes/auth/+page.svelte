@@ -2,13 +2,18 @@
 	import { superForm } from "sveltekit-superforms"
 	import { loginAsSchema } from "$lib/client/schemas"
 	import { zod4Client } from "sveltekit-superforms/adapters"
+	import { untrack } from "svelte"
 
 	const { data } = $props()
-	const { form, errors, enhance } = superForm(data.form, {
-		multipleSubmits: "prevent",
-		taintedMessage: "Are you sure you want to leave?",
-		validators: zod4Client(loginAsSchema)
-	})
+
+	const { form, errors, enhance } = superForm(
+		untrack(() => data.form),
+		{
+			multipleSubmits: "prevent",
+			taintedMessage: "Are you sure you want to leave?",
+			validators: zod4Client(loginAsSchema)
+		}
+	)
 </script>
 
 <main class="min-h-screen">

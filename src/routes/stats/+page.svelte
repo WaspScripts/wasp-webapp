@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { invalidate } from "$app/navigation"
 	import { page } from "$app/state"
-	import { onMount } from "svelte"
+	import { onMount, untrack } from "svelte"
 	import { formatTime, formatNumber } from "$lib/utils"
 	import StatsTable from "./StatsTable.svelte"
 	import { replaceQuery } from "$lib/client/utils"
@@ -9,12 +9,12 @@
 
 	const { data } = $props()
 
-	let {
+	const {
 		supabaseClient,
 		totals,
 		stats: { stats, count }
 	} = $derived(data)
-	let { amount } = $state(data)
+	let { amount } = $state(untrack(() => data))
 
 	let search = $state(decodeURIComponent(page.url.searchParams.get("search") || "").trim())
 

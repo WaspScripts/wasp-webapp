@@ -2,18 +2,22 @@
 	import type { Tutorial } from "$lib/types/collection"
 	import { encodeSEO } from "$lib/utils"
 
-	const { tutorial }: { tutorial: Tutorial } = $props()
+	interface Props {
+		tutorial: Tutorial
+	}
+	const { tutorial }: Props = $props()
 
 	const link = $derived(
 		"/tutorials/" + (tutorial ? encodeSEO(tutorial.title + " by " + tutorial.username) : "")
 	)
 
-	const style =
+	const style = $derived(
 		tutorial.level === 0
 			? "ring-sky-400 dark:ring-sky-500"
 			: tutorial.level === 1
 				? "ring-orange-400 dark:ring-orange-500"
 				: "ring-red-400 dark:ring-red-500"
+	)
 </script>
 
 <a

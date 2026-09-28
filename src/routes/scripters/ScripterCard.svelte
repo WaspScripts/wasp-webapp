@@ -10,11 +10,17 @@
 	class="m-4 mx-auto w-full max-w-md min-w-xs card rounded-md border-2 border-surface-300-700 preset-filled-surface-200-800 card-hover hover:border-primary-300-700"
 >
 	<div class="text-md flex truncate font-semibold text-primary-600 dark:text-primary-500">
-		<Avatar
-			src={scripter.profiles.avatar}
-			name={scripter.profiles.username}
-			classes="border-surface-300-700 m-4 flex border-2"
-		/>
+		<Avatar class="border-surface-300-700 m-4 flex border-2">
+			<Avatar.Image
+				height="2.75rem"
+				width="2.75rem"
+				class="h-full w-full"
+				src={scripter.profiles.avatar}
+				alt="scripter.profiles.username"
+				loading="eager"
+			/>
+		</Avatar>
+
 		<span class="mx-8 my-auto">
 			{scripter.profiles.username}
 			{#if scripter.realname}

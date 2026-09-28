@@ -3,17 +3,22 @@
 	import type { ScriptMetaData, ScriptPublic } from "$lib/types/collection"
 	import { cropString, encodeSEO, scriptCategories, scriptStatus, scriptTypes } from "$lib/utils"
 	import { Portal, Tooltip } from "@skeletonlabs/skeleton-svelte"
+	import { untrack } from "svelte"
 
-	let {
-		script,
-		metadata,
-		customCover = $bindable(undefined)
-	}: { script: ScriptPublic; metadata: ScriptMetaData; customCover: string | undefined } = $props()
+	interface Props {
+		script: ScriptPublic
+		metadata: ScriptMetaData
+		customCover: string | undefined
+	}
+
+	let { script, metadata, customCover = $bindable(undefined) }: Props = $props()
 
 	let imgLink = $derived(customCover ?? "/cover.webp")
 	const username = page.data.profile?.username ?? "USERNAME"
 
-	const categoriesTooltip: boolean[] = $state(new Array(metadata.categories.length).fill(false))
+	const categoriesTooltip: boolean[] = $state(
+		new Array(untrack(() => metadata.categories.length)).fill(false)
+	)
 	let status = $state(false)
 	let type = $state(false)
 </script>

@@ -5,10 +5,11 @@
 	import { replaceQuery } from "$lib/client/utils"
 	import Head from "$lib/components/Head.svelte"
 	import GitHubButton from "$lib/components/GitHubButton.svelte"
+	import { untrack } from "svelte"
 
 	const { data } = $props()
 	const { tutorials, count } = $derived(data)
-	let { amount } = $state(data)
+	let { amount } = $state(untrack(() => data))
 
 	const pageStr = page.url.searchParams.get("page") || "-1"
 	let currentPage = $state(Number(pageStr) < 0 || Number.isNaN(Number(pageStr)) ? 1 : Number(pageStr))
