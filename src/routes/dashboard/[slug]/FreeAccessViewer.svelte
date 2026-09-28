@@ -3,7 +3,7 @@
 	import TableHeader from "$lib/components/TableHeader.svelte"
 	import { Avatar, Dialog, Portal } from "@skeletonlabs/skeleton-svelte"
 	import UserRoundPlus from "@lucide/svelte/icons/user-round-plus"
-	import { TicketPlus } from "@lucide/svelte"
+	import TicketPlus from "@lucide/svelte/icons/ticket-plus"
 	import UUID from "$lib/components/UUID.svelte"
 	import { onMount } from "svelte"
 

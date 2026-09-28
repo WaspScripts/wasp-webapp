@@ -5,6 +5,18 @@ import DOMPurify from "isomorphic-dompurify"
 
 type validSlug = "privacy_policy" | "scripter_tos" | "user_tos"
 
+// Compiled (and sanitized) policies keyed by their markdown, policies are rarely added and never edited.
+const compiled = new Map<string, string>()
+
+async function compile(content: string) {
+	let html = compiled.get(content)
+	if (html == null) {
+		html = DOMPurify.sanitize((await mdvsvexCompile(content)).code)
+		compiled.set(content, html)
+	}
+	return html
+}
+
 export const load = async ({ params: { slug }, locals: { supabaseServer } }) => {
 	const validSlugs = ["privacy_policy", "scripter_tos", "user_tos"]
 	slug = slug.toLowerCase()
@@ -34,7 +46,7 @@ export const load = async ({ params: { slug }, locals: { supabaseServer } }) => 
 				return {
 					version: legal.version,
 					created_at: legal.created_at,
-					content: DOMPurify.sanitize((await mdvsvexCompile(legal.content)).code),
+					content: await compile(legal.content),
 					originalContent: legal.content
 				}
 			})

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import UUID from "$lib/components/UUID.svelte"
-	import type { TScriptStages } from "$lib/types/collection"
+	import type { ScriptStats, TScriptStages } from "$lib/types/collection"
 	import { scriptStages } from "$lib/utils"
 	import { Portal, Tooltip } from "@skeletonlabs/skeleton-svelte"
 	import StatsHeader from "./StatsHeader.svelte"
@@ -13,6 +13,7 @@
 	let description: string | undefined = $derived(data.description)
 	let hasLink: boolean = $derived(data.hasLink)
 	let stage: TScriptStages = $derived(data.stage)
+	let stats: ScriptStats | null | undefined = $derived(data.stats)
 </script>
 
 <header class="my-4 flex w-full flex-col justify-between gap-4 lg:flex-row">
@@ -57,6 +58,6 @@
 			<UUID uuid={id ?? "Loading..."}></UUID>
 		</h3>
 
-		<StatsHeader {id} />
+		<StatsHeader {id} {stats} />
 	</div>
 </header>

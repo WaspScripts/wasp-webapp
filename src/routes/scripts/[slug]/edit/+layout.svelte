@@ -10,7 +10,7 @@
 
 	import ScriptHeader from "../../ScriptHeader.svelte"
 	import ScriptCard from "$lib/components/ScriptCard.svelte"
-	import ScriptArticle from "../../ScriptArticle.svelte"
+	import ScriptArticlePreview from "../../ScriptArticlePreview.svelte"
 	import { replaceScriptContent } from "$lib/client/utils"
 	import { cropString } from "$lib/utils"
 	const { data, children } = $props()
@@ -62,7 +62,7 @@
 					</div>
 				{/if}
 
-				<ScriptArticle
+				<ScriptArticlePreview
 					content={script
 						? replaceScriptContent(script, { gp_max: 0, gp_min: 0, xp_max: 0, xp_min: 0 })
 						: "Loading..."}

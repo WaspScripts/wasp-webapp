@@ -8,6 +8,13 @@ let scriptsIndex: Index
 let scripts: Script[] = []
 let publishedScripts: Script[] = []
 
+// Script cards don't use the (potentially large) markdown content, don't send it to the client.
+export function withoutContent(script: Script): Omit<Script, "content"> {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const { content, ...card } = script
+	return card
+}
+
 function getScriptString(script: Script) {
 	return `${script.title} ${script.description} ${script.content} ${script.protected.username}`
 }

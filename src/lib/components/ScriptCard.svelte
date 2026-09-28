@@ -12,7 +12,11 @@
 	} from "$lib/utils"
 	import { Portal, Tooltip } from "@skeletonlabs/skeleton-svelte"
 
-	let { script, customCover, link }: { script: Script; customCover?: string; link?: string } = $props()
+	let {
+		script,
+		customCover,
+		link
+	}: { script: Omit<Script, "content">; customCover?: string; link?: string } = $props()
 
 	let imgLink = $derived(
 		customCover ?? PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/cover.webp"
@@ -40,7 +44,14 @@
 				{scriptStages[script.metadata.stage].icon + scriptStages[script.metadata.stage].name}
 			</div>
 		{/if}
-		<img src={imgLink} alt="Script cover" class="rounded-md contain-content" loading="lazy" />
+		<img
+			src={imgLink}
+			alt="Script cover"
+			class="rounded-md contain-content"
+			width="300"
+			height="200"
+			loading="lazy"
+		/>
 	</button>
 	<button
 		class="mx-auto my-2 flex h-44 w-64 flex-col"

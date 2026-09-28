@@ -6,8 +6,8 @@
 	import { getCurrentPrice, getPriceIntervalEx, setPriceInterval } from "$lib/utils"
 	import ExternalLink from "@lucide/svelte/icons/external-link"
 	import ScriptLinks from "./ScriptLinks.svelte"
-	import { zod4 } from "sveltekit-superforms/adapters"
-	import { Loader } from "@lucide/svelte"
+	import { zod4Client } from "sveltekit-superforms/adapters"
+	import Loader from "@lucide/svelte/icons/loader"
 
 	let {
 		data,
@@ -26,7 +26,7 @@
 			multipleSubmits: "prevent",
 			clearOnSubmit: "errors",
 			taintedMessage: null,
-			validators: zod4(checkoutSchema)
+			validators: zod4Client(checkoutSchema)
 		})
 	)
 

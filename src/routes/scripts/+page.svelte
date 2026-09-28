@@ -87,9 +87,14 @@
 				<CarouselEntry />
 			</div>
 		{:then featured}
-			{#each featured as feature (feature.id)}
+			{#each featured as feature, idx (feature.id)}
 				<a href="/scripts/{feature.url}" class="relative w-full shrink-0 snap-center rounded-lg text-center">
-					<CarouselEntry id={feature.id} title={feature.title} username={feature.protected.username} />
+					<CarouselEntry
+						id={feature.id}
+						title={feature.title}
+						username={feature.protected.username}
+						priority={idx === 0}
+					/>
 				</a>
 			{/each}
 		{/await}

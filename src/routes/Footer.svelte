@@ -10,6 +10,13 @@
 	import Zod from "./logos/Zod.svelte"
 	import Supabase from "./logos/Supabase.svelte"
 	import Svelte from "./logos/Svelte.svelte"
+	import { browser } from "$app/environment"
+	import type { SimpleScripter } from "$lib/types/collection"
+
+	// SSR only renders the loading state, so only fetch in the browser.
+	const randomScripters: Promise<SimpleScripter[]> = browser
+		? WaspScripters.getRandomScripters(page.data.supabaseClient)
+		: new Promise(() => {})
 </script>
 
 <footer class="z-40 my-auto h-fit preset-filled-surface-100-900">
@@ -70,7 +77,7 @@
 			<nav class="mx-auto text-center md:text-left">
 				<span class="text-md mb-6 font-semibold uppercase">Special thanks:</span>
 				<ul class="*:hover:text-primary-500">
-					{#await WaspScripters.getRandomScripters(page.data.supabaseClient)}
+					{#await randomScripters}
 						{#each { length: 5 }}
 							<li>Loading...</li>
 						{/each}

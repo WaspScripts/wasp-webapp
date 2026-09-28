@@ -2,10 +2,48 @@ import { PUBLIC_SUPER_USER_ID } from "$env/static/public"
 import { createCheckoutSession } from "$lib/server/stripe.server"
 import { doLogin } from "$lib/server/supabase.server"
 import { formatError } from "$lib/utils"
+import { replaceScriptContent } from "$lib/client/utils"
+import { renderMarkdown } from "$lib/markdown"
 import { error, redirect } from "@sveltejs/kit"
 
-export const load = async ({ cookies }) => {
-	return { dismissed: cookies.get("warning_dismissed") === "true" }
+// Rendering markdown with syntax highlighting is expensive, reuse it while the content is unchanged.
+const htmlCache = new Map<string, { content: string; html: string }>()
+
+export const load = async ({ cookies, parent, locals: { supabaseServer } }) => {
+	const { script } = await parent()
+
+	const [limitsResult, statsResult] = await Promise.all([
+		supabaseServer
+			.schema("stats")
+			.from("limits")
+			.select("xp_min, xp_max, gp_min, gp_max")
+			.eq("id", script.id)
+			.maybeSingle(),
+		supabaseServer
+			.schema("stats")
+			.from("values")
+			.select("experience, gold, runtime")
+			.eq("id", script.id)
+			.maybeSingle()
+	])
+
+	if (limitsResult.error) console.error(limitsResult.error)
+	if (statsResult.error) console.error(statsResult.error)
+
+	const limits = limitsResult.data ?? { xp_min: 0, xp_max: 0, gp_min: 0, gp_max: 0 }
+	const content = replaceScriptContent(script, limits)
+
+	let cached = htmlCache.get(script.id)
+	if (cached?.content !== content) {
+		cached = { content, html: renderMarkdown(content) }
+		htmlCache.set(script.id, cached)
+	}
+
+	return {
+		dismissed: cookies.get("warning_dismissed") === "true",
+		html: cached.html,
+		stats: statsResult.data
+	}
 }
 
 export const actions = {
@@ -77,6 +115,6 @@ export const actions = {
 		const url = await createCheckoutSession(profile.id, profile.stripe, stripeUser ?? null, data.id, origin)
 
 		if (url) redirect(303, url)
-		return error(500, "Something went wrong!")
+		error(500, "Something went wrong!")
 	}
 }

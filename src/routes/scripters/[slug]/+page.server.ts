@@ -1,13 +1,30 @@
 import { scripterSchema } from "$lib/client/schemas"
 import { canEdit, getScripter } from "$lib/client/supabase"
 import { mdvsvexCompile } from "$lib/server/markdown.server"
-import { getPublishedScripts, getScripts, searchScriptsIndex } from "$lib/server/scripts.server"
+import {
+	getPublishedScripts,
+	getScripts,
+	searchScriptsIndex,
+	withoutContent
+} from "$lib/server/scripts.server"
 import type { Script } from "$lib/types/collection"
 import { formatError } from "$lib/utils"
 import { redirect } from "@sveltejs/kit"
 import { zod4 } from "sveltekit-superforms/adapters"
 import { setError, superValidate } from "sveltekit-superforms/server"
 import DOMPurify from "isomorphic-dompurify"
+
+// Compiled (and sanitized) scripter descriptions, reused while the markdown is unchanged.
+const compiled = new Map<string, { content: string; html: string }>()
+
+async function compile(id: string, content: string) {
+	let cached = compiled.get(id)
+	if (cached?.content !== content) {
+		cached = { content, html: DOMPurify.sanitize((await mdvsvexCompile(content)).code) }
+		compiled.set(id, cached)
+	}
+	return cached.html
+}
 
 export const load = async ({
 	url: { searchParams },
@@ -45,11 +62,11 @@ export const load = async ({
 
 	const filteredScripts = scripts.slice(Math.max(0, start), Math.min(scripts.length, finish + 1))
 
-	if (scripter.content) scripter.content = DOMPurify.sanitize((await mdvsvexCompile(scripter.content)).code)
+	if (scripter.content) scripter.content = await compile(scripter.id, scripter.content)
 
 	return {
 		scripter,
-		scripts: filteredScripts,
+		scripts: filteredScripts.map(withoutContent),
 		amount,
 		count: scripts.length,
 		form: await superValidate(scripter, zod4(scripterSchema))

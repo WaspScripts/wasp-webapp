@@ -3,8 +3,6 @@
 	import Head from "$lib/components/Head.svelte"
 	import AdvancedButton from "./AdvancedButton.svelte"
 
-	import DOMPurify from "isomorphic-dompurify"
-
 	let { data } = $props()
 	let { policies } = $derived(data)
 	let index = $state(0)
@@ -43,7 +41,8 @@
 		{/if}
 	</div>
 	<article class="mx-auto prose max-w-md py-6 md:max-w-4xl dark:prose-invert">
+		<!-- content is sanitized on the server -->
 		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-		{@html DOMPurify.sanitize(currentPolicy.content)}
+		{@html currentPolicy.content}
 	</article>
 </main>

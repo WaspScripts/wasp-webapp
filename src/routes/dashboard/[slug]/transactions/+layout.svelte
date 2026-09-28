@@ -4,7 +4,7 @@
 	import { transactionDaysSchema } from "$lib/client/schemas"
 	import Head from "$lib/components/Head.svelte"
 	import { currency } from "$lib/utils"
-	import Stripe from "stripe"
+	import type Stripe from "stripe"
 	import ArrowLeft from "@lucide/svelte/icons/arrow-left"
 	import ArrowRight from "@lucide/svelte/icons/arrow-right"
 	import { SvelteDate } from "svelte/reactivity"

@@ -43,6 +43,11 @@ export interface ScripterProfile {
 //stats
 export type StatsTotal = Database["stats"]["Views"]["totals"]["Row"]
 
+export type ScriptStats = Pick<
+	Database["stats"]["Tables"]["values"]["Row"],
+	"experience" | "gold" | "runtime"
+>
+
 export type Stats = {
 	username: string
 	experience: number

@@ -5,8 +5,9 @@
 	const {
 		id,
 		title = "Loading...",
-		username = null
-	}: { id?: string; title?: string; username?: string | null } = $props()
+		username = null,
+		priority = true
+	}: { id?: string; title?: string; username?: string | null; priority?: boolean } = $props()
 
 	const src = $derived(
 		id
@@ -19,7 +20,10 @@
 	class="w-full rounded-lg object-fill brightness-90 md:h-44 lg:h-64"
 	{src}
 	alt={title}
-	fetchpriority="high"
+	width="1920"
+	height="768"
+	fetchpriority={priority ? "high" : "auto"}
+	loading={priority ? "eager" : "lazy"}
 />
 
 <div class="absolute top-1/2 left-1/2 grid -translate-x-1/2 -translate-y-1/2">

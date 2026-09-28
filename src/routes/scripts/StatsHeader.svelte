@@ -1,9 +1,16 @@
 <script lang="ts">
+	import { browser } from "$app/environment"
 	import { page } from "$app/state"
+	import type { ScriptStats } from "$lib/types/collection"
 	import { formatTime, formatNumber } from "$lib/utils"
 
-	let { id = undefined } = $props()
+	// stats can be passed in already loaded (e.g. by a server load), otherwise they are fetched in the browser
+	let { id = undefined, stats = undefined }: { id?: string; stats?: ScriptStats | null } = $props()
 	const { supabaseClient } = $derived(page.data)
+
+	const statsPromise = $derived(
+		stats !== undefined ? stats : browser ? getStats(id) : new Promise<ScriptStats | null>(() => {})
+	)
 
 	async function getStats(id: string | undefined) {
 		if (!id) {
@@ -31,7 +38,7 @@
 </script>
 
 <div class="h-24 text-center">
-	{#await getStats(id) then stats}
+	{#await statsPromise then stats}
 		{#if stats}
 			{#if stats.experience > 0 || stats.gold > 0 || stats.runtime > 0}
 				<h4>Total Experience Gained: {formatNumber(stats.experience)}</h4>

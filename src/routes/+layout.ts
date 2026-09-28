@@ -10,10 +10,24 @@ export const load = async ({ data, depends, fetch }) => {
 			global: { fetch }
 		})
 
-		const promises = await Promise.all([supabaseClient.auth.getSession(), supabaseClient.auth.getUser()])
+		const {
+			data: { session }
+		} = await supabaseClient.auth.getSession()
 
-		const expiresAt = promises[0].data.session?.expires_at ?? null
-		const authUser = promises[1].data.user
+		// The server already verified this user and loaded their profile, reuse it instead of refetching.
+		if ((session?.user.id ?? null) === data.user) {
+			return {
+				mode: data.mode,
+				theme: data.theme,
+				supabaseClient,
+				user: data.user,
+				expiresAt: session?.expires_at ?? null,
+				profile: data.profile
+			}
+		}
+
+		const expiresAt = session?.expires_at ?? null
+		const authUser = (await supabaseClient.auth.getUser()).data.user
 
 		if (authUser) {
 			const { data: profile } = await supabaseClient

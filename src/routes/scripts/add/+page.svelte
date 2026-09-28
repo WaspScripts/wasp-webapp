@@ -4,7 +4,7 @@
 	import { cropString, scriptCategories, scriptStages, scriptStatus, scriptTypes } from "$lib/utils"
 	import { getScriptContent } from "$lib/client/utils"
 	import ScriptHeader from "../ScriptHeader.svelte"
-	import ScriptArticle from "../ScriptArticle.svelte"
+	import ScriptArticlePreview from "../ScriptArticlePreview.svelte"
 	import { addScriptClientSchema } from "$lib/client/schemas"
 	import { Combobox, FileUpload, Portal, Switch } from "@skeletonlabs/skeleton-svelte"
 	import NewScriptCard from "$lib/components/NewScriptCard.svelte"
@@ -95,7 +95,7 @@
 					</div>
 				{/if}
 
-				<ScriptArticle
+				<ScriptArticlePreview
 					content={getScriptContent(
 						publicData,
 						{

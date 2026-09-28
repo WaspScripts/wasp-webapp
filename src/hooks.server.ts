@@ -57,10 +57,10 @@ const supabase: Handle = async ({ event, resolve }) => {
 
 const authGuard: Handle = async ({ event, resolve }) => {
 	const { session, user } = await event.locals.safeGetSession()
-	event.locals.session = session
-	event.locals.user = user
 
-	event.locals.getProfile = async () => {
+	let profilePromise: ReturnType<typeof fetchProfile> | null = null
+
+	async function fetchProfile() {
 		if (!user) return null
 
 		const { data, error: err } = await event.locals.supabaseServer
@@ -75,6 +75,11 @@ const authGuard: Handle = async ({ event, resolve }) => {
 	}
 
 	const now = new Date().toISOString()
+
+	event.locals.session = session
+	event.locals.user = user
+
+	event.locals.getProfile = () => (profilePromise ??= fetchProfile())
 
 	event.locals.getSubscriptions = async () => {
 		if (!user) return []
@@ -103,7 +108,7 @@ const authGuard: Handle = async ({ event, resolve }) => {
 	}
 
 	if (!event.locals.session && event.url.pathname.startsWith("/dashboard")) {
-		return redirect(303, "/auth")
+		redirect(303, "/auth")
 	}
 
 	const response = resolve(event)

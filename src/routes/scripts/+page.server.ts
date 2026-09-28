@@ -1,4 +1,4 @@
-import { getPublishedScripts, searchScriptsIndex } from "$lib/server/scripts.server"
+import { getPublishedScripts, searchScriptsIndex, withoutContent } from "$lib/server/scripts.server"
 import { formatError } from "$lib/utils"
 import { error } from "@sveltejs/kit"
 
@@ -36,7 +36,7 @@ export async function load({ depends, url, locals: { supabaseServer } }) {
 
 		if (featuredIDs && Date.now() - featuredFetchedAt < FEATURED_TTL) {
 			const cached = featuredIDs
-			return scripts.filter((script) => cached.has(script.id))
+			return scripts.filter((script) => cached.has(script.id)).map(withoutContent)
 		}
 
 		const { data, error: err } = await supabaseServer.schema("scripts").from("featured").select("id")
@@ -52,7 +52,7 @@ export async function load({ depends, url, locals: { supabaseServer } }) {
 		const ids = new Set(data.flatMap((featured) => (featured.id ? [featured.id] : [])))
 		featuredIDs = ids
 		featuredFetchedAt = Date.now()
-		return scripts.filter((script) => ids.has(script.id))
+		return scripts.filter((script) => ids.has(script.id)).map(withoutContent)
 	}
 
 	if (statusFilter) scripts = scripts.filter((script) => script.metadata.status === statusFilter)
@@ -66,5 +66,10 @@ export async function load({ depends, url, locals: { supabaseServer } }) {
 
 	const filteredScripts = scripts.slice(Math.max(0, start), Math.min(scripts.length, finish + 1))
 
-	return { scripts: filteredScripts, featuredPromise: getFeatured(), amount, count: scripts.length }
+	return {
+		scripts: filteredScripts.map(withoutContent),
+		featuredPromise: getFeatured(),
+		amount,
+		count: scripts.length
+	}
 }
