@@ -4,6 +4,7 @@
 	import { zod4Client } from "sveltekit-superforms/adapters"
 	import SubscriptionViewer from "../SubscriptionViewer.svelte"
 	import FreeAccessViewer from "../FreeAccessViewer.svelte"
+	import { untrack } from "svelte"
 
 	const { data } = $props()
 	const { available, subscriptions, freeAccess } = $derived(data)
@@ -12,27 +13,33 @@
 		form: scriptsForm,
 		errors: scriptErrors,
 		enhance: scriptsEnhance
-	} = superForm(data.scriptsForm, {
-		id: "scripts",
-		dataType: "json",
-		multipleSubmits: "prevent",
-		clearOnSubmit: "errors-and-message",
-		validators: zod4Client(scriptArraySchema),
-		warnings: { duplicateId: false }
-	})
+	} = superForm(
+		untrack(() => data.scriptsForm),
+		{
+			id: "scripts",
+			dataType: "json",
+			multipleSubmits: "prevent",
+			clearOnSubmit: "errors-and-message",
+			validators: zod4Client(scriptArraySchema),
+			warnings: { duplicateId: false }
+		}
+	)
 
 	const {
 		form: newScriptForm,
 		errors: newScriptErrors,
 		enhance: newScriptEnhance
-	} = superForm(data.newScriptForm, {
-		id: "newscript",
-		dataType: "json",
-		multipleSubmits: "prevent",
-		clearOnSubmit: "errors-and-message",
-		validators: zod4Client(newScriptSchema),
-		warnings: { duplicateId: false }
-	})
+	} = superForm(
+		untrack(() => data.newScriptForm),
+		{
+			id: "newscript",
+			dataType: "json",
+			multipleSubmits: "prevent",
+			clearOnSubmit: "errors-and-message",
+			validators: zod4Client(newScriptSchema),
+			warnings: { duplicateId: false }
+		}
+	)
 
 	const headers = [
 		"Title",

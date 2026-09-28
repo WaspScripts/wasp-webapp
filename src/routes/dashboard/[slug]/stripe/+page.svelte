@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { countryCodeSchema, dbaSchema } from "$lib/client/schemas"
+	import { untrack } from "svelte"
 	import { superForm } from "sveltekit-superforms"
 	import { zod4Client } from "sveltekit-superforms/adapters"
 
@@ -11,25 +12,31 @@
 		errors: countryErrors,
 		enhance: countryEnhance,
 		allErrors: countryAllErrors
-	} = superForm(data.countryForm, {
-		dataType: "json",
-		multipleSubmits: "prevent",
-		clearOnSubmit: "errors-and-message",
-		validators: zod4Client(countryCodeSchema),
-		resetForm: true
-	})
+	} = superForm(
+		untrack(() => data.countryForm),
+		{
+			dataType: "json",
+			multipleSubmits: "prevent",
+			clearOnSubmit: "errors-and-message",
+			validators: zod4Client(countryCodeSchema),
+			resetForm: true
+		}
+	)
 
 	const {
 		form: dbaForm,
 		errors: dbaErrors,
 		enhance: dbaEnhance
-	} = superForm(data.dbaForm, {
-		dataType: "json",
-		multipleSubmits: "prevent",
-		clearOnSubmit: "errors-and-message",
-		validators: zod4Client(dbaSchema),
-		resetForm: true
-	})
+	} = superForm(
+		untrack(() => data.dbaForm),
+		{
+			dataType: "json",
+			multipleSubmits: "prevent",
+			clearOnSubmit: "errors-and-message",
+			validators: zod4Client(dbaSchema),
+			resetForm: true
+		}
+	)
 </script>
 
 <main class="m-4 min-h-96">

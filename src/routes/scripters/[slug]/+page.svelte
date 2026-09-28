@@ -11,11 +11,12 @@
 	import { scripterSchema } from "$lib/client/schemas"
 	import DOMPurify from "isomorphic-dompurify"
 	import GitFork from "@lucide/svelte/icons/git-fork"
+	import { untrack } from "svelte"
 
 	const { data } = $props()
 	const { profile, count, scripts, scripter } = $derived(data)
 
-	let { amount } = $state(data)
+	let amount = $state(untrack(() => data.amount))
 
 	const pageStr = page.url.searchParams.get("page") || "-1"
 	let currentPage = $state(Number(pageStr) < 0 || Number.isNaN(Number(pageStr)) ? 1 : Number(pageStr))

@@ -14,7 +14,8 @@
 		totals,
 		stats: { stats, count }
 	} = $derived(data)
-	let { amount } = $state(untrack(() => data))
+
+	let amount = $state(untrack(() => data.amount))
 
 	let search = $state(decodeURIComponent(page.url.searchParams.get("search") || "").trim())
 
