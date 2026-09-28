@@ -1,12 +1,12 @@
 import { faqsPromise } from "$lib/server/faqs.server"
 import type { FAQEntry } from "$lib/types/collection"
-import FlexSearch from "flexsearch"
+import { Index } from "flexsearch"
 
-let faqsIndex: FlexSearch.Index
+let faqsIndex: Index
 let faqs: FAQEntry[]
 
 function createFAQsIndex(data: FAQEntry[]) {
-	faqsIndex = new FlexSearch.Index({ tokenize: "full", cache: true, language: "en" })
+	faqsIndex = new Index({ tokenize: "full", cache: true })
 	data.forEach((faq, i) => {
 		const item = `${faq.title} ${faq.content}`
 		faqsIndex.add(i, item)

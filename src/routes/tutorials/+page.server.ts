@@ -1,12 +1,12 @@
 import { tutorialsPromise } from "$lib/server/tutorials.server"
 import type { Tutorial } from "$lib/types/collection"
-import FlexSearch from "flexsearch"
+import { Index } from "flexsearch"
 
-let tutorialsIndex: FlexSearch.Index
+let tutorialsIndex: Index
 let tutorials: Tutorial[]
 
 function createTutorialsIndex(data: Tutorial[]) {
-	tutorialsIndex = new FlexSearch.Index({ tokenize: "full", cache: true, language: "en" })
+	tutorialsIndex = new Index({ tokenize: "full", cache: true })
 	data.forEach((tutorial, i) => {
 		const item = `${tutorial.title} ${tutorial.description} ${tutorial.content}`
 		tutorialsIndex.add(i, item)

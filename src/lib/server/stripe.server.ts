@@ -3,7 +3,7 @@ import type { PriceSchema } from "$lib/client/schemas"
 import type { Interval, Price } from "$lib/types/collection"
 import Stripe from "stripe"
 
-export const stripe = new Stripe(STRIPE_KEY, { apiVersion: "2026-03-25.dahlia", typescript: true })
+export const stripe = new Stripe(STRIPE_KEY, { apiVersion: "2026-06-24.dahlia", typescript: true })
 
 export async function createCustomer(id: string, email: string, discord: string, username: string) {
 	try {

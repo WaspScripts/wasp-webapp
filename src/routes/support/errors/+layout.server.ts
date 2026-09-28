@@ -1,12 +1,12 @@
 import { errorsPromise } from "$lib/server/errors.server"
 import type { FAQEntry } from "$lib/types/collection"
-import FlexSearch from "flexsearch"
+import { Index } from "flexsearch"
 
-let errorsIndex: FlexSearch.Index
+let errorsIndex: Index
 let errors: FAQEntry[]
 
 function createErrorsIndex(data: FAQEntry[]) {
-	errorsIndex = new FlexSearch.Index({ tokenize: "full", cache: true, language: "en" })
+	errorsIndex = new Index({ tokenize: "full", cache: true })
 	data.forEach((err, i) => {
 		const item = `${err.title} ${err.content}`
 		errorsIndex.add(i, item)

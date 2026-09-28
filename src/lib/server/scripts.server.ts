@@ -1,10 +1,10 @@
-import FlexSearch from "flexsearch"
+import { Index } from "flexsearch"
 import type { Script } from "$lib/types/collection"
 import { supabaseAdmin } from "./supabase.server"
 import { fetchScriptByID } from "$lib/client/supabase"
 import { UUID_V4_REGEX } from "$lib/utils"
 
-let scriptsIndex: FlexSearch.Index
+let scriptsIndex: Index
 let scripts: Script[] = []
 let publishedScripts: Script[] = []
 
@@ -13,7 +13,7 @@ function getScriptString(script: Script) {
 }
 
 function createScriptsIndex(data: Script[]) {
-	scriptsIndex = new FlexSearch.Index({ tokenize: "full", cache: true, language: "en" })
+	scriptsIndex = new Index({ tokenize: "full", cache: true })
 	data.forEach((script) => scriptsIndex.add(script.id, getScriptString(script)))
 }
 
