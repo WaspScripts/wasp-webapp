@@ -9,7 +9,7 @@ import {
 	supabaseAdmin
 } from "$lib/server/supabase.server"
 import type { Interval } from "$lib/types/collection"
-import { formatError, UUID_V4_REGEX } from "$lib/utils"
+import { formatError, groupBy, UUID_V4_REGEX } from "$lib/utils"
 import { error, redirect } from "@sveltejs/kit"
 import type Stripe from "stripe"
 import { fail, setError, superValidate } from "sveltekit-superforms"
@@ -22,6 +22,7 @@ const newPrices = [
 ]
 
 const intervals = ["week", "month", "year"] as const
+const STRIPE_BATCH_SIZE = 20
 
 export const load = async ({ params: { slug }, parent }) => {
 	const { scripts, scripter, products, prices, data } = await parent()
@@ -35,13 +36,17 @@ export const load = async ({ params: { slug }, parent }) => {
 	const subs: (typeof data.data)[] = []
 	const free: (typeof data.freeData)[] = []
 
-	let available = scripts
-	const scriptData = scriptProducts.map((product) => {
-		available = available.filter((script) => script.id !== product.script)
-		subs.push(data.data.filter((s) => s.product === product.id))
-		free.push(data.freeData.filter((f) => f.product === product.id))
+	const subsByProduct = groupBy(data.data, (s) => s.product)
+	const freeByProduct = groupBy(data.freeData, (f) => f.product)
+	const pricesByProduct = groupBy(prices, (price) => price.product)
+	const productScripts = new Set(scriptProducts.map((product) => product.script))
+	const available = scripts.filter((script) => !productScripts.has(script.id))
 
-		const productPrices = prices.filter((price) => price.product == product.id)
+	const scriptData = scriptProducts.map((product) => {
+		subs.push(subsByProduct.get(product.id) ?? [])
+		free.push(freeByProduct.get(product.id) ?? [])
+
+		const productPrices = [...(pricesByProduct.get(product.id) ?? [])]
 		if (productPrices.length < 3) {
 			intervals.forEach((interval) => {
 				const i = productPrices.findIndex((price) => price.interval === interval)
@@ -460,12 +465,19 @@ export const actions = {
 			)
 		}
 
-		for (let i = 0; i < data.length; i++) {
-			try {
-				await stripe.subscriptions.update(data[i].id, { cancel_at_period_end: true })
-			} catch {
-				error(503, "Failed to update subscription: " + data[i].id + " on stripe side.")
-			}
+		const failed: string[] = []
+		for (let i = 0; i < data.length; i += STRIPE_BATCH_SIZE) {
+			const batch = data.slice(i, i + STRIPE_BATCH_SIZE)
+			const results = await Promise.allSettled(
+				batch.map(({ id }) => stripe.subscriptions.update(id, { cancel_at_period_end: true }))
+			)
+			results.forEach((result, j) => {
+				if (result.status === "rejected") failed.push(batch[j].id)
+			})
+		}
+
+		if (failed.length > 0) {
+			error(503, "Failed to update subscriptions: " + failed.join(", ") + " on stripe side.")
 		}
 
 		return { success: true }

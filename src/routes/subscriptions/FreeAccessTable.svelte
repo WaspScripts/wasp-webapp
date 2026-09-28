@@ -15,12 +15,15 @@
 		scripts: ScriptProduct[]
 	} = $props()
 
+	const bundlesByID = $derived(new Map(bundles.map((bundle) => [bundle.id, bundle])))
+	const scriptsByID = $derived(new Map(scripts.map((script) => [script.id, script])))
+
 	function getBundle(id: string) {
-		return bundles.find((bundle) => bundle.id === id)
+		return bundlesByID.get(id)
 	}
 
 	function getScript(id: string) {
-		return scripts.find((script) => script.id === id)
+		return scriptsByID.get(id)
 	}
 
 	const bundleArray = $derived(freeAccess.map((access) => getBundle(access.product)))

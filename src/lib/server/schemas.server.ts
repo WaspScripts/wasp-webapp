@@ -16,6 +16,34 @@ async function checkServerImageDimensions(file: File, width: number, height: num
 	}
 }
 
+async function isValidSimbaVersion(version: string) {
+	const versions = await getSimbaVersions()
+	if (versions.some((v) => v.version === version)) return true
+
+	const { count, error } = await supabaseAdmin
+		.schema("scripts")
+		.from("simba")
+		.select("version", { head: true, count: "estimated" })
+		.limit(1)
+		.eq("version", version)
+
+	return !error && !!count && count > 0
+}
+
+async function isValidWaspLibVersion(version: string) {
+	const versions = await getWaspLibVersions()
+	if (versions.some((v) => v.version === version)) return true
+
+	const { count, error } = await supabaseAdmin
+		.schema("scripts")
+		.from("wasplib")
+		.select("version", { head: true, count: "estimated" })
+		.limit(1)
+		.eq("version", version)
+
+	return !error && !!count && count > 0
+}
+
 export const addScriptServerSchema = scriptInfoSchema
 	.extend({
 		simba: z
@@ -32,34 +60,8 @@ export const addScriptServerSchema = scriptInfoSchema
 	})
 	.refine(async (schema) => await checkServerImageDimensions(schema.cover, 300, 200))
 	.refine(async (schema) => await checkServerImageDimensions(schema.banner, 1920, 768))
-	.refine(async (schema) => {
-		const simbaVersions = await getSimbaVersions()
-		if (simbaVersions.includes({ version: schema.simba })) return true
-
-		const { count, error } = await supabaseAdmin
-			.schema("scripts")
-			.from("simba")
-			.select("version", { head: true, count: "estimated" })
-			.limit(1)
-			.eq("version", schema.simba)
-
-		if (error || !count || count < 1) return false
-		return true
-	}, "Invalid Simba version.")
-	.refine(async (schema) => {
-		const wasplibVersions = await getWaspLibVersions()
-		if (wasplibVersions.includes({ version: schema.wasplib })) return true
-
-		const { count, error } = await supabaseAdmin
-			.schema("scripts")
-			.from("wasplib")
-			.select("version", { head: true, count: "estimated" })
-			.limit(1)
-			.eq("version", schema.wasplib)
-
-		if (error || !count || count < 1) return false
-		return true
-	}, "Invalid WaspLib version.")
+	.refine((schema) => isValidSimbaVersion(schema.simba), "Invalid Simba version.")
+	.refine((schema) => isValidWaspLibVersion(schema.wasplib), "Invalid WaspLib version.")
 
 export const scriptFilesServerSchema = z
 	.object({
@@ -75,31 +77,5 @@ export const scriptFilesServerSchema = z
 		script: scriptFile.array().optional(),
 		main: z.string().nonempty().optional()
 	})
-	.refine(async (schema) => {
-		const simbaVersions = await getSimbaVersions()
-		if (simbaVersions.includes({ version: schema.simba })) return true
-
-		const { count, error } = await supabaseAdmin
-			.schema("scripts")
-			.from("simba")
-			.select("version", { head: true, count: "estimated" })
-			.limit(1)
-			.eq("version", schema.simba)
-
-		if (error || !count || count < 1) return false
-		return true
-	}, "Invalid Simba version.")
-	.refine(async (schema) => {
-		const wasplibVersions = await getWaspLibVersions()
-		if (wasplibVersions.includes({ version: schema.wasplib })) return true
-
-		const { count, error } = await supabaseAdmin
-			.schema("scripts")
-			.from("wasplib")
-			.select("version", { head: true, count: "estimated" })
-			.limit(1)
-			.eq("version", schema.wasplib)
-
-		if (error || !count || count < 1) return false
-		return true
-	}, "Invalid WaspLib version.")
+	.refine((schema) => isValidSimbaVersion(schema.simba), "Invalid Simba version.")
+	.refine((schema) => isValidWaspLibVersion(schema.wasplib), "Invalid WaspLib version.")

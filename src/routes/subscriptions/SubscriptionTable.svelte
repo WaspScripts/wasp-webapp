@@ -41,18 +41,23 @@
 		}
 	)
 
+	const bundlesByID = $derived(new Map(bundles.map((bundle) => [bundle.id, bundle])))
+	const scriptsByID = $derived(new Map(scripts.map((script) => [script.id, script])))
+
 	function getBundle(id: string) {
-		return bundles.find((bundle) => bundle.id === id)
+		return bundlesByID.get(id)
 	}
 
 	function getScript(id: string) {
-		return scripts.find((script) => script.id === id)
+		return scriptsByID.get(id)
 	}
 
 	const bundleArray = $derived(subscriptions.map((sub) => getBundle(sub.product)))
 
-	function getPrice(id: string, prices: Price[]) {
-		return prices.find((price) => price.id === id)
+	const pricesByID = $derived(new Map(prices.map((price) => [price.id, price])))
+
+	function getPrice(id: string) {
+		return pricesByID.get(id)
 	}
 
 	let userLocale = $state("pt-PT")
@@ -84,7 +89,7 @@
 			/>
 			<tbody class="preset-filled-surface-200-800 [&>tr]:hover:preset-tonal">
 				{#each subscriptions as { id, product, price, date_start, date_end, disabled }, i (id)}
-					{@const priceEx = getPrice(price, prices)}
+					{@const priceEx = getPrice(price)}
 					<tr class="table-row">
 						{#if bundleArray[i]}
 							<td>

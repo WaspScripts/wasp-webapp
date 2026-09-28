@@ -27,8 +27,20 @@ export async function searchScriptsIndex(searchTerm: string) {
 	if (scripts.length === 0 || publishedScripts.length === 0) await getPublishedScripts()
 	const match = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") //escape special regex characters
 	const ids = scriptsIndex.search(match) as string[]
-	const byID = new Map(publishedScripts.map((script) => [script.id, script]))
+	const byID = getPublishedByID()
 	return ids.map((id) => byID.get(id)).filter((script): script is Script => script !== undefined)
+}
+
+let publishedByID: { source: Script[]; map: Map<string, Script> } | null = null
+
+function getPublishedByID() {
+	if (publishedByID?.source !== publishedScripts) {
+		publishedByID = {
+			source: publishedScripts,
+			map: new Map(publishedScripts.map((script) => [script.id, script]))
+		}
+	}
+	return publishedByID.map
 }
 
 let scriptsLoading: Promise<Script[]> | null = null

@@ -74,19 +74,23 @@ export async function updateImgFile(supabase: SupabaseClient, bucket: string, pa
 	}
 }
 
-export async function getUsername(id: string) {
+export async function getUsernames(ids: string[]) {
+	const usernames = new Map<string, string>()
+	if (ids.length === 0) return usernames
+
 	const { data, error: err } = await supabaseAdmin
 		.schema("profiles")
 		.from("profiles")
-		.select("username")
-		.eq("id", id)
-		.single()
+		.select("id, username")
+		.in("id", [...new Set(ids)])
 
 	if (err) {
-		console.error("getUsername(" + id + "): " + formatError(err))
-		return null
+		console.error("getUsernames(" + ids.join(", ") + "): " + formatError(err))
+		return usernames
 	}
-	return data.username
+
+	for (const { id, username } of data) usernames.set(id, username)
+	return usernames
 }
 
 export async function addFreeAccess(user_id: string, product: string, date_end: string) {

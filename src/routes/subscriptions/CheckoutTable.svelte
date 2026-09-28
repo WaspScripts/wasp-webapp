@@ -45,82 +45,47 @@
 	let scriptArray: ScriptProduct[] = $state(scripts)
 
 	async function getAuthors() {
-		const ids: string[] = []
-		const usernames: Promise<string | null>[] = []
+		const usernames: Record<string, Promise<string | null>> = {}
+		for (const product of [...bundles, ...scripts]) usernames[product.user_id] ??= product.username
 
-		bundles.forEach((b) => {
-			if (!ids.includes(b.user_id)) {
-				ids.push(b.user_id)
-				usernames.push(b.username)
-			}
-		})
-
-		scripts.forEach((s) => {
-			if (!ids.includes(s.user_id)) {
-				ids.push(s.user_id)
-				usernames.push(s.username)
-			}
-		})
-
-		return await Promise.all(usernames)
+		return await Promise.all(Object.values(usernames))
 	}
 
 	const authorsPromise = getAuthors()
 
-	async function filter() {
-		switch (type) {
-			case "all":
-				bundleArray = bundles
-				scriptArray = scripts
-				break
-
-			case "bundles":
-				bundleArray = bundles
-				scriptArray = []
-				break
-
-			case "scripts":
-				bundleArray = []
-				scriptArray = scripts
-				break
-		}
-
-		if (author === "all") return
-
-		for (let i = bundleArray.length - 1; i >= 0; i--) {
-			const username = await bundleArray[i].username
-			if (author !== username) bundleArray.splice(i, 1)
-		}
-
-		for (let i = scriptArray.length - 1; i >= 0; i--) {
-			const username = await scriptArray[i].username
-			if (author !== username) scriptArray.splice(i, 1)
-		}
+	async function filterProducts<T extends BundleProduct | ScriptProduct>(products: T[], term: string) {
+		const usernames = await Promise.all(products.map((product) => product.username))
+		return products.filter((product, i) => {
+			const username = usernames[i]
+			if (author !== "all" && author !== username) return false
+			if (term === "") return true
+			return (
+				product.id.toLowerCase().includes(term) ||
+				product.name.toLowerCase().includes(term) ||
+				!!username?.toLowerCase().includes(term)
+			)
+		})
 	}
 
-	async function searchFilter() {
-		await filter()
-		if (search === "") return
-		const tmp = search.trim().toLowerCase()
+	let filterRun = 0
 
-		for (let i = bundleArray.length - 1; i >= 0; i--) {
-			if (bundleArray[i].id.toLowerCase().includes(tmp)) continue
-			if (bundleArray[i].name.toLowerCase().includes(tmp)) continue
+	async function applyFilters(term: string) {
+		const run = ++filterRun
+		const [filteredBundles, filteredScripts] = await Promise.all([
+			type === "scripts" ? [] : filterProducts(bundles, term),
+			type === "bundles" ? [] : filterProducts(scripts, term)
+		])
+		if (run !== filterRun) return
+		bundleArray = filteredBundles
+		scriptArray = filteredScripts
+	}
 
-			const username = await bundleArray[i].username
-			if (username?.toLowerCase().includes(tmp)) continue
+	function filter() {
+		return applyFilters("")
+	}
 
-			bundleArray.splice(i, 1)
-		}
-
-		for (let i = scriptArray.length - 1; i >= 0; i--) {
-			if (scriptArray[i].id.toLowerCase().includes(tmp)) continue
-			if (scriptArray[i].name.trim().toLowerCase().includes(tmp)) continue
-			const username = await scriptArray[i].username
-			if (username?.trim().toLowerCase().includes(tmp)) continue
-
-			scriptArray.splice(i, 1)
-		}
+	function searchFilter() {
+		return applyFilters(search.trim().toLowerCase())
 	}
 </script>
 

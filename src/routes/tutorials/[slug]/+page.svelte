@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { browser } from "$app/environment"
+	import { getAuthorProfiles } from "$lib/client/supabase"
 	import GitHubButton from "$lib/components/GitHubButton.svelte"
 	import Head from "$lib/components/Head.svelte"
 	import { Avatar } from "@skeletonlabs/skeleton-svelte"
@@ -6,26 +8,14 @@
 	const { data } = $props()
 	const { meta, content, supabaseClient } = $derived(data)
 
-	interface Profile {
-		username: string
-		avatar: string
-	}
+	const authors = $derived(
+		browser
+			? getAuthorProfiles(supabaseClient, [meta.author, ...(meta.coauthors ?? [])])
+			: new Promise<never>(() => {})
+	)
 
-	async function getUsername(id: string) {
-		const { data, error: err } = await supabaseClient
-			.schema("profiles")
-			.from("profiles")
-			.select("username, avatar")
-			.eq("id", id)
-			.single()
-			.overrideTypes<Profile>()
-
-		if (err) {
-			console.error(err)
-			return { username: "Error", avatar: "Error" }
-		}
-
-		return data
+	function getUsername(id: string) {
+		return authors.then((getAuthor) => getAuthor(id))
 	}
 
 	let Content = $derived(content)

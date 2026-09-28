@@ -1,29 +1,20 @@
 <script lang="ts">
+	import { browser } from "$app/environment"
+	import { getAuthorProfiles } from "$lib/client/supabase"
 	import { Avatar } from "@skeletonlabs/skeleton-svelte"
 	import ChevronsDownUp from "@lucide/svelte/icons/chevrons-down-up"
 
 	const { data } = $props()
 	const { meta, content, supabaseClient } = $derived(data)
 
-	async function getUsername(id: string) {
-		interface Profile {
-			username: string
-			avatar: string
-		}
-		const { data, error: err } = await supabaseClient
-			.schema("profiles")
-			.from("profiles")
-			.select("username, avatar")
-			.eq("id", id)
-			.single()
-			.overrideTypes<Profile>()
+	const authors = $derived(
+		browser
+			? getAuthorProfiles(supabaseClient, [meta.author, ...(meta.coauthors ?? [])])
+			: new Promise<never>(() => {})
+	)
 
-		if (err) {
-			console.error(err)
-			return { username: "Error", avatar: "Error" }
-		}
-
-		return data
+	function getUsername(id: string) {
+		return authors.then((getAuthor) => getAuthor(id))
 	}
 
 	let Content = $derived(content)

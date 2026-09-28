@@ -4,7 +4,7 @@ import { stripe, createPrice, createPriceEx, updatePrice, updateProduct } from "
 import { addFreeAccess, cancelFreeAccess, doLogin, supabaseAdmin } from "$lib/server/supabase.server"
 import type { Interval } from "$lib/types/collection"
 import type { Database } from "$lib/types/supabase"
-import { formatError, UUID_V4_REGEX } from "$lib/utils"
+import { formatError, groupBy, UUID_V4_REGEX } from "$lib/utils"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { error, redirect } from "@sveltejs/kit"
 import type Stripe from "stripe"
@@ -18,6 +18,7 @@ const newPrices = [
 ]
 
 const intervals = ["week", "month", "year"] as const
+const STRIPE_BATCH_SIZE = 20
 
 export const load = async ({ locals: { supabaseServer }, params: { slug }, parent }) => {
 	const { scripts, scripter, products, prices, data } = await parent()
@@ -48,13 +49,18 @@ export const load = async ({ locals: { supabaseServer }, params: { slug }, paren
 			)
 		}
 
+		const productsByBundle = new Map(bundleProducts.map((p) => [p.bundle, p]))
+		const subsByProduct = groupBy(data.data, (s) => s.product)
+		const freeByProduct = groupBy(data.freeData, (f) => f.product)
+		const pricesByProduct = groupBy(prices, (price) => price.product)
+
 		return await Promise.all(
 			bundleData.map(async (bundle) => {
-				const product = bundleProducts.find((p) => p.bundle == bundle.id)!
-				subs.push(data.data.filter((s) => s.product === product.id))
-				free.push(data.freeData.filter((f) => f.product === product.id))
+				const product = productsByBundle.get(bundle.id)!
+				subs.push(subsByProduct.get(product.id) ?? [])
+				free.push(freeByProduct.get(product.id) ?? [])
 
-				const productPrices = prices.filter((price) => price.product == product.id)
+				const productPrices = [...(pricesByProduct.get(product.id) ?? [])]
 				if (productPrices.length < 3) {
 					intervals.forEach((interval) => {
 						const i = productPrices.findIndex((price) => price.interval === interval)
@@ -78,6 +84,8 @@ export const load = async ({ locals: { supabaseServer }, params: { slug }, paren
 					})
 				}
 
+				const bundledIDs = new Set(bundle.scripts)
+
 				return {
 					id: product.id,
 					name: bundle.name,
@@ -85,7 +93,7 @@ export const load = async ({ locals: { supabaseServer }, params: { slug }, paren
 					prices: productPrices,
 					bundledScripts: scripts.map((script) => ({
 						...script,
-						active: bundle.scripts.includes(script.id)
+						active: bundledIDs.has(script.id)
 					})),
 					open: false,
 					subsOpen: false,
@@ -465,12 +473,19 @@ export const actions = {
 			)
 		}
 
-		for (let i = 0; i < data.length; i++) {
-			try {
-				await stripe.subscriptions.update(data[i].id, { cancel_at_period_end: true })
-			} catch {
-				error(503, "Failed to update subscription: " + data[i].id + " on stripe side.")
-			}
+		const failed: string[] = []
+		for (let i = 0; i < data.length; i += STRIPE_BATCH_SIZE) {
+			const batch = data.slice(i, i + STRIPE_BATCH_SIZE)
+			const results = await Promise.allSettled(
+				batch.map(({ id }) => stripe.subscriptions.update(id, { cancel_at_period_end: true }))
+			)
+			results.forEach((result, j) => {
+				if (result.status === "rejected") failed.push(batch[j].id)
+			})
+		}
+
+		if (failed.length > 0) {
+			error(503, "Failed to update subscriptions: " + failed.join(", ") + " on stripe side.")
 		}
 
 		return { success: true }

@@ -52,17 +52,18 @@
 
 		const intervals = ["week", "month", "year"]
 
-		return subData.map((sub) => {
-			const i = priceData.findIndex((price) => price.id === sub.price)
-			const value = priceData[i].amount / 100
+		const pricesByID = new Map(priceData.map((price) => [price.id, price]))
 
-			intervals.forEach((interval, idx) => {
-				if (priceData[i].interval === interval) {
-					if (sub.cancel) income[idx].cancelling += value
-					else income[idx].active += value
-					income[idx].total += value
-				}
-			})
+		return subData.map((sub) => {
+			const price = pricesByID.get(sub.price)!
+			const value = price.amount / 100
+
+			const idx = intervals.indexOf(price.interval)
+			if (idx !== -1) {
+				if (sub.cancel) income[idx].cancelling += value
+				else income[idx].active += value
+				income[idx].total += value
+			}
 
 			return {
 				id: sub.id,
@@ -72,7 +73,7 @@
 				date_start: sub.date_start,
 				date_end: sub.date_end,
 				price: value,
-				interval: priceData[i].interval.charAt(0).toUpperCase() + priceData[i].interval.slice(1) + "ly",
+				interval: price.interval.charAt(0).toUpperCase() + price.interval.slice(1) + "ly",
 				state: sub.cancel ? (sub.disabled ? 2 : 1) : 0
 			}
 		})

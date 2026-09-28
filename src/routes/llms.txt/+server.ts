@@ -1,145 +1,119 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
-import { encodeSEO } from "$lib/utils"
-import type { ScripterProfile } from "$lib/types/collection"
+import { scriptCategories, scriptStages, scriptStatus, scriptTypes } from "$lib/utils"
+import type { Script } from "$lib/types/collection"
 import type { Database } from "$lib/types/supabase"
 import { getPublishedScripts } from "$lib/server/scripts.server"
 import { tutorialsPromise } from "$lib/server/tutorials.server"
+import { faqsPromise } from "$lib/server/faqs.server"
+import { errorsPromise } from "$lib/server/errors.server"
 
 const website = "https://waspscripts.dev"
+const SCRIPTERS_TTL = 60 * 60 * 1000
 
-const getScripts = async () => {
-	const scripts = await getPublishedScripts()
-
-	const result: string[] = []
-	scripts.forEach((script) => {
-		result.push(
-			`[${script.title} by ${script.protected.username}](${website + "/scripts/" + script.url}): ${script.description}`
-		)
-	})
-
-	return result
+const headers = {
+	"Cache-Control": "max-age=0, s-maxage=3600",
+	"Content-Type": "text/markdown; charset=utf-8"
 }
 
-const getTutorials = async () => {
-	const tutorials = await tutorialsPromise
-	const result: string[] = []
-	tutorials.forEach((tutorial) => {
-		result.push(
-			`[${tutorial.title} by ${tutorial.username}](${website}/tutorials/${tutorial.url}): ${tutorial.description}`
-		)
-	})
-	return result
+function oneLine(text: string | null | undefined) {
+	return (text ?? "").replace(/\s+/g, " ").trim()
 }
 
-const getScripters = async (supabase: SupabaseClient<Database>) => {
+function entry(title: string, url: string, notes?: string | null) {
+	const description = oneLine(notes)
+	return `- [${oneLine(title)}](${url})${description ? ": " + description : ""}`
+}
+
+function scriptNotes(script: Script) {
+	const { type, status, stage, categories } = script.metadata
+	const tags = [scriptTypes[type].name, scriptStatus[status].name]
+	if (stage !== "stable") tags.push(scriptStages[stage].name)
+	if (categories.length > 0)
+		tags.push(categories.map((category) => scriptCategories[category].name).join(", "))
+	return `${oneLine(script.description)} (${tags.join(" · ")})`
+}
+
+let cachedScripters: { lines: string[]; expires: number } | null = null
+
+async function getScripters(supabase: SupabaseClient<Database>) {
+	if (cachedScripters && cachedScripters.expires > Date.now()) return cachedScripters.lines
+
 	const { data, error } = await supabase
 		.schema("profiles")
 		.from("scripters")
 		.select("description, url, profiles (username)")
-		.overrideTypes<ScripterProfile[]>()
+		.order("url")
+		.overrideTypes<{ description: string | null; url: string; profiles: { username: string } }[]>()
 
-	if (error) return console.error("developers SELECT failed: " + error.message)
-
-	const result: string[] = []
-	data.forEach((developer) =>
-		result.push(
-			`[${encodeSEO(developer.profiles.username)}](${website + "/scripters/" + encodeSEO(developer.url)})${developer.description ? ": " + developer.description : ""}`
-		)
-	)
-	return result
-}
-
-const getLoc = async (supabase: SupabaseClient<Database>, loc: string) => {
-	let data: string[]
-	if (loc === "scripts") {
-		data = (await getScripts()) as string[]
-	} else if (loc === "tutorials") {
-		data = (await getTutorials()) || []
-	} else {
-		data = (await getScripters(supabase)) || []
+	if (error) {
+		console.error("llms.txt scripters SELECT failed: " + error.message)
+		return cachedScripters?.lines ?? []
 	}
 
-	let result = ""
-	data.forEach((el) => {
-		result += `- ${el}\r\n`
-	})
-
-	return result
+	const lines = data.map((scripter) =>
+		entry(scripter.profiles.username, `${website}/scripters/${scripter.url}`, scripter.description)
+	)
+	cachedScripters = { lines, expires: Date.now() + SCRIPTERS_TTL }
+	return lines
 }
 
 export const GET = async ({ locals: { supabaseServer } }) => {
-	const promises = await Promise.all([
-		getLoc(supabaseServer, "scripts"),
-		getLoc(supabaseServer, "tutorials"),
-		getLoc(supabaseServer, "developers")
+	const [scripts, tutorials, faqs, errors, scripters] = await Promise.all([
+		getPublishedScripts(),
+		tutorialsPromise,
+		faqsPromise,
+		errorsPromise,
+		getScripters(supabaseServer)
 	])
-	const scripts = promises[0]
-	const tutorials = promises[1]
-	const scripters = promises[2]
 
-	const headers = {
-		"Cache-Control": "max-age=0, s-maxage=3600",
-		"Content-Type": "text/markdown"
-	}
-	return new Response(
-		`# WaspScripts
+	const body = `# WaspScripts
 
-> WaspScripts is a botting platform built on top of Simba.
+> WaspScripts is an open source botting platform built on top of Simba. Scripts use colour-only computer vision and remote input, so you can keep using your computer while botting and run multiple clients at once.
 
-- Everything is open source, from Simba itself, to the libraries to the scripts.
-- Extremely advanced computer vision systems, everything uses colour only to function.
-- You can use your computer while botting and bot on multiple clients through remote input.
-
-For setup instructions you visit the setup [page](${website}/setup)
+- Everything is open source: Simba, the WaspLib library and the scripts.
+- Scripts are either free or premium. Premium scripts require a subscription to the script or to a bundle that includes it.
+- Scripts are downloaded and run through the wasp-launcher, see the [setup guide](${website}/setup).
 
 ## Documentation
 
-- [Simba](https://villavu.github.io/Simba/): Simba documentation
-- [WaspLib](https://docs.waspscripts.dev/): WaspLib documentation
-- [Wasp Stats API](https://api.waspscripts.dev/docs): Stats API documentation
-- [Map](https://map.waspscripts.com/): Interactive game map
+${entry("Setup", `${website}/setup`, "How to install Simba and the wasp-launcher and start botting")}
+${entry("Simba", "https://villavu.github.io/Simba/", "Simba documentation")}
+${entry("WaspLib", "https://docs.waspscripts.dev/", "WaspLib documentation")}
+${entry("Wasp Stats API", "https://api.waspscripts.dev/docs", "Stats API documentation")}
+${entry("Interactive map", "https://map.waspscripts.com/", "Interactive game map")}
 
 ## Scripts
 
-- [Scripts](${website}/scripts): All available scripts on the website
-${scripts}
-
-## Stats
-
-WaspScripts Stats can be found on the following [page](${website}/stats).
-
-## Subscriptions
-
-Subscriptions for WaspScripts can be managed on the [subscriptions page](${website}/subscriptions).
-
-## FAQ
-
-Find the solution to your problem in our [support page](${website}/support).
+${entry("All scripts", `${website}/scripts`, `Browse and search all ${scripts.length} published scripts`)}
+${scripts.map((script) => entry(`${script.title} by ${script.protected.username}`, `${website}/scripts/${script.url}`, scriptNotes(script))).join("\n")}
 
 ## Tutorials
 
-Learn programming and how you can make your own color bots.
+${entry("All tutorials", `${website}/tutorials`, "Learn how to bot and how to write your own colour bots")}
+${tutorials.map((tutorial) => entry(`${tutorial.title} by ${tutorial.username}`, `${website}/tutorials/${tutorial.url}`, tutorial.description)).join("\n")}
 
-- [Tutorials](${website}/tutorials): All tutorials
-${tutorials}
+## Frequently Asked Questions
+
+${faqs.map((faq) => entry(faq.title, `${website}/support/faqs/${faq.url}`)).join("\n")}
+
+## Common Errors
+
+${errors.map((err) => entry(err.title, `${website}/support/errors/${err.url}`)).join("\n")}
 
 ## Scripters
 
-People behind this project.
+${entry("All scripters", `${website}/scripters`, "The developers behind WaspScripts")}
+${scripters.join("\n")}
 
-- [Scripters](${website}/scripters)
-${scripters}
+## Optional
 
-## Legal
+${entry("Stats", `${website}/stats`, "Experience, gold and runtime gained by users running WaspScripts")}
+${entry("Subscriptions", `${website}/subscriptions`, "Buy and manage script and bundle subscriptions")}
+${entry("Support", `${website}/support`, "FAQs, common errors and how to get help on Discord")}
+${entry("User Terms and Conditions", `${website}/legal/user_tos`)}
+${entry("Scripter Terms and Conditions", `${website}/legal/scripter_tos`)}
+${entry("Privacy Policy", `${website}/legal/privacy_policy`)}
+`
 
-### Terms and Conditions
-
-Learn about the [terms and conditions](${website}/legal/scripter_terms_of_service) of WaspScripts.
-
-### Privacy Policy
-
-Learn about the [privacy policy](${website}/legal/privacy_policy) of WaspScripts.
-`,
-		{ headers: headers }
-	)
+	return new Response(body, { headers })
 }

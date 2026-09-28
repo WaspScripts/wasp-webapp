@@ -50,6 +50,19 @@ export async function getStatsTotal(supabase: SupabaseClient) {
 	return data
 }
 
+export async function getAuthorProfiles(supabase: SupabaseClient<Database>, ids: string[]) {
+	const { data, error: err } = await supabase
+		.schema("profiles")
+		.from("profiles")
+		.select("id, username, avatar")
+		.in("id", [...new Set(ids)])
+
+	if (err) console.error(err)
+
+	const profiles = new Map((data ?? []).map(({ id, username, avatar }) => [id, { username, avatar }]))
+	return (id: string) => profiles.get(id) ?? { username: "Error", avatar: "Error" }
+}
+
 export function canEdit(id: string | null | undefined, role: ProfileRole, author: string | null | undefined) {
 	if (!id || !role || !author) return false
 	if (["administrator", "moderator"].includes(role)) return true

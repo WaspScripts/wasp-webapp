@@ -1,5 +1,5 @@
 import type { ScriptSimple } from "$lib/types/collection"
-import { formatError } from "$lib/utils"
+import { formatError, groupBy } from "$lib/utils"
 import { error } from "@sveltejs/kit"
 
 export const load = async ({ parent, data }) => {
@@ -94,11 +94,14 @@ export const load = async ({ parent, data }) => {
 	const prices = await getPrices()
 
 	async function getData() {
-		const promises = await dataPromises
-		const tmpPrices = [...prices]
-		const products = promises[0]
-		const bundles = promises[1]
-		const scripts = promises[2]
+		const [products, bundles, scripts] = await dataPromises
+
+		const pricesByProduct = groupBy(
+			prices.filter((price) => price.active),
+			(price) => price.product
+		)
+		const bundlesByID = new Map(bundles.map((bundle) => [bundle.id, bundle]))
+		const scriptsByID = new Map(scripts.map((script) => [script.id, script]))
 
 		const bundleProduct = []
 		const scriptProduct = []
@@ -106,57 +109,24 @@ export const load = async ({ parent, data }) => {
 		for (let i = 0; i < products.length; i++) {
 			const product = products[i]
 
-			const productPrices = []
-			let currentBundle
-			const bundledScripts = []
-			let scriptURL: string = ""
-
-			for (let j = 0; j < tmpPrices.length; j++) {
-				if (!tmpPrices[j].active || tmpPrices[j].product !== product.id) continue
-
-				productPrices.push({
-					id: tmpPrices[j].id,
-					product: tmpPrices[j].product,
-					amount: tmpPrices[j].amount,
-					interval: tmpPrices[j].interval,
-					currency: tmpPrices[j].currency,
-					active: productPrices.length === 0
-				})
-
-				tmpPrices.splice(j, 1)
-				j--
-			}
-
-			for (let j = 0; j < bundles.length; j++) {
-				if (bundles[j].id !== product.bundle) continue
-				currentBundle = bundles[j]
-				bundles.splice(j, 1)
-				break
-			}
+			const productPrices = (pricesByProduct.get(product.id) ?? []).map((price, j) => ({
+				id: price.id,
+				product: price.product,
+				amount: price.amount,
+				interval: price.interval,
+				currency: price.currency,
+				active: j === 0
+			}))
 
 			data.checkoutForm.data.products[i] = { id: product.id, prices: productPrices }
 
-			const tmpScripts = [...scripts]
+			const currentBundle = product.bundle ? bundlesByID.get(product.bundle) : undefined
+			if (currentBundle) bundlesByID.delete(currentBundle.id)
 
-			if (currentBundle) {
-				for (let l = 0; l < currentBundle.scripts.length; l++) {
-					for (let j = 0; j < tmpScripts.length; j++) {
-						if (currentBundle.scripts[l] !== tmpScripts[j].id) continue
-						bundledScripts.push(tmpScripts[j])
-						tmpScripts.splice(j, 1)
-						break
-					}
-					currentBundle.scripts.splice(l, 1)
-					l--
-				}
-			} else {
-				for (let j = 0; j < tmpScripts.length; j++) {
-					if (product.script !== tmpScripts[j].id) continue
-					scriptURL = tmpScripts[j].url as string
-					tmpScripts.splice(j, 1)
-					break
-				}
-			}
+			const bundledScripts = currentBundle
+				? [...new Set(currentBundle.scripts)].flatMap((id) => scriptsByID.get(id) ?? [])
+				: []
+			const scriptURL = !currentBundle && product.script ? (scriptsByID.get(product.script)?.url ?? "") : ""
 
 			if (product.bundle) {
 				bundleProduct.push({

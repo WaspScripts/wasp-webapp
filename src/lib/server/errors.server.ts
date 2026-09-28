@@ -1,5 +1,5 @@
 import type { FAQEntry } from "$lib/types/collection"
-import { getUsername } from "$lib/server/supabase.server"
+import { getUsernames } from "$lib/server/supabase.server"
 import matter from "gray-matter"
 import removeMd from "remove-markdown"
 import { encodeSEO } from "$lib/utils"
@@ -13,15 +13,18 @@ export async function getErrors() {
 		import: "default"
 	})
 
-	for (const path in files) {
-		const raw = files[path] as string
-		const order = path.split("/").at(-1)?.replace(".md", "")
-		if (!order) continue
-		const { data, content } = matter(raw)
+	const parsed = Object.entries(files).map(([path, raw]) => ({
+		order: path.split("/").at(-1)?.replace(".md", ""),
+		...matter(raw as string)
+	}))
 
+	const usernames = await getUsernames(parsed.flatMap(({ data }) => (data.author ? [data.author] : [])))
+
+	for (const { order, data, content } of parsed) {
+		if (!order) continue
 		if (!data.title || !data.author || !data.published) continue
 
-		const username = await getUsername(data.author)
+		const username = usernames.get(data.author)
 		if (!username) continue
 
 		const url = encodeSEO(data.title + " by " + username)
