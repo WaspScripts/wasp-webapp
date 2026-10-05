@@ -35,9 +35,9 @@ const config = {
 					"self",
 					"ws://localhost:*",
 					"http://localhost:*",
-					"https://db.waspscripts.dev",
-					"ws://db.waspscripts.dev",
-					"wss://db.waspscripts.dev",
+					"https://db.waspscripts.com",
+					"ws://db.waspscripts.com",
+					"wss://db.waspscripts.com",
 					"https://connect-js.stripe.com"
 				],
 
