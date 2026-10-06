@@ -8,7 +8,7 @@ import { zod4 } from "sveltekit-superforms/adapters"
 import type { TScriptStages, TScriptStatus, TScriptTypes } from "$lib/types/collection"
 import { pad } from "$lib/client/utils"
 import { updateScript } from "$lib/server/scripts.server"
-import { DISCORD_WEBHOOK } from "$env/static/private"
+import { DISCORD_RELEASE_WEBHOOK } from "$env/static/private"
 import { getSimbaVersions, getWaspLibVersions } from "$lib/server/versions.server"
 
 const scriptDefaultContent = `### {$title} by {$author}
@@ -207,7 +207,7 @@ export const actions = {
 					}
 				]
 			}
-			const res = await fetch(DISCORD_WEBHOOK, {
+			const res = await fetch(DISCORD_RELEASE_WEBHOOK, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(body)

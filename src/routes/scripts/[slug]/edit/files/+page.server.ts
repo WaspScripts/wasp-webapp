@@ -8,6 +8,7 @@ import { zod4 } from "sveltekit-superforms/adapters"
 import { getScript, updateScript } from "$lib/server/scripts.server"
 import { pad } from "$lib/client/utils"
 import { getScriptVersion, getSimbaVersions, getWaspLibVersions } from "$lib/server/versions.server"
+import { DISCORD_UPDATE_WEBHOOK } from "$env/static/private"
 
 export const load = async ({ locals: { supabaseServer, user, session }, parent }) => {
 	if (!user || !session) {
@@ -47,7 +48,12 @@ export const load = async ({ locals: { supabaseServer, user, session }, parent }
 }
 
 export const actions = {
-	default: async ({ request, params: { slug }, locals: { supabaseServer, user, session, getProfile } }) => {
+	default: async ({
+		request,
+		params: { slug },
+		locals: { supabaseServer, user, session, getProfile },
+		fetch
+	}) => {
 		if (!user || !session) {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		}
@@ -171,6 +177,30 @@ export const actions = {
 		}
 
 		await updateScript(id)
+
+		if (script.published) {
+			const body = {
+				embeds: [
+					{
+						title: "Script Update: " + title,
+						description: "Updated to revision " + revision + ".",
+						color: 0xf56f27,
+						footer: {
+							text: "Author: " + script.protected.username,
+							icon_url: script.protected.avatar
+						}
+					}
+				]
+			}
+			const res = await fetch(DISCORD_UPDATE_WEBHOOK, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(body)
+			})
+
+			if (!res.ok) console.error("Failed to send webhook", await res.text())
+		}
+
 		return message(
 			form,
 			"Script files data updated! You may need to refresh the page to see the changes. Images may take 24h to change."
