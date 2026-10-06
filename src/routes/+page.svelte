@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { formatTime, formatNumber } from "$lib/utils"
+	import { formatTime, formatNumber, WEBSITE_URL } from "$lib/utils"
 	import Head from "$lib/components/Head.svelte"
 
 	const { data } = $props()
@@ -7,8 +7,33 @@
 </script>
 
 <Head
-	title="Free Open Source Bots"
-	description="Color botting at it's best. Color only and fully open-source Simba scripts."
+	title="WaspScripts - Free Open Source Colour Bots"
+	description="Colour botting at its best. Colour only, fully open source Simba scripts, tutorials and tools that run while you keep using your computer."
+	jsonld={[
+		{
+			"@context": "https://schema.org",
+			"@type": "Organization",
+			name: "WaspScripts",
+			url: WEBSITE_URL,
+			logo: WEBSITE_URL + "/favicon.png",
+			sameAs: [
+				"https://github.com/WaspScripts",
+				"https://www.youtube.com/@waspscripts",
+				"https://discord.waspscripts.com"
+			]
+		},
+		{
+			"@context": "https://schema.org",
+			"@type": "WebSite",
+			name: "WaspScripts",
+			url: WEBSITE_URL,
+			potentialAction: {
+				"@type": "SearchAction",
+				target: { "@type": "EntryPoint", urlTemplate: WEBSITE_URL + "/scripts?search={search_term_string}" },
+				"query-input": "required name=search_term_string"
+			}
+		}
+	]}
 />
 
 <main class="container mx-auto my-24 max-w-2xl grow">

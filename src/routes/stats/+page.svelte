@@ -37,9 +37,14 @@
 	})
 </script>
 
-<Head title="Stats" description="WaspScripts usage stats." keywords="Stats, Scores" />
+<Head
+	title="Stats"
+	description="Live WaspScripts usage stats: experience, gold, levels and runtime gained by everyone running our open source colour scripts."
+	keywords="Stats, Scores"
+/>
 
 <main class="mx-4 my-8 h-fit grow md:mx-16 lg:mx-24">
+	<h1 class="sr-only">WaspScripts Stats</h1>
 	<header class="my-4 flex-col text-center text-sm lg:text-lg">
 		<h5 class="md:whitespace-nowrap">
 			Total experience: <wbr />

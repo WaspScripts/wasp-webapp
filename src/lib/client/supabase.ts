@@ -80,6 +80,7 @@ export async function getScripter(supabase: SupabaseClient<Database>, slug: stri
 		.single<Scripter>()
 
 	if (err) {
+		if (err.code === "PGRST116") error(404, "Scripter not found!")
 		error(
 			500,
 			"Server error, this is probably not an issue on your end!\n" +

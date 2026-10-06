@@ -25,13 +25,13 @@
 
 <Head
 	title="Tutorials"
-	description="Guides and tutorials to bot and develop scripts. Find the large collection of Simba tutorials available and unleach the power of Simba and max."
+	description="Guides and tutorials to bot and develop your own scripts. Learn Simba and WaspLib step by step, from basic setup to advanced colour scripting."
 	keywords="Tutorial, Tutorials, Guide, Guides, Learn, Coding"
 />
 
 <main class="mx-auto flex flex-col py-8">
 	<header class="py-8 text-center">
-		<h3>Welcome to the Tutorials section.</h3>
+		<h1>Welcome to the Tutorials section.</h1>
 		<p>Here you can find guides and tutorials to learn how to bot!</p>
 	</header>
 

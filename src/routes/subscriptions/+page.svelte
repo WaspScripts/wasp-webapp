@@ -10,9 +10,11 @@
 
 <Head
 	title="Subscriptions"
-	description="Start and/or manage your WaspScripts subscriptions."
+	description="Start or manage your WaspScripts subscriptions to premium scripts and bundles, and support the scripters who build them."
 	keywords="Stats, Scores, Premium, Subscribe, Member"
 />
+
+<h1 class="sr-only">WaspScripts Subscriptions</h1>
 
 <main class="my-8 grid">
 	{#if profile}

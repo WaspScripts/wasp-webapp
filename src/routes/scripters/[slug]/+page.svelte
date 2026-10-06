@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Head from "$lib/components/Head.svelte"
+	import { metaDescription, WEBSITE_URL } from "$lib/utils"
 	import PayPal from "./PayPal.svelte"
 	import { page } from "$app/state"
 	import { Tabs } from "@skeletonlabs/skeleton-svelte"
@@ -39,25 +40,46 @@
 </script>
 
 <Head
-	title={scripter.profiles.username}
-	description={scripter.profiles.username + ($form.description ? ", " + $form.description : "")}
+	title="{scripter.profiles.username} - Scripters"
+	description={metaDescription(
+		scripter.description
+			? scripter.profiles.username + ": " + scripter.description
+			: scripter.profiles.username +
+					" is a WaspScripts scripter. Browse their open source colour scripts and profile."
+	)}
 	keywords={"Scripter, Scripters, Developer, Developers, " +
 		scripter.profiles.username +
 		($form.realname ? ", " + $form.realname : "")}
 	author={scripter.profiles.username}
 	img={scripter.profiles.avatar}
+	imgAlt="{scripter.profiles.username} avatar"
+	card="summary"
+	type="profile"
+	jsonld={{
+		"@context": "https://schema.org",
+		"@type": "ProfilePage",
+		url: WEBSITE_URL + "/scripters/" + scripter.url,
+		mainEntity: {
+			"@type": "Person",
+			name: scripter.profiles.username,
+			alternateName: scripter.realname || undefined,
+			description: scripter.description || undefined,
+			image: scripter.profiles.avatar || undefined,
+			sameAs: scripter.github ? [scripter.github] : undefined
+		}
+	}}
 />
 
 <main class="my-16">
 	<div class="my-16 flex justify-around text-center">
 		<div class="my-auto flex">
 			<header>
-				<h3 class="text-2xl font-bold">
+				<h1 class="text-2xl font-bold">
 					{#if $form.realname && $form.realname != ""}
 						{$form.realname} /
 					{/if}
 					{scripter.profiles.username}
-				</h3>
+				</h1>
 			</header>
 		</div>
 		{#if $form.github || ($form.paypal && $form.paypal != "")}
@@ -103,16 +125,14 @@
 			</article>
 
 			<div class="mx-auto flex justify-around">
-				<a href="./" class="btn preset-filled-secondary-500">Back</a>
+				<a href="/scripters" class="btn preset-filled-secondary-500">Back</a>
 			</div>
 		</Tabs.Content>
 		{#if profile && ($form.id === profile.id || profile.role == "moderator" || profile.role == "administrator")}
 			<Tabs.Content value="edit">
 				<form method="POST" class="mx-auto my-24 w-2/4 min-w-xs text-center" use:enhance>
-					<h1 class="my-2">All fields are optional</h1>
-					<h2 class="mb-12">
-						You can preview your changes in the "Information" tab but don't forget to save.
-					</h2>
+					<h2 class="my-2">All fields are optional</h2>
+					<p class="mb-12">You can preview your changes in the "Information" tab but don't forget to save.</p>
 					<label class="my-4 label">
 						<span class="label-text">Real name:</span>
 						<input class="input" bind:value={$form.realname} />

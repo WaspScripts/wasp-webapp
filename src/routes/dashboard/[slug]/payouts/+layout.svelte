@@ -37,6 +37,7 @@
 	title="Payouts"
 	description="List of payouts the scripter received."
 	keywords="Scripters, Developers, Dashboard, Payouts"
+	noindex
 />
 
 {@render children()}

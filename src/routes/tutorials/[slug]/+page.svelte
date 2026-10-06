@@ -3,6 +3,7 @@
 	import { getAuthorProfiles } from "$lib/client/supabase"
 	import GitHubButton from "$lib/components/GitHubButton.svelte"
 	import Head from "$lib/components/Head.svelte"
+	import { isoDate, metaDescription, WEBSITE_URL } from "$lib/utils"
 	import { Avatar } from "@skeletonlabs/skeleton-svelte"
 
 	const { data } = $props()
@@ -23,17 +24,44 @@
 
 <Head
 	title="{meta.title} - Tutorials"
-	description="Botting tutorial: {meta.description}"
+	description={metaDescription(meta.description || meta.title)}
 	keywords="Tutorial, Tutorials, Guide, Guides, Learn, Coding"
 	author={meta.username}
+	type="article"
+	jsonld={[
+		{
+			"@context": "https://schema.org",
+			"@type": "TechArticle",
+			headline: meta.title,
+			description: meta.description,
+			url: WEBSITE_URL + "/tutorials/" + meta.url,
+			datePublished: isoDate(meta.created_at),
+			dateModified: isoDate(meta.updated_at),
+			author: { "@type": "Person", name: meta.username },
+			publisher: {
+				"@type": "Organization",
+				name: "WaspScripts",
+				url: WEBSITE_URL,
+				logo: { "@type": "ImageObject", url: WEBSITE_URL + "/favicon.png" }
+			}
+		},
+		{
+			"@context": "https://schema.org",
+			"@type": "BreadcrumbList",
+			itemListElement: [
+				{ "@type": "ListItem", position: 1, name: "Tutorials", item: WEBSITE_URL + "/tutorials" },
+				{ "@type": "ListItem", position: 2, name: meta.title, item: WEBSITE_URL + "/tutorials/" + meta.url }
+			]
+		}
+	]}
 />
 
 <main class="container mx-auto my-6 max-w-4xl grow">
 	<div class="my-8 grid place-items-center">
 		<GitHubButton link="edit/main/tutorials/{meta.order}.md" text="Edit on GitHub!"></GitHubButton>
 	</div>
-	<h2 class="my-4 text-center text-3xl font-bold">{meta.title}</h2>
-	<h3 class="my-4 text-center leading-normal font-semibold">{meta.description}</h3>
+	<h1 class="my-4 text-center text-3xl font-bold">{meta.title}</h1>
+	<p class="my-4 text-center leading-normal font-semibold">{meta.description}</p>
 	<h4 class="my-12 text-center">
 		Author:
 		<span class="flex justify-center text-primary-500">

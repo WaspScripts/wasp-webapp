@@ -30,6 +30,7 @@
 	title={profile.username}
 	description={"Information about " + profile.username + " in WaspScripts"}
 	keywords={profile?.username}
+	noindex
 />
 
 <main class="container mx-auto my-6 flex max-w-3xl flex-col">

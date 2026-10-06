@@ -24,6 +24,7 @@
 	title="Add Legal"
 	description="Add Legal document in WaspScripts."
 	keywords="Privacy, Policy, Terms, Conditions"
+	noindex
 />
 
 <div class="container mx-auto my-6 max-w-2xl grow">

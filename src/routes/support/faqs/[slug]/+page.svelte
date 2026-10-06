@@ -3,6 +3,8 @@
 	import { getAuthorProfiles } from "$lib/client/supabase"
 	import GitHubButton from "$lib/components/GitHubButton.svelte"
 	import { Avatar } from "@skeletonlabs/skeleton-svelte"
+	import Head from "$lib/components/Head.svelte"
+	import { metaDescription, WEBSITE_URL } from "$lib/utils"
 	import ChevronsDownUp from "@lucide/svelte/icons/chevrons-down-up"
 
 	const { data } = $props()
@@ -20,6 +22,28 @@
 
 	let Content = $derived(content)
 </script>
+
+<Head
+	title="{meta.title} - FAQ"
+	description={metaDescription(meta.content) || meta.title}
+	keywords="Support, Help, FAQ"
+	author={meta.username}
+	type="article"
+	jsonld={{
+		"@context": "https://schema.org",
+		"@type": "BreadcrumbList",
+		itemListElement: [
+			{ "@type": "ListItem", position: 1, name: "Support", item: WEBSITE_URL + "/support" },
+			{
+				"@type": "ListItem",
+				position: 2,
+				name: "Frequently Asked Questions",
+				item: WEBSITE_URL + "/support/faqs"
+			},
+			{ "@type": "ListItem", position: 3, name: meta.title, item: WEBSITE_URL + "/support/faqs/" + meta.url }
+		]
+	}}
+/>
 
 <a
 	href="/support/faqs"

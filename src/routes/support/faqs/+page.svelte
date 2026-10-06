@@ -12,7 +12,7 @@
 </script>
 
 <a
-	href="/support/"
+	href="/support"
 	data-sveltekit-noscroll
 	class="inline-flex w-full justify-between preset-outlined-surface-500 px-4 py-2 text-sm font-medium hover:preset-outlined-primary-500"
 >

@@ -61,6 +61,7 @@
 	title="Transactions"
 	description="List of transactions the scripter received."
 	keywords="Scripters, Developers, Dashboard, Transactions"
+	noindex
 />
 
 {@render children()}

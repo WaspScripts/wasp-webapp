@@ -39,7 +39,7 @@
 		{/if}
 		<img
 			src={imgLink}
-			alt="Script cover"
+			alt="{script.title} cover"
 			class="rounded-md contain-content"
 			width="300"
 			height="200"

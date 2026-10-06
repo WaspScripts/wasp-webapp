@@ -2,6 +2,7 @@ import type { AuthError, PostgrestError } from "@supabase/supabase-js"
 import type { Price, TScriptCategories, TScriptStages, TScriptStatus, TScriptTypes } from "./types/collection"
 
 export const API_URL = "https://api.waspscripts.com" //http://localhost:8080
+export const WEBSITE_URL = "https://waspscripts.com"
 export const UUID_V4_REGEX =
 	/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89AB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/i
 
@@ -60,6 +61,20 @@ export function encodeSEO(url: string) {
 		.replaceAll(/^-*/g, "")
 		.replaceAll(/-*$/g, "")
 	return url
+}
+
+export function metaDescription(str: string | null | undefined, length = 155) {
+	const text = (str ?? "").replace(/\s+/g, " ").trim()
+	if (text.length <= length) return text
+	const cut = text.substring(0, length - 1)
+	const space = cut.lastIndexOf(" ")
+	return (space > length / 2 ? cut.substring(0, space) : cut).replace(/[\s.,;:!?-]+$/, "") + "…"
+}
+
+export function isoDate(date: string | Date | null | undefined) {
+	if (!date) return undefined
+	const parsed = new Date(date)
+	return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString()
 }
 
 export function cropString(str: string, length = 80) {

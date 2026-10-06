@@ -25,7 +25,8 @@
 
 <Head
 	title="Edit {script.title} - Scripts"
-	description="The best open source botting scripts."
+	description="Edit {script.title} on WaspScripts."
+	noindex
 	keywords="Premium, Free, Automation, ComputerVision"
 	author={script.protected.username}
 	img={PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/banner.webp"}
@@ -43,7 +44,7 @@
 					class="rounded-md {!script ? 'animate-pulse' : ''}"
 					src={bannerURL ??
 						PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/banner.webp"}
-					alt="Script banner"
+					alt="{script.title} banner"
 					loading="lazy"
 				/>
 			</ScriptHeader>

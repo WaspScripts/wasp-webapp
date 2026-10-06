@@ -17,13 +17,13 @@
 
 <Head
 	title="Scripters"
-	description="List of scripters and developers that are behind the project directly and/or indirerectly."
+	description="Meet the scripters and developers behind WaspScripts, directly and indirectly. Browse their profiles, scripts and ways to support their work."
 	keywords="Scripters, Developers"
 />
 
 <main class="min-h-screen max-w-screen">
 	<header class="py-8 text-center">
-		<h3>Welcome to the Developers section.</h3>
+		<h1>Welcome to the Developers section.</h1>
 		<p>
 			Here you can find information about the developers involved directly or indirectly with WaspScripts.
 		</p>

@@ -10,13 +10,23 @@
 	let currentPolicy: (typeof policies)[number] = $derived(policies[index])
 
 	let userLocale = "pt-PT"
+
+	const titles: Record<string, string> = {
+		user_tos: "User Terms and Conditions",
+		scripter_tos: "Scripter Terms and Conditions",
+		privacy_policy: "Privacy Policy"
+	}
+
+	const legalTitle = $derived(titles[page.params.slug?.toLowerCase() ?? ""] ?? "Terms and Conditions")
 </script>
 
 <Head
-	title="Terms and Conditions"
-	description="WaspScripts Terms and Conditions"
+	title={legalTitle}
+	description="Read the WaspScripts {legalTitle.toLowerCase()}, including every previous version of the document."
 	keywords="Privacy, Policy, Terms, Conditions"
 />
+
+<h1 class="sr-only">{legalTitle}</h1>
 
 <main class="container mx-auto my-6 max-w-4xl grow">
 	<div class="mx-auto grid max-w-4xl">

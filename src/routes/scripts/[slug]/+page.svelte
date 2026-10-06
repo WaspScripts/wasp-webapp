@@ -6,7 +6,14 @@
 	import { page } from "$app/state"
 	import { browser } from "$app/environment"
 	import TableHeader from "$lib/components/TableHeader.svelte"
-	import { getCurrentPrice, getPriceIntervalEx, setPriceInterval } from "$lib/utils"
+	import {
+		getCurrentPrice,
+		getPriceIntervalEx,
+		isoDate,
+		metaDescription,
+		setPriceInterval,
+		WEBSITE_URL
+	} from "$lib/utils"
 	import ScriptArticle from "../ScriptArticle.svelte"
 	import Head from "$lib/components/Head.svelte"
 	import { PUBLIC_SUPABASE_URL } from "$env/static/public"
@@ -24,14 +31,48 @@
 	}
 
 	const hasAccess = $derived(browser && profile ? canDownloadScript() : null)
+
+	const banner = $derived(
+		PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/banner.webp"
+	)
 </script>
 
 <Head
-	title="{script.title} - Scripts"
-	description="The best open source botting scripts."
+	title="{script.title} by {script.protected.username} - Scripts"
+	description={metaDescription(script.description) ||
+		`${script.title}, an open source colour script by ${script.protected.username}.`}
 	keywords="Premium, Free, Automation, ComputerVision"
 	author={script.protected.username}
-	img={PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/banner.webp"}
+	img={banner}
+	imgWidth={1920}
+	imgHeight={768}
+	imgAlt="{script.title} banner"
+	type="article"
+	jsonld={[
+		{
+			"@context": "https://schema.org",
+			"@type": "SoftwareApplication",
+			name: script.title,
+			description: script.description,
+			url: WEBSITE_URL + "/scripts/" + script.url,
+			image: banner,
+			applicationCategory: "UtilitiesApplication",
+			operatingSystem: "Windows, macOS, Linux",
+			softwareVersion: script.protected.revision?.toString(),
+			dateModified: isoDate(script.protected.updated_at),
+			isAccessibleForFree: script.metadata.type === "free",
+			author: { "@type": "Person", name: script.protected.username },
+			publisher: { "@type": "Organization", name: "WaspScripts", url: WEBSITE_URL }
+		},
+		{
+			"@context": "https://schema.org",
+			"@type": "BreadcrumbList",
+			itemListElement: [
+				{ "@type": "ListItem", position: 1, name: "Scripts", item: WEBSITE_URL + "/scripts" },
+				{ "@type": "ListItem", position: 2, name: script.title, item: WEBSITE_URL + "/scripts/" + script.url }
+			]
+		}
+	]}
 />
 
 <main class="mx-auto flex w-[90%] flex-col">
@@ -45,8 +86,8 @@
 	>
 		<img
 			class="rounded-md"
-			src={PUBLIC_SUPABASE_URL + "/storage/v1/object/public/imgs/scripts/" + script.id + "/banner.webp"}
-			alt="Script banner"
+			src={banner}
+			alt="{script.title} banner"
 			fetchpriority="high"
 			width="1920"
 			height="768"

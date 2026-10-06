@@ -2,6 +2,8 @@
 	import { browser } from "$app/environment"
 	import { getAuthorProfiles } from "$lib/client/supabase"
 	import { Avatar } from "@skeletonlabs/skeleton-svelte"
+	import Head from "$lib/components/Head.svelte"
+	import { metaDescription, WEBSITE_URL } from "$lib/utils"
 	import ChevronsDownUp from "@lucide/svelte/icons/chevrons-down-up"
 
 	const { data } = $props()
@@ -20,8 +22,30 @@
 	let Content = $derived(content)
 </script>
 
+<Head
+	title="{meta.title} - Common Error"
+	description={metaDescription(meta.content) || meta.title}
+	keywords="Support, Help, Common Error"
+	author={meta.username}
+	type="article"
+	jsonld={{
+		"@context": "https://schema.org",
+		"@type": "BreadcrumbList",
+		itemListElement: [
+			{ "@type": "ListItem", position: 1, name: "Support", item: WEBSITE_URL + "/support" },
+			{ "@type": "ListItem", position: 2, name: "Common Errors", item: WEBSITE_URL + "/support/errors" },
+			{
+				"@type": "ListItem",
+				position: 3,
+				name: meta.title,
+				item: WEBSITE_URL + "/support/errors/" + meta.url
+			}
+		]
+	}}
+/>
+
 <a
-	href="/support/errors/"
+	href="/support/errors"
 	data-sveltekit-noscroll
 	class="mx-4 inline-flex justify-between border border-surface-200-800 px-4 py-2 text-left text-sm font-medium text-surface-900-100 shadow-sm hover:preset-outlined-primary-500"
 >

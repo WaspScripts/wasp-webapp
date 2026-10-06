@@ -17,7 +17,7 @@
 	let tab = $derived(page.url.pathname.split("/").pop())
 </script>
 
-<Head title="Dashboard" description="Scripter dashboard" keywords="Dashboard, Scripter, Developer" />
+<Head title="Dashboard" description="Scripter dashboard" keywords="Dashboard, Scripter, Developer" noindex />
 
 <main class="">
 	<h3 class="my-4 flex justify-center gap-2">

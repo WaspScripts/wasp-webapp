@@ -4,7 +4,7 @@
 
 <Head
 	title="Setup"
-	description="Setup Simba and WaspScripts from scratch to bot. Start your road to max today!"
+	description="Set up Simba and the wasp-launcher from scratch and start running open source colour scripts in minutes with this step by step guide."
 />
 
 <main class="container mx-auto my-6 min-h-screen max-w-2xl grow">
@@ -22,7 +22,7 @@
 
 			<p class="my-32 text-center text-xs">
 				For a manual setup and/or a developer setup guide check the
-				<a href="/tutorials/" class="font-semibold text-primary-500 hover:underline dark:text-primary-200">
+				<a href="/tutorials" class="font-semibold text-primary-500 hover:underline dark:text-primary-200">
 					tutorials
 				</a>
 			</p>

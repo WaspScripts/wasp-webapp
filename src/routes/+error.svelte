@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { page } from "$app/state"
+	import Head from "$lib/components/Head.svelte"
 </script>
+
+<Head title="Error {page.status}" description={page.error?.message ?? "Something went wrong."} noindex />
 
 {#if page.error}
 	<main class="mx-auto my-64 flex h-96 flex-col text-center">

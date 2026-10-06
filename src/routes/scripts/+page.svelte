@@ -63,9 +63,11 @@
 
 <Head
 	title="Scripts"
-	description="The best open source botting scripts."
+	description="Browse free and premium open source colour scripts for Simba. Search by category, read the source and start botting with the wasp-launcher."
 	keywords="Premium, Free, Automation, ComputerVision"
 />
+
+<h1 class="sr-only">Open Source Colour Scripts</h1>
 
 <header class="my-4 flex justify-between md:h-44 lg:mx-4 lg:h-64">
 	<!-- Button: Left -->

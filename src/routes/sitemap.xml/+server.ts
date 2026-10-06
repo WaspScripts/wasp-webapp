@@ -1,72 +1,80 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
-import { encodeSEO } from "$lib/utils"
-import type { ScripterProfile } from "$lib/types/collection"
+import { isoDate, WEBSITE_URL } from "$lib/utils"
 import { tutorialsPromise } from "$lib/server/tutorials.server"
 import { getPublishedScripts } from "$lib/server/scripts.server"
+import { faqsPromise } from "$lib/server/faqs.server"
+import { errorsPromise } from "$lib/server/errors.server"
 import type { Database } from "$lib/types/supabase"
 
-const website = "https://waspscripts.com"
+type SitemapEntry = { path: string; lastmod?: string | Date | null }
 
-const getScripts = async () => {
+const staticPaths = [
+	"",
+	"/setup",
+	"/scripts",
+	"/stats",
+	"/subscriptions",
+	"/support",
+	"/support/faqs",
+	"/support/errors",
+	"/tutorials",
+	"/scripters",
+	"/legal/user_tos",
+	"/legal/scripter_tos",
+	"/legal/privacy_policy"
+]
+
+function escapeXml(text: string) {
+	return text
+		.replaceAll("&", "&amp;")
+		.replaceAll("<", "&lt;")
+		.replaceAll(">", "&gt;")
+		.replaceAll('"', "&quot;")
+		.replaceAll("'", "&apos;")
+}
+
+function toUrl({ path, lastmod }: SitemapEntry) {
+	const date = isoDate(lastmod)
+	return `	<url>
+		<loc>${escapeXml(WEBSITE_URL + path)}</loc>${date ? `\n		<lastmod>${date}</lastmod>` : ""}
+	</url>`
+}
+
+async function getScripts(): Promise<SitemapEntry[]> {
 	const scripts = await getPublishedScripts()
-
-	const result: string[] = []
-	scripts.forEach((script) => {
-		result.push(script.url ?? "")
-	})
-
-	return result
+	return scripts
+		.filter((script) => script.url)
+		.map((script) => ({ path: "/scripts/" + script.url, lastmod: script.protected?.updated_at }))
 }
 
-const getTutorials = async () => {
+async function getTutorials(): Promise<SitemapEntry[]> {
 	const tutorials = await tutorialsPromise
-
-	const result: string[] = []
-	tutorials.forEach((tutorial) => {
-		result.push(encodeSEO(tutorial.title + " by " + tutorial.username))
-	})
-
-	return result
+	return tutorials.map((tutorial) => ({ path: "/tutorials/" + tutorial.url, lastmod: tutorial.updated_at }))
 }
 
-const getScripters = async (supabase: SupabaseClient<Database>) => {
+async function getFAQs(): Promise<SitemapEntry[]> {
+	const faqs = await faqsPromise
+	return faqs.map((faq) => ({ path: "/support/faqs/" + faq.url, lastmod: faq.updated_at }))
+}
+
+async function getErrors(): Promise<SitemapEntry[]> {
+	const errors = await errorsPromise
+	return errors.map((err) => ({ path: "/support/errors/" + err.url, lastmod: err.updated_at }))
+}
+
+async function getScripters(supabase: SupabaseClient<Database>): Promise<SitemapEntry[]> {
 	const { data, error } = await supabase
 		.schema("profiles")
 		.from("scripters")
-		.select("profiles (username)")
-		.overrideTypes<ScripterProfile[]>()
+		.select("url")
+		.overrideTypes<{ url: string | null }[]>()
 
-	if (error) return console.error("scripters SELECT failed: " + error.message)
-
-	const result: string[] = []
-	data.forEach((developer) => {
-		result.push(encodeSEO(developer.profiles.username))
-	})
-
-	return result
-}
-
-const buildLoc = async (supabase: SupabaseClient<Database>, loc: string) => {
-	let data: string[]
-	if (loc === "scripts") {
-		data = (await getScripts()) as string[]
-	} else if (loc === "tutorials") {
-		data = (await getTutorials()) || []
-	} else {
-		data = (await getScripters(supabase)) || []
+	if (error) {
+		console.error("scripters SELECT failed: " + error.message)
+		return []
 	}
 
-	return data
-		.map(
-			(el) => `
-      <url>
-        <loc>${website}/${loc}/${el}</loc>
-        <changefreq>daily</changefreq>
-        <priority>0.7</priority>
-      </url>
-`
-		)
-		.join("")
+	return data.filter((scripter) => scripter.url).map((scripter) => ({ path: "/scripters/" + scripter.url }))
 }
 
 const CACHE_TTL = 60 * 60 * 1000
@@ -81,83 +89,20 @@ export const GET = async ({ locals: { supabaseServer } }) => {
 	if (cachedSitemap && cachedSitemap.expires > Date.now())
 		return new Response(cachedSitemap.body, { headers })
 
-	const promises = await Promise.all([
-		buildLoc(supabaseServer, "scripts"),
-		buildLoc(supabaseServer, "tutorials"),
-		buildLoc(supabaseServer, "scripters")
+	const dynamic = await Promise.all([
+		getScripts(),
+		getTutorials(),
+		getFAQs(),
+		getErrors(),
+		getScripters(supabaseServer)
 	])
-	const scripts = promises[0]
-	const tutorials = promises[1]
-	const scripters = promises[2]
 
-	const body = `<?xml version="1.0" encoding="UTF-8" ?>
-    <urlset
-      xmlns="https://www.sitemaps.org/schemas/sitemap/0.9"
-      xmlns:news="https://www.google.com/schemas/sitemap-news/0.9"
-      xmlns:xhtml="https://www.w3.org/1999/xhtml"
-      xmlns:mobile="https://www.google.com/schemas/sitemap-mobile/1.0"
-      xmlns:image="https://www.google.com/schemas/sitemap-image/1.1"
-      xmlns:video="https://www.google.com/schemas/sitemap-video/1.1"
-    >
-      <url>
-        <loc>${website}</loc>
-        <changefreq>daily</changefreq>
-        <priority>0.7</priority>
-      </url>
-      <url>
-        <loc>${website}/setup</loc>
-        <changefreq>daily</changefreq>
-        <priority>0.7</priority>
-      </url>
-      <url>
-        <loc>${website}/scripts</loc>
-        <changefreq>daily</changefreq>
-        <priority>0.7</priority>
-      </url>
-      ${scripts}
-      <url>
-        <loc>${website}/stats</loc>
-        <changefreq>daily</changefreq>
-        <priority>0.7</priority>
-      </url>
-      <url>
-        <loc>${website}/subscriptions</loc>
-        <changefreq>daily</changefreq>
-        <priority>0.7</priority>
-      </url>
-      <url>
-        <loc>${website}/support</loc>
-        <changefreq>daily</changefreq>
-        <priority>0.7</priority>
-      </url>
-      <url>
-        <loc>${website}/tutorials</loc>
-        <changefreq>daily</changefreq>
-        <priority>0.7</priority>
-      </url>
-      ${tutorials}
-      <url>
-        <loc>${website}/scripters</loc>
-        <changefreq>daily</changefreq>
-        <priority>0.7</priority>
-      </url>
-      ${scripters}
-	  <url>
-        <loc>${website}/legal/user_tos</loc>
-        <changefreq>daily</changefreq>
-        <priority>0.6</priority>
-      </url>
-	  <url>
-        <loc>${website}/legal/scripter_tos</loc>
-        <changefreq>daily</changefreq>
-        <priority>0.6</priority>
-      </url>
-	  <url>
-        <loc>${website}/legal/privacy_policy</loc>
-        <changefreq>daily</changefreq>
-        <priority>0.6</priority>
-      </url>
-    </urlset>`
+	const entries: SitemapEntry[] = [...staticPaths.map((path) => ({ path })), ...dynamic.flat()]
+
+	const body = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${entries.map(toUrl).join("\n")}
+</urlset>`
 
 	cachedSitemap = { body, expires: Date.now() + CACHE_TTL }
 	return new Response(body, { headers })
