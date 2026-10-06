@@ -1,7 +1,7 @@
 import type { AuthError, PostgrestError } from "@supabase/supabase-js"
 import type { Price, TScriptCategories, TScriptStages, TScriptStatus, TScriptTypes } from "./types/collection"
 
-export const API_URL = "https://api.waspscripts.dev" //http://localhost:8080
+export const API_URL = "https://api.waspscripts.com" //http://localhost:8080
 export const UUID_V4_REGEX =
 	/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89AB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/i
 

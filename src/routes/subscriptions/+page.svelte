@@ -50,7 +50,7 @@
 	.
 </h5>
 <p class="mx-auto my-8 text-center">
-	If you have any issues please contact <a href="mailto: support@waspscripts.dev" class="anchor">
-		support@waspscripts.dev
+	If you have any issues please contact <a href="mailto: support@waspscripts.com" class="anchor">
+		support@waspscripts.com
 	</a>
 </p>

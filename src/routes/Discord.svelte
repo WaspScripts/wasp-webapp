@@ -1,5 +1,5 @@
 <a
-	href="https://discord.waspscripts.dev"
+	href="https://discord.waspscripts.com"
 	class="my-auto btn flex px-2 hover:preset-tonal xl:px-4"
 	aria-label="Join WaspScripts Discord server"
 	target="_blank"

@@ -54,8 +54,8 @@ async function createConnectAccount(baseURL: string, scripter: Scripter, email: 
 		business_profile: {
 			mcc: "5734",
 			name: profile.username,
-			url: "https://waspscripts.dev/",
-			support_url: "https://waspscripts.dev/",
+			url: "https://waspscripts.com/",
+			support_url: "https://waspscripts.com/",
 			support_email: "support@waspscripts.com"
 		},
 		individual: { full_name_aliases: [profile.username, scripter.id, profile.discord] },
@@ -63,7 +63,7 @@ async function createConnectAccount(baseURL: string, scripter: Scripter, email: 
 		settings: {
 			payouts: {
 				schedule: { interval: "monthly", delay_days: 15, monthly_anchor: 31 },
-				statement_descriptor: "waspscripts.dev",
+				statement_descriptor: "waspscripts.com",
 				debit_negative_balances: false
 			}
 		},

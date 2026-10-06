@@ -131,7 +131,7 @@
 					</div>
 					<div class="block">
 						<span class="block">WaspScripts</span>
-						<small class="block">https://waspscripts.dev > scripts</small>
+						<small class="block">https://waspscripts.com > scripts</small>
 					</div>
 				</div>
 				<div>

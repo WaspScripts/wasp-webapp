@@ -300,7 +300,7 @@ export const actions = {
 				403,
 				"You need to wait 1 day to attempt to refund this payment and you will have until" +
 					endWindow.toLocaleString() +
-					" to request it. If you think this is an error refresh the page, if this keeps happening, please contact support@waspscripts.dev"
+					" to request it. If you think this is an error refresh the page, if this keeps happening, please contact support@waspscripts.com"
 			)
 		}
 
@@ -310,7 +310,7 @@ export const actions = {
 				403,
 				"The subscription you want to refund is outside of the refund window, you could only refund until " +
 					endWindow.toLocaleString() +
-					". If you think this is an error refresh the page, if this keeps happening, please contact support@waspscripts.dev"
+					". If you think this is an error refresh the page, if this keeps happening, please contact support@waspscripts.com"
 			)
 		}
 

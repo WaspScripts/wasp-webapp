@@ -40,14 +40,14 @@
 
 		<div class="my-4 flex flex-col gap-2 lg:flex-row">
 			<a
-				href="https://docs.waspscripts.dev/"
+				href="https://docs.waspscripts.com/"
 				class="mx-auto btn preset-filled-primary-200-800 ring-2 ring-primary-500"
 			>
 				WaspLib Documentation
 			</a>
 
 			<a
-				href="https://api.waspscripts.dev/docs"
+				href="https://api.waspscripts.com/docs"
 				class="mx-auto btn preset-filled-primary-200-800 ring-2 ring-primary-500"
 			>
 				Stats API Documentation

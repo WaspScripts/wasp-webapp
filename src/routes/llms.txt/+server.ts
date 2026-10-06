@@ -7,7 +7,7 @@ import { tutorialsPromise } from "$lib/server/tutorials.server"
 import { faqsPromise } from "$lib/server/faqs.server"
 import { errorsPromise } from "$lib/server/errors.server"
 
-const website = "https://waspscripts.dev"
+const website = "https://waspscripts.com"
 const SCRIPTERS_TTL = 60 * 60 * 1000
 
 const headers = {
@@ -78,8 +78,8 @@ export const GET = async ({ locals: { supabaseServer } }) => {
 
 ${entry("Setup", `${website}/setup`, "How to install Simba and the wasp-launcher and start botting")}
 ${entry("Simba", "https://villavu.github.io/Simba/", "Simba documentation")}
-${entry("WaspLib", "https://docs.waspscripts.dev/", "WaspLib documentation")}
-${entry("Wasp Stats API", "https://api.waspscripts.dev/docs", "Stats API documentation")}
+${entry("WaspLib", "https://docs.waspscripts.com/", "WaspLib documentation")}
+${entry("Wasp Stats API", "https://api.waspscripts.com/docs", "Stats API documentation")}
 ${entry("Interactive map", "https://map.waspscripts.com/", "Interactive game map")}
 
 ## Scripts
