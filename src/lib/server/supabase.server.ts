@@ -1,7 +1,7 @@
 import { SUPABASE_SERVICE_KEY } from "$env/static/private"
 import { PUBLIC_SUPABASE_URL } from "$env/static/public"
 import type { Database } from "$lib/types/supabase"
-import { formatError } from "$lib/utils"
+import { formatError, UUID_V4_REGEX } from "$lib/utils"
 import { type SupabaseClient, createClient, type Provider } from "@supabase/supabase-js"
 import { error, redirect } from "@sveltejs/kit"
 
@@ -142,6 +142,46 @@ export async function cancelFreeAccess(id: string, product: string) {
 		.eq("product", product)
 
 	return err
+}
+
+type GetProfile = App.Locals["getProfile"]
+
+export async function assertDashboardAccess(userID: string, slug: string, getProfile: GetProfile) {
+	if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
+	if (userID === slug) return
+	const profile = await getProfile()
+	if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
+}
+
+export async function assertOwnerOrAdmin(owned: boolean, getProfile: GetProfile) {
+	if (owned) return
+	const profile = await getProfile()
+	if (profile?.role != "administrator") error(403, "That doesn't belong to this dashboard.")
+}
+
+export async function assertProductAccess(product: string, slug: string, getProfile: GetProfile) {
+	const { count, error: err } = await supabaseAdmin
+		.schema("stripe")
+		.from("products")
+		.select("id", { count: "exact", head: true })
+		.eq("id", product)
+		.eq("user_id", slug)
+
+	if (err) error(500, formatError(err))
+	await assertOwnerOrAdmin(!!count, getProfile)
+}
+
+export async function assertSubscriptionAccess(subscription: string, slug: string, getProfile: GetProfile) {
+	const { data, error: err } = await supabaseAdmin
+		.schema("profiles")
+		.from("subscriptions")
+		.select("product")
+		.eq("id", subscription)
+		.maybeSingle()
+
+	if (err) error(500, formatError(err))
+	if (!data) return await assertOwnerOrAdmin(false, getProfile)
+	await assertProductAccess(data.product, slug, getProfile)
 }
 
 export const LOGIN_REDIRECT_COOKIE = "login_redirect"

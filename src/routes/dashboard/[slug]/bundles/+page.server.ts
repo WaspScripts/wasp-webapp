@@ -1,7 +1,17 @@
 import { bundleArraySchema, newBundleSchema, type BundleSchema } from "$lib/client/schemas"
 import { getScripter } from "$lib/client/supabase"
 import { stripe, createPrice, createPriceEx, updatePrice, updateProduct } from "$lib/server/stripe.server"
-import { addFreeAccess, cancelFreeAccess, doLogin, supabaseAdmin } from "$lib/server/supabase.server"
+import {
+	addFreeAccess,
+	assertDashboardAccess,
+	assertOwnerOrAdmin,
+	assertProductAccess,
+	assertSubscriptionAccess,
+	cancelFreeAccess,
+	doLogin,
+	supabaseAdmin
+} from "$lib/server/supabase.server"
+import { getScripts } from "$lib/server/scripts.server"
 import type { Interval } from "$lib/types/collection"
 import type { Database } from "$lib/types/supabase"
 import { formatError, groupBy, UUID_V4_REGEX } from "$lib/utils"
@@ -122,6 +132,21 @@ export const load = async ({ locals: { supabaseServer }, params: { slug }, paren
 	}
 }
 
+async function assertBundleScripts(
+	bundledScripts: BundleSchema["bundledScripts"],
+	slug: string,
+	getProfile: App.Locals["getProfile"]
+) {
+	const scripts = await getScripts()
+	const owned = new Set(
+		scripts.filter((script) => script.protected.author === slug).map((script) => script.id)
+	)
+	await assertOwnerOrAdmin(
+		bundledScripts.every((script) => !script.active || owned.has(script.id)),
+		getProfile
+	)
+}
+
 async function createBundleProduct(supabase: SupabaseClient<Database>, bundle: BundleSchema) {
 	const scripts = bundle.bundledScripts.reduce((acc: string[], script) => {
 		if (script.active) acc.push(script.id)
@@ -187,21 +212,18 @@ export const actions = {
 		if (!user) {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		}
-		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-		if (user.id !== slug) {
-			const profile = await getProfile()
-			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
-		}
+		await assertDashboardAccess(user.id, slug, getProfile)
+
+		const productID = searchParams.get("product")
 
 		const [scripter, form] = await Promise.all([
 			getScripter(supabaseServer, slug),
-			superValidate(request, zod4(bundleArraySchema))
+			superValidate(request, zod4(bundleArraySchema)),
+			productID ? assertProductAccess(productID, slug, getProfile) : undefined
 		])
 
 		if (scripter.stripe == scripter.id) return setError(form, "", "Stripe account is not setup!")
 		if (!form.valid) return setError(form, "", "The form is not valid!")
-
-		const productID = searchParams.get("product")
 
 		if (!productID) {
 			return setError(
@@ -223,6 +245,8 @@ export const actions = {
 
 		if (product.bundledScripts.length < 2)
 			return setError(form, "", "You need to add at least 2 scripts to a bundle.")
+
+		await assertBundleScripts(product.bundledScripts, slug, getProfile)
 
 		const { data: productsData, error: errProducts } = await supabaseServer
 			.schema("stripe")
@@ -330,6 +354,7 @@ export const actions = {
 		if (scripter.stripe == scripter.id) return setError(form, "", "Stripe account is not setup!")
 		if (!form.valid) return setError(form, "", "The form is not valid!")
 		if (!["administrator", "moderator"].includes(profile.role)) form.data.user_id = user.id
+		await assertBundleScripts(form.data.bundledScripts, slug, getProfile)
 
 		const { message: err } = await createBundleProduct(supabaseServer, form.data)
 
@@ -345,16 +370,12 @@ export const actions = {
 		params: { slug }
 	}) => {
 		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
-		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-		if (user.id !== slug) {
-			const profile = await getProfile()
-			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
-		}
+		await assertDashboardAccess(user.id, slug, getProfile)
 
 		const product = searchParams.get("product")
 		if (!product) error(403, "Product not specified.")
 
-		const data = await request.formData()
+		const [data] = await Promise.all([request.formData(), assertProductAccess(product, slug, getProfile)])
 		const id = data.get("userid")?.toString()
 		if (!id || id === "") error(403, "User ID not specified.")
 		if (!UUID_V4_REGEX.test(id)) error(403, "User ID is not a valid UUID.")
@@ -376,11 +397,7 @@ export const actions = {
 		params: { slug }
 	}) => {
 		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
-		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-		if (user.id !== slug) {
-			const profile = await getProfile()
-			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
-		}
+		await assertDashboardAccess(user.id, slug, getProfile)
 
 		const product = searchParams.get("product")
 		if (!product) error(403, "Product not specified.")
@@ -389,6 +406,7 @@ export const actions = {
 		if (!id) error(403, "User ID not specified.")
 		if (!UUID_V4_REGEX.test(id)) error(403, "User ID is not a valid UUID.")
 
+		await assertProductAccess(product, slug, getProfile)
 		const err = await cancelFreeAccess(id, product)
 		if (err) error(403, formatError(err))
 
@@ -401,14 +419,12 @@ export const actions = {
 		params: { slug }
 	}) => {
 		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
-		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-		if (user.id !== slug) {
-			const profile = await getProfile()
-			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
-		}
+		await assertDashboardAccess(user.id, slug, getProfile)
 
 		const subscription = searchParams.get("subscription")
 		if (!subscription) error(403, "Subscription not specified.")
+
+		await assertSubscriptionAccess(subscription, slug, getProfile)
 
 		let success = true
 
@@ -446,14 +462,12 @@ export const actions = {
 		params: { slug }
 	}) => {
 		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
-		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-		if (user.id !== slug) {
-			const profile = await getProfile()
-			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
-		}
+		await assertDashboardAccess(user.id, slug, getProfile)
 
 		const product = searchParams.get("product")
 		if (!product) error(403, "Product not specified.")
+
+		await assertProductAccess(product, slug, getProfile)
 
 		const { data, error: err } = await supabaseAdmin
 			.schema("profiles")

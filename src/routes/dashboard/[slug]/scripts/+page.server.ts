@@ -4,6 +4,10 @@ import { stripe, createPrice, updatePrice, updateProduct, createPriceEx } from "
 import {
 	addFreeAccess,
 	addFreeAccessRole,
+	assertDashboardAccess,
+	assertOwnerOrAdmin,
+	assertProductAccess,
+	assertSubscriptionAccess,
 	cancelFreeAccess,
 	doLogin,
 	supabaseAdmin
@@ -142,21 +146,19 @@ export const actions = {
 		params: { slug }
 	}) => {
 		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
-		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-		if (user.id !== slug) {
-			const profile = await getProfile()
-			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
-		}
+		await assertDashboardAccess(user.id, slug, getProfile)
+
+		const productID = searchParams.get("product")
 
 		const [scripter, form] = await Promise.all([
 			getScripter(supabaseServer, slug),
-			superValidate(request, zod4(scriptArraySchema))
+			superValidate(request, zod4(scriptArraySchema)),
+			productID ? assertProductAccess(productID, slug, getProfile) : undefined
 		])
 
 		if (scripter.stripe == scripter.id) return setError(form, "", "Stripe account is not setup!")
 		if (!form.valid) return setError(form, "", "The form is not valid!")
 
-		const productID = searchParams.get("product")
 		if (!productID) {
 			return setError(
 				form,
@@ -251,11 +253,7 @@ export const actions = {
 		params: { slug }
 	}) => {
 		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
-		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-		if (user.id !== slug) {
-			const profile = await getProfile()
-			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
-		}
+		await assertDashboardAccess(user.id, slug, getProfile)
 
 		const [scripter, form] = await Promise.all([
 			getScripter(supabaseServer, slug),
@@ -292,6 +290,7 @@ export const actions = {
 			.single()
 
 		if (errProtected) return setError(form, "", formatError(errProtected))
+		await assertOwnerOrAdmin(data.author === slug, getProfile)
 
 		const { message: createScriptErr } = await createScriptProduct(form.data, data.scripts.title, data.author)
 		if (createScriptErr) return setError(form, "", createScriptErr)
@@ -306,16 +305,12 @@ export const actions = {
 		params: { slug }
 	}) => {
 		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
-		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-		if (user.id !== slug) {
-			const profile = await getProfile()
-			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
-		}
+		await assertDashboardAccess(user.id, slug, getProfile)
 
 		const product = searchParams.get("product")
 		if (!product) error(403, "Product not specified.")
 
-		const data = await request.formData()
+		const [data] = await Promise.all([request.formData(), assertProductAccess(product, slug, getProfile)])
 
 		const id = data.get("userid")?.toString()
 		if (!id || id === "") error(403, "User ID not specified.")
@@ -339,15 +334,12 @@ export const actions = {
 		params: { slug }
 	}) => {
 		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
-		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-		if (user.id !== slug) {
-			const profile = await getProfile()
-			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
-		}
+		await assertDashboardAccess(user.id, slug, getProfile)
+
 		const product = searchParams.get("product")
 		if (!product) error(403, "Product not specified.")
 
-		const data = await request.formData()
+		const [data] = await Promise.all([request.formData(), assertProductAccess(product, slug, getProfile)])
 
 		const role = data.get("rolename")?.toString()
 		if (!role || role === "") error(403, "Role not specified.")
@@ -368,11 +360,7 @@ export const actions = {
 		params: { slug }
 	}) => {
 		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
-		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-		if (user.id !== slug) {
-			const profile = await getProfile()
-			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
-		}
+		await assertDashboardAccess(user.id, slug, getProfile)
 
 		const product = searchParams.get("product")
 		if (!product) error(403, "Product not specified.")
@@ -381,6 +369,7 @@ export const actions = {
 		if (!id) error(403, "User ID not specified.")
 		if (!UUID_V4_REGEX.test(id)) error(403, "User ID is not a valid UUID.")
 
+		await assertProductAccess(product, slug, getProfile)
 		const err = await cancelFreeAccess(id, product)
 		if (err) error(403, formatError(err))
 
@@ -393,14 +382,12 @@ export const actions = {
 		params: { slug }
 	}) => {
 		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
-		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-		if (user.id !== slug) {
-			const profile = await getProfile()
-			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
-		}
+		await assertDashboardAccess(user.id, slug, getProfile)
 
 		const subscription = searchParams.get("subscription")
 		if (!subscription) error(403, "Subscription not specified.")
+
+		await assertSubscriptionAccess(subscription, slug, getProfile)
 
 		let success = true
 
@@ -438,14 +425,12 @@ export const actions = {
 		params: { slug }
 	}) => {
 		if (!user) return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
-		if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-		if (user.id !== slug) {
-			const profile = await getProfile()
-			if (profile?.role != "administrator") error(403, "You cannot access another scripter dashboard.")
-		}
+		await assertDashboardAccess(user.id, slug, getProfile)
 
 		const product = searchParams.get("product")
 		if (!product) error(403, "Product not specified.")
+
+		await assertProductAccess(product, slug, getProfile)
 
 		const { data, error: err } = await supabaseAdmin
 			.schema("profiles")
