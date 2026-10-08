@@ -1,6 +1,6 @@
 import { error, redirect } from "@sveltejs/kit"
 import { formatError } from "$lib/utils"
-import { isSafePath, LOGIN_REDIRECT_COOKIE } from "$lib/server/supabase.server"
+import { isSafePath, LOGIN_REDIRECT_COOKIE, supabaseAdmin } from "$lib/server/supabase.server"
 import { createCustomer } from "$lib/server/stripe.server"
 
 export const GET = async ({ url: { searchParams }, cookies, locals: { supabaseServer } }) => {
@@ -45,8 +45,8 @@ export const GET = async ({ url: { searchParams }, cookies, locals: { supabaseSe
 
 		if (count) redirect(303, takeLoginRedirect())
 
-		if (user.email && user.app_metadata.provider == "discord") {
-			const discord = user.user_metadata["provider_id"]
+		const discord = user.identities?.find((identity) => identity.provider === "discord")?.id
+		if (user.email && discord) {
 			const stripe = await createCustomer(
 				user.id,
 				user.email,
@@ -55,7 +55,7 @@ export const GET = async ({ url: { searchParams }, cookies, locals: { supabaseSe
 			)
 			if (!stripe) error(403, "Failed to create stripe user for " + user.id)
 
-			const { error: err } = await supabaseServer.schema("profiles").from("profiles").insert({
+			const { error: err } = await supabaseAdmin.schema("profiles").from("profiles").insert({
 				id: user.id,
 				stripe,
 				discord,
