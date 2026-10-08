@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/state"
-	import { WEBSITE_URL } from "$lib/utils"
+	import { markdownAlternate, WEBSITE_URL } from "$lib/utils"
 
 	interface Props {
 		title: string
@@ -54,6 +54,8 @@
 		return WEBSITE_URL + path + (pageNumber > 1 ? "?page=" + pageNumber : "")
 	})
 
+	const markdown = $derived(noindex || page.status !== 200 ? null : markdownAlternate(page.url.pathname))
+
 	const structuredData = $derived(
 		jsonld
 			? '<script type="application/ld+json">' +
@@ -72,6 +74,9 @@
 	<meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large"} />
 	{#if !noindex}
 		<link rel="canonical" href={canonical} />
+	{/if}
+	{#if markdown}
+		<link rel="alternate" type="text/markdown" href={WEBSITE_URL + markdown} title="Markdown" />
 	{/if}
 
 	<!-- OpenGraph tags -->

@@ -77,6 +77,13 @@ export function isoDate(date: string | Date | null | undefined) {
 	return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString()
 }
 
+export function markdownAlternate(pathname: string) {
+	if (pathname === "/") return "/llms.txt"
+	if (/^\/(?:scripts|tutorials|scripters|support\/faqs|support\/errors)\/[^/]+$/.test(pathname))
+		return pathname + ".md"
+	return null
+}
+
 export function cropString(str: string, length = 80) {
 	if (str.length > length) {
 		str = str.substring(0, length) + "..."
