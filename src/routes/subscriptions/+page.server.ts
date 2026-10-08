@@ -116,9 +116,11 @@ export const actions = {
 		const start = performance.now()
 		const { data, error: err } = await supabaseServer
 			.schema("stripe")
-			.from("products")
-			.select("user_id, stripe")
-			.eq("id", productID)
+			.from("prices")
+			.select("products!inner (user_id, stripe)")
+			.eq("id", selectedPrice.id)
+			.eq("product", productID)
+			.eq("active", true)
 			.single()
 		console.log(`└────🦾 Product owner data took ${(performance.now() - start).toFixed(2)} ms to check!`)
 
@@ -126,11 +128,12 @@ export const actions = {
 			return setError(
 				form,
 				"",
-				"Something went wrong! Seems like that product doesn't exist on the database. If this keeps occuring please contact support@waspscripts.com Erorr message:"
+				"Something went wrong! Seems like the selected price doesn't exist or doesn't belong to that product. If this keeps occuring please contact support@waspscripts.com"
 			)
 		}
 
-		const stripeUser = data.user_id !== PUBLIC_SUPER_USER_ID ? data.stripe : null
+		const owner = data.products
+		const stripeUser = owner.user_id !== PUBLIC_SUPER_USER_ID ? owner.stripe : null
 
 		const url = await createCheckoutSession(profile.id, profile.stripe, stripeUser, selectedPrice.id, origin)
 
