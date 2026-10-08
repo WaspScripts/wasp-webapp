@@ -3,7 +3,7 @@ import { error } from "@sveltejs/kit"
 import matter from "gray-matter"
 import type { FAQEntry, Script, Tutorial } from "$lib/types/collection"
 import type { Database } from "$lib/types/supabase"
-import { getPublishedScripts, getScript } from "$lib/server/scripts.server"
+import { getPublishedScripts, getScript, isPublicScript } from "$lib/server/scripts.server"
 import { getTutorial, tutorialsPromise } from "$lib/server/tutorials.server"
 import { faqsPromise, getFAQ } from "$lib/server/faqs.server"
 import { errorsPromise, getError } from "$lib/server/errors.server"
@@ -164,7 +164,7 @@ async function getPageMarkdown(section: Section, slug: string, supabase: Supabas
 		switch (section) {
 			case "scripts": {
 				const script = await getScript(slug)
-				if (!script?.published) return null
+				if (!script || !isPublicScript(script)) return null
 				const [limits, stats] = await Promise.all([
 					fetchLimits(supabase, script.id),
 					fetchStats(supabase, script.id)

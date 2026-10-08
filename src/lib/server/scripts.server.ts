@@ -1,5 +1,6 @@
 import { Index } from "flexsearch"
-import type { Script } from "$lib/types/collection"
+import type { ProfileRole, Script } from "$lib/types/collection"
+import { Constants } from "$lib/types/supabase"
 import { supabaseAdmin } from "./supabase.server"
 import { fetchScriptByID } from "$lib/client/supabase"
 import { UUID_V4_REGEX } from "$lib/utils"
@@ -7,6 +8,27 @@ import { UUID_V4_REGEX } from "$lib/utils"
 let scriptsIndex: Index
 let scripts: Script[] = []
 let publishedScripts: Script[] = []
+
+const roles = Constants.profiles.Enums.roles
+
+function minRole(role: ProfileRole, target: (typeof roles)[number]) {
+	return !!role && roles.indexOf(role) >= roles.indexOf(target)
+}
+
+export function isPublicScript(script: Script) {
+	const { stage } = script.metadata
+	return script.published && (stage === "beta" || stage === "stable")
+}
+
+export function canViewScript(script: Script, userID: string | null | undefined, role: ProfileRole) {
+	if (userID && script.protected.author === userID) return true
+	if (minRole(role, "moderator")) return true
+
+	const { stage } = script.metadata
+	if (stage === "prototype" || stage === "archived") return false
+	if (stage === "alpha") return minRole(role, "tester")
+	return script.published
+}
 
 export function withoutContent(script: Script): Omit<Script, "content"> {
 	const card: Partial<Script> = { ...script }
@@ -82,7 +104,7 @@ export async function getPublishedScripts() {
 	if (publishedScripts.length > 0) return publishedScripts // built by a concurrent caller
 	if (scripts.length === 0) return publishedScripts
 
-	publishedScripts = scripts.filter((script) => script.published)
+	publishedScripts = scripts.filter(isPublicScript)
 
 	createScriptsIndex(publishedScripts)
 
@@ -130,11 +152,11 @@ export async function updateScript(id: string) {
 
 	// Indexes are keyed by script id, so the index and published list can't drift apart.
 	const wasPublished = publishedScripts.some((s) => s.id === id)
-	publishedScripts = scripts.filter((s) => s.published)
+	publishedScripts = scripts.filter(isPublicScript)
 
 	if (!scriptsIndex) return
 
-	if (script.published) {
+	if (isPublicScript(script)) {
 		if (wasPublished) scriptsIndex.update(id, getScriptString(script))
 		else scriptsIndex.add(id, getScriptString(script))
 	} else if (wasPublished) {
