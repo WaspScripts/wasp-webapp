@@ -3,7 +3,7 @@ import { fromHighlighter } from "@shikijs/markdown-it/core"
 import { createHighlighterCore } from "shiki/core"
 import { createJavaScriptRegexEngine } from "shiki/engine/javascript"
 import { imgLazyload } from "@mdit/plugin-img-lazyload"
-import DOMPurify from "isomorphic-dompurify"
+import { sanitizeHtml } from "$lib/sanitize"
 
 const shikiHighlighter = await createHighlighterCore({
 	themes: [import("shiki/themes/github-light.mjs"), import("shiki/themes/github-dark.mjs")],
@@ -27,5 +27,5 @@ const markdownRenderer = markdownit("commonmark", {
 	.use(imgLazyload)
 
 export function renderMarkdown(content: string) {
-	return DOMPurify.sanitize(markdownRenderer.render(content))
+	return sanitizeHtml(markdownRenderer.render(content))
 }

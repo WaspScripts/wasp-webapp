@@ -10,7 +10,7 @@
 	import { superForm } from "sveltekit-superforms/client"
 	import { zod4Client } from "sveltekit-superforms/adapters"
 	import { scripterSchema } from "$lib/client/schemas"
-	import DOMPurify from "isomorphic-dompurify"
+	import { sanitizeHtml } from "$lib/sanitize"
 	import GitFork from "@lucide/svelte/icons/git-fork"
 	import { untrack } from "svelte"
 
@@ -118,7 +118,7 @@
 			<article class="mx-auto my-24 prose dark:prose-invert">
 				{#if $form.content}
 					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-					{@html DOMPurify.sanitize($form.content)}
+					{@html sanitizeHtml($form.content)}
 				{:else}
 					This scripter did not add information about him.
 				{/if}
