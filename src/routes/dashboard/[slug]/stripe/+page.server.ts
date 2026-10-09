@@ -172,7 +172,11 @@ export const actions = {
 		if (scripter.stripe != scripter.id) return setError(form, "", "Stripe account is already created!")
 		if (!form.valid) return setError(form, "", "The country code form is not valid!")
 
-		const link = await createConnectAccount(origin, scripter, user.email!, form.data.code)
+		const email =
+			user.id === slug ? user.email : (await supabaseAdmin.auth.admin.getUserById(slug)).data.user?.email
+		if (!email) return setError(form, "", "The scripter has no email address!")
+
+		const link = await createConnectAccount(origin, scripter, email, form.data.code)
 		if (link) redirect(303, link)
 		return { form }
 	},
