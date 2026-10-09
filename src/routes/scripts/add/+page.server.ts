@@ -44,7 +44,7 @@ Can get {$min_xp}-{$max_xp} xp/h and {$min_gp}-{$max_gp} gp/h.
 You need quest ABC completed to use this.
 `
 
-export const load = async ({ locals: { supabaseServer, user, session } }) => {
+export const load = async ({ url: { origin }, locals: { supabaseServer, user, session } }) => {
 	if (!user || !session) {
 		return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 	}
@@ -76,7 +76,7 @@ export const load = async ({ locals: { supabaseServer, user, session } }) => {
 }
 
 export const actions = {
-	default: async ({ request, locals: { user, session, supabaseServer, getProfile } }) => {
+	default: async ({ url: { origin }, request, locals: { user, session, supabaseServer, getProfile } }) => {
 		if (!user || !session) {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		}

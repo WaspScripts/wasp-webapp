@@ -11,7 +11,7 @@ import { getScriptVersion, getSimbaVersions, getWaspLibVersions } from "$lib/ser
 import { DISCORD_UPDATE_WEBHOOK } from "$env/static/private"
 import { sendDiscordWebhook } from "$lib/server/webhooks.server"
 
-export const load = async ({ locals: { supabaseServer, user, session }, parent }) => {
+export const load = async ({ url: { origin }, locals: { supabaseServer, user, session }, parent }) => {
 	if (!user || !session) {
 		return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 	}
@@ -49,7 +49,12 @@ export const load = async ({ locals: { supabaseServer, user, session }, parent }
 }
 
 export const actions = {
-	default: async ({ request, params: { slug }, locals: { supabaseServer, user, session, getProfile } }) => {
+	default: async ({
+		url: { origin },
+		request,
+		params: { slug },
+		locals: { supabaseServer, user, session, getProfile }
+	}) => {
 		if (!user || !session) {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		}

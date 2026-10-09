@@ -6,7 +6,7 @@ import { getScript, updateScript } from "$lib/server/scripts.server"
 import { scriptInfoSchema } from "$lib/client/schemas"
 import type { TScriptStages } from "$lib/types/collection"
 
-export const load = async ({ locals: { supabaseServer, user, session }, parent }) => {
+export const load = async ({ url: { origin }, locals: { supabaseServer, user, session }, parent }) => {
 	if (!user || !session) {
 		return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 	}
@@ -31,7 +31,12 @@ export const load = async ({ locals: { supabaseServer, user, session }, parent }
 }
 
 export const actions = {
-	default: async ({ request, params: { slug }, locals: { supabaseServer, user, session, getProfile } }) => {
+	default: async ({
+		url: { origin },
+		request,
+		params: { slug },
+		locals: { supabaseServer, user, session, getProfile }
+	}) => {
 		if (!user || !session) {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		}
