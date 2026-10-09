@@ -1,7 +1,7 @@
 import { mdvsvexCompile } from "$lib/server/markdown.server"
 import { formatError } from "$lib/utils"
 import { error } from "@sveltejs/kit"
-import DOMPurify from "isomorphic-dompurify"
+import { sanitizeHtml } from "$lib/sanitize"
 
 type validSlug = "privacy_policy" | "scripter_tos" | "user_tos"
 
@@ -10,7 +10,7 @@ const compiled = new Map<string, string>()
 async function compile(content: string) {
 	let html = compiled.get(content)
 	if (html == null) {
-		html = DOMPurify.sanitize((await mdvsvexCompile(content)).code)
+		html = sanitizeHtml((await mdvsvexCompile(content)).code)
 		compiled.set(content, html)
 	}
 	return html

@@ -50,7 +50,7 @@ export const load = async ({ parent, data }) => {
 		const { data, error: err } = await supabaseClient
 			.schema("scripts")
 			.from("scripts")
-			.select(`id, title, url, protected!left (username), metadata!left (type)`)
+			.select(`id, title, url, protected!left (username), metadata!inner (type)`)
 			.limit(1, { foreignTable: "protected" })
 			.limit(1, { foreignTable: "metadata" })
 			.eq("published", true)

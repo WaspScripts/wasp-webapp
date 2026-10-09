@@ -12,14 +12,14 @@ import { formatError } from "$lib/utils"
 import { redirect } from "@sveltejs/kit"
 import { zod4 } from "sveltekit-superforms/adapters"
 import { setError, superValidate } from "sveltekit-superforms/server"
-import DOMPurify from "isomorphic-dompurify"
+import { sanitizeHtml } from "$lib/sanitize"
 
 const compiled = new Map<string, { content: string; html: string }>()
 
 async function compile(id: string, content: string) {
 	let cached = compiled.get(id)
 	if (cached?.content !== content) {
-		cached = { content, html: DOMPurify.sanitize((await mdvsvexCompile(content)).code) }
+		cached = { content, html: sanitizeHtml((await mdvsvexCompile(content)).code) }
 		compiled.set(id, cached)
 	}
 	return cached.html
