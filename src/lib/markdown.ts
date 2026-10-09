@@ -2,7 +2,6 @@ import markdownit from "markdown-it"
 import { fromHighlighter } from "@shikijs/markdown-it/core"
 import { createHighlighterCore } from "shiki/core"
 import { createJavaScriptRegexEngine } from "shiki/engine/javascript"
-import { full } from "markdown-it-emoji"
 import { imgLazyload } from "@mdit/plugin-img-lazyload"
 import DOMPurify from "isomorphic-dompurify"
 
@@ -25,7 +24,6 @@ const markdownRenderer = markdownit("commonmark", {
 	typographer: true
 })
 	.use(fromHighlighter(shikiHighlighter, { themes: { light: "github-light", dark: "github-dark" } }))
-	.use(full)
 	.use(imgLazyload)
 
 export function renderMarkdown(content: string) {
