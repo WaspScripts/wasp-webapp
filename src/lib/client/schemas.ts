@@ -31,7 +31,7 @@ const stageKeys = Object.keys(scriptStages) as TScriptStages[]
 export const scriptInfoSchema = z.object({
 	title: title,
 	description: description,
-	content: content,
+	content: content.max(20000, "Must be at most 20000 characters long."),
 	status: z.boolean().default(false),
 	type: z.boolean().default(false),
 	categories: z.array(ScriptCategoryEnum).min(1, "You should have at least 1 category."),
@@ -57,9 +57,9 @@ export const scriptStatsSchema = z
 			.number()
 			.int("Only whole numbers are allowed.")
 			.max(600000, "That exceeds the reasonable profit limit."),
-		trackers: z.array(z.string()),
-		minima: z.array(z.number().int("Only whole numbers are allowed.")),
-		maxima: z.array(z.number().int("Only whole numbers are allowed."))
+		trackers: z.array(z.string()).max(50, "You can have at most 50 custom trackers."),
+		minima: z.array(z.number().int("Only whole numbers are allowed.")).max(50),
+		maxima: z.array(z.number().int("Only whole numbers are allowed.")).max(50)
 	})
 	.refine(
 		(schema) => schema.xp_min <= schema.xp_max,
@@ -194,7 +194,7 @@ export const scripterSchema = z.object({
 			"The paypal ID seems to have the wrong length. If you put the correct ID please contact Torwent."
 		)
 		.nullable(),
-	content: content.nullable()
+	content: content.max(20000, "Must be at most 20000 characters long.").nullable()
 })
 
 export const subscriptionsSchema = z.object({
