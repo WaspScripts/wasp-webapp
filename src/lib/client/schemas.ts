@@ -257,6 +257,11 @@ const newPriceSchema = z.object({
 	currency: z.string().length(3).regex(new RegExp("eur"))
 })
 
+const editPriceSchema = newPriceSchema.extend({
+	id: z.string().startsWith("price_"),
+	active: z.boolean()
+})
+
 const bundledScriptSchema = z.object({
 	id: z.string().uuid("Script IDs must be valid UUIDs"),
 	name: z.string(),
@@ -278,7 +283,7 @@ const bundleSchema = z.object({
 	name: z.string(),
 	author: z.string(),
 	prices: z
-		.array(priceSchema)
+		.array(editPriceSchema)
 		.min(1, "You need to pass at least 1 price!")
 		.max(3, "You passed more than 3 prices!")
 		.refine((prices) => {
@@ -336,7 +341,7 @@ const premiumScriptSchema = z.object({
 	user_id: z.string().uuid("User id must be a valid UUID"),
 	name: z.string(),
 	prices: z
-		.array(priceSchema)
+		.array(editPriceSchema)
 		.min(1, "You need to pass at least 1 price!")
 		.max(3, "You passed more than 3 prices!")
 		.refine((prices) => {

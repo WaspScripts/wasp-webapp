@@ -353,7 +353,7 @@ export const actions = {
 		}
 		if (scripter.stripe == scripter.id) return setError(form, "", "Stripe account is not setup!")
 		if (!form.valid) return setError(form, "", "The form is not valid!")
-		if (!["administrator", "moderator"].includes(profile.role)) form.data.user_id = user.id
+		form.data.user_id = slug
 		await assertBundleScripts(form.data.bundledScripts, slug, getProfile)
 
 		const { message: err } = await createBundleProduct(supabaseServer, form.data)
