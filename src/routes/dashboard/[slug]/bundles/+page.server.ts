@@ -1,5 +1,6 @@
 import { bundleArraySchema, newBundleSchema, type BundleSchema } from "$lib/client/schemas"
 import { getScripter } from "$lib/client/supabase"
+import { getActiveSubscriptions } from "$lib/server/dashboard.server"
 import { stripe, createPrice, createPriceEx, updatePrice, updateProduct } from "$lib/server/stripe.server"
 import {
 	addFreeAccess,
@@ -31,7 +32,7 @@ const intervals = ["week", "month", "year"] as const
 const STRIPE_BATCH_SIZE = 20
 
 export const load = async ({ locals: { supabaseServer }, params: { slug }, parent }) => {
-	const { scripts, scripter, products, prices, data } = await parent()
+	const { scripts, scripter, products, prices } = await parent()
 	if (scripter.stripe == scripter.id)
 		error(
 			403,
@@ -39,8 +40,12 @@ export const load = async ({ locals: { supabaseServer }, params: { slug }, paren
 		)
 
 	const bundleProducts = products.filter((p) => p.bundle)
-	const subs: (typeof data.data)[] = []
-	const free: (typeof data.freeData)[] = []
+	const dataPromise = getActiveSubscriptions(
+		supabaseServer,
+		bundleProducts.map((product) => product.id)
+	)
+	const subs: Awaited<typeof dataPromise>["subscriptions"][] = []
+	const free: Awaited<typeof dataPromise>["freeAccess"][] = []
 
 	async function getBundles() {
 		const { data: bundleData, error: err } = await supabaseServer
@@ -59,9 +64,10 @@ export const load = async ({ locals: { supabaseServer }, params: { slug }, paren
 			)
 		}
 
+		const data = await dataPromise
 		const productsByBundle = new Map(bundleProducts.map((p) => [p.bundle, p]))
-		const subsByProduct = groupBy(data.data, (s) => s.product)
-		const freeByProduct = groupBy(data.freeData, (f) => f.product)
+		const subsByProduct = groupBy(data.subscriptions, (s) => s.product)
+		const freeByProduct = groupBy(data.freeAccess, (f) => f.product)
 		const pricesByProduct = groupBy(prices, (price) => price.product)
 
 		return await Promise.all(

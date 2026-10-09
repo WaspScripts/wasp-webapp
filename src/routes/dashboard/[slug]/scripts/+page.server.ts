@@ -1,5 +1,6 @@
 import { newScriptSchema, scriptArraySchema, type NewScriptSchema } from "$lib/client/schemas"
 import { getScripter } from "$lib/client/supabase"
+import { getActiveSubscriptions } from "$lib/server/dashboard.server"
 import { stripe, createPrice, updatePrice, updateProduct, createPriceEx } from "$lib/server/stripe.server"
 import {
 	addFreeAccess,
@@ -28,8 +29,8 @@ const newPrices = [
 const intervals = ["week", "month", "year"] as const
 const STRIPE_BATCH_SIZE = 20
 
-export const load = async ({ params: { slug }, parent }) => {
-	const { scripts, scripter, products, prices, data } = await parent()
+export const load = async ({ locals: { supabaseServer }, params: { slug }, parent }) => {
+	const { scripts, scripter, products, prices } = await parent()
 	if (scripter.stripe == scripter.id)
 		error(
 			403,
@@ -37,11 +38,15 @@ export const load = async ({ params: { slug }, parent }) => {
 		)
 
 	const scriptProducts = products.filter((p) => p.script)
-	const subs: (typeof data.data)[] = []
-	const free: (typeof data.freeData)[] = []
+	const data = await getActiveSubscriptions(
+		supabaseServer,
+		scriptProducts.map((product) => product.id)
+	)
+	const subs: (typeof data.subscriptions)[] = []
+	const free: (typeof data.freeAccess)[] = []
 
-	const subsByProduct = groupBy(data.data, (s) => s.product)
-	const freeByProduct = groupBy(data.freeData, (f) => f.product)
+	const subsByProduct = groupBy(data.subscriptions, (s) => s.product)
+	const freeByProduct = groupBy(data.freeAccess, (f) => f.product)
 	const pricesByProduct = groupBy(prices, (price) => price.product)
 	const productScripts = new Set(scriptProducts.map((product) => product.script))
 	const available = scripts.filter((script) => !productScripts.has(script.id))

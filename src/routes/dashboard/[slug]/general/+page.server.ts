@@ -1,8 +1,9 @@
 import { assertDashboardAccess, supabaseAdmin } from "$lib/server/supabase.server"
+import { getSubscriptionCounts } from "$lib/server/dashboard.server"
 import { formatError } from "$lib/utils"
 import { error } from "@sveltejs/kit"
 
-export const load = async ({ parent, params: { slug }, locals: { user, getProfile } }) => {
+export const load = async ({ parent, params: { slug }, locals: { supabaseServer, user, getProfile } }) => {
 	if (!user) error(403, "You need to be logged in.")
 	await assertDashboardAccess(user.id, slug, getProfile)
 
@@ -31,14 +32,13 @@ export const load = async ({ parent, params: { slug }, locals: { user, getProfil
 	}
 
 	const statsPromise = getStats()
-	const { data } = await parent()
+	const { products } = await parent()
 
 	return {
 		statsPromise,
-		subscriptions: {
-			subscribers: data.count,
-			cancelling: data.cancelling,
-			free_access: data.freeCount
-		}
+		subscriptions: await getSubscriptionCounts(
+			supabaseServer,
+			products.map((product) => product.id)
+		)
 	}
 }

@@ -64,51 +64,6 @@ export const load = async ({
 		})
 	}
 
-	async function getData(products: string[]) {
-		const now = new Date().toISOString()
-
-		const promises = await Promise.all([
-			supabaseServer
-				.schema("profiles")
-				.from("subscriptions")
-				.select("user_id, product, price, cancel", { count: "exact" })
-				.in("product", products)
-				.gte("date_end", now),
-			supabaseServer
-				.schema("profiles")
-				.from("free_access")
-				.select("id, product", { count: "exact" })
-				.in("product", products)
-				.gte("date_end", now)
-		])
-
-		const { data, count, error: err } = promises[0]
-
-		if (err) {
-			error(
-				500,
-				"Server error, this is probably not an issue on your end!\n" +
-					"SELECT product failed!\n\n" +
-					formatError(err)
-			)
-		}
-
-		const { data: freeData, count: freeCount, error: freeErr } = promises[1]
-
-		if (freeErr) {
-			error(
-				500,
-				"Server error, this is probably not an issue on your end!\n" +
-					"SELECT product failed!\n\n" +
-					formatError(freeErr)
-			)
-		}
-
-		const cancelling = data.reduce((n, { cancel }) => n + +cancel, 0)
-
-		return { data, freeData, count: count ?? 0, cancelling, freeCount: freeCount ?? 0 }
-	}
-
 	async function getProducts() {
 		const { data, error: err } = await supabaseServer
 			.schema("stripe")
@@ -139,14 +94,12 @@ export const load = async ({
 
 	const promises = await Promise.all([getScripts(), getScripter(supabaseServer, slug), getProducts()])
 
-	const productIDs = promises[2].map((product) => product.id)
-	const lastPromises = await Promise.all([getData(productIDs), getPrices(productIDs)])
+	const prices = await getPrices(promises[2].map((product) => product.id))
 
 	return {
 		scripts: promises[0],
 		scripter: promises[1],
 		products: promises[2],
-		data: lastPromises[0],
-		prices: lastPromises[1]
+		prices
 	}
 }
