@@ -27,7 +27,7 @@ export const load = async ({ url, depends, parent }) => {
 		const query = supabase
 			.schema("stats")
 			.from("stats")
-			.select("username, experience, gold, levels, runtime", { count: "exact" })
+			.select("username, experience, gold, levels, runtime", { count: "estimated" })
 
 		if (search === "") {
 			query
