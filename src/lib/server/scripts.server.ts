@@ -135,7 +135,32 @@ export async function getScript(slug: string) {
 	return script
 }
 
+const NO_LIMITS = { xp_min: 0, xp_max: 0, gp_min: 0, gp_max: 0 }
+const limitsCache = new Map<string, typeof NO_LIMITS>()
+
+export async function getScriptLimits(id: string) {
+	const cached = limitsCache.get(id)
+	if (cached) return cached
+
+	const { data, error: err } = await supabaseAdmin
+		.schema("stats")
+		.from("limits")
+		.select("xp_min, xp_max, gp_min, gp_max")
+		.eq("id", id)
+		.maybeSingle()
+
+	if (err) {
+		console.error(err)
+		return NO_LIMITS
+	}
+
+	const limits = data ?? NO_LIMITS
+	limitsCache.set(id, limits)
+	return limits
+}
+
 export async function updateScript(id: string) {
+	limitsCache.delete(id)
 	if (scripts.length === 0) return
 
 	const script = await fetchScriptByID(supabaseAdmin, id)

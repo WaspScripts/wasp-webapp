@@ -4,10 +4,18 @@ import { legalSchema } from "$lib/client/schemas"
 import { zod4 } from "sveltekit-superforms/adapters"
 import { formatError } from "$lib/utils"
 
-export const load = async ({ parent }) => {
-	const { policies } = await parent()
+export const load = async ({ parent, params: { slug }, locals: { supabaseServer } }) => {
+	await parent()
+	const { data } = await supabaseServer
+		.schema("info")
+		.from(slug.toLowerCase() as "privacy_policy" | "scripter_tos" | "user_tos")
+		.select("content")
+		.order("version", { ascending: false })
+		.limit(1)
+		.maybeSingle()
+
 	return {
-		form: await superValidate({ content: policies[0].originalContent }, zod4(legalSchema))
+		form: await superValidate({ content: data?.content ?? "" }, zod4(legalSchema))
 	}
 }
 

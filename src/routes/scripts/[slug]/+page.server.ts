@@ -4,6 +4,7 @@ import { doLogin } from "$lib/server/supabase.server"
 import { formatError } from "$lib/utils"
 import { replaceScriptContent } from "$lib/client/utils"
 import { renderMarkdown } from "$lib/markdown"
+import { getScriptLimits } from "$lib/server/scripts.server"
 import { error, redirect } from "@sveltejs/kit"
 
 const htmlCache = new Map<string, { content: string; html: string }>()
@@ -11,13 +12,8 @@ const htmlCache = new Map<string, { content: string; html: string }>()
 export const load = async ({ cookies, parent, locals: { supabaseServer } }) => {
 	const { script } = await parent()
 
-	const [limitsResult, statsResult] = await Promise.all([
-		supabaseServer
-			.schema("stats")
-			.from("limits")
-			.select("xp_min, xp_max, gp_min, gp_max")
-			.eq("id", script.id)
-			.maybeSingle(),
+	const [limits, statsResult] = await Promise.all([
+		getScriptLimits(script.id),
 		supabaseServer
 			.schema("stats")
 			.from("values")
@@ -26,10 +22,8 @@ export const load = async ({ cookies, parent, locals: { supabaseServer } }) => {
 			.maybeSingle()
 	])
 
-	if (limitsResult.error) console.error(limitsResult.error)
 	if (statsResult.error) console.error(statsResult.error)
 
-	const limits = limitsResult.data ?? { xp_min: 0, xp_max: 0, gp_min: 0, gp_max: 0 }
 	const content = replaceScriptContent(script, limits)
 
 	let cached = htmlCache.get(script.id)

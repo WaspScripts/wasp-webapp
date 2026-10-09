@@ -45,8 +45,7 @@ export const load = async ({ params: { slug }, locals: { supabaseServer } }) => 
 				return {
 					version: legal.version,
 					created_at: legal.created_at,
-					content: await compile(legal.content),
-					originalContent: legal.content
+					content: await compile(legal.content)
 				}
 			})
 		)
