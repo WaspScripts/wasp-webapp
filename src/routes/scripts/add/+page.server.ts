@@ -9,6 +9,7 @@ import type { TScriptStages, TScriptStatus, TScriptTypes } from "$lib/types/coll
 import { pad } from "$lib/client/utils"
 import { updateScript } from "$lib/server/scripts.server"
 import { DISCORD_RELEASE_WEBHOOK } from "$env/static/private"
+import { sendDiscordWebhook } from "$lib/server/webhooks.server"
 import { getSimbaVersions, getWaspLibVersions } from "$lib/server/versions.server"
 
 const scriptDefaultContent = `### {$title} by {$author}
@@ -75,7 +76,7 @@ export const load = async ({ locals: { supabaseServer, user, session } }) => {
 }
 
 export const actions = {
-	default: async ({ request, locals: { user, session, supabaseServer, getProfile }, fetch }) => {
+	default: async ({ request, locals: { user, session, supabaseServer, getProfile } }) => {
 		if (!user || !session) {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		}
@@ -198,7 +199,7 @@ export const actions = {
 		await updateScript(data.id)
 
 		if (data.url) {
-			const body = {
+			sendDiscordWebhook(DISCORD_RELEASE_WEBHOOK, {
 				embeds: [
 					{
 						title: "New Script: " + form.data.title,
@@ -210,14 +211,7 @@ export const actions = {
 						}
 					}
 				]
-			}
-			const res = await fetch(DISCORD_RELEASE_WEBHOOK, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(body)
 			})
-
-			if (!res.ok) console.error("Failed to send webhook", await res.text())
 
 			redirect(303, "/scripts/" + data.url)
 		}

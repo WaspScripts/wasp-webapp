@@ -9,6 +9,7 @@ import { getScript, updateScript } from "$lib/server/scripts.server"
 import { pad } from "$lib/client/utils"
 import { getScriptVersion, getSimbaVersions, getWaspLibVersions } from "$lib/server/versions.server"
 import { DISCORD_UPDATE_WEBHOOK } from "$env/static/private"
+import { sendDiscordWebhook } from "$lib/server/webhooks.server"
 
 export const load = async ({ locals: { supabaseServer, user, session }, parent }) => {
 	if (!user || !session) {
@@ -48,12 +49,7 @@ export const load = async ({ locals: { supabaseServer, user, session }, parent }
 }
 
 export const actions = {
-	default: async ({
-		request,
-		params: { slug },
-		locals: { supabaseServer, user, session, getProfile },
-		fetch
-	}) => {
+	default: async ({ request, params: { slug }, locals: { supabaseServer, user, session, getProfile } }) => {
 		if (!user || !session) {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		}
@@ -179,7 +175,7 @@ export const actions = {
 		await updateScript(id)
 
 		if (script.published) {
-			const body = {
+			sendDiscordWebhook(DISCORD_UPDATE_WEBHOOK, {
 				embeds: [
 					{
 						title: "Script Update: " + title,
@@ -191,14 +187,7 @@ export const actions = {
 						}
 					}
 				]
-			}
-			const res = await fetch(DISCORD_UPDATE_WEBHOOK, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(body)
 			})
-
-			if (!res.ok) console.error("Failed to send webhook", await res.text())
 		}
 
 		return message(

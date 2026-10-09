@@ -1,6 +1,18 @@
 import { error } from "@sveltejs/kit"
 import { base64ToBytes } from "$lib/utils"
 
+export function sendDiscordWebhook(url: string, body: object) {
+	fetch(url, {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify(body)
+	})
+		.then(async (res) => {
+			if (!res.ok) console.error("Failed to send Discord webhook", res.status, await res.text())
+		})
+		.catch((err) => console.error("Failed to send Discord webhook", err))
+}
+
 export function webhookError(status: number, message: string, detail?: unknown): never {
 	const id = crypto.randomUUID().slice(0, 8)
 	console.error(`[${id}] ${message}`, detail ?? "")
