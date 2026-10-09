@@ -55,6 +55,16 @@ const config = {
 					"unsafe-inline",
 					"wasm-unsafe-eval"
 				],
+				"img-src": [
+					"self",
+					"data:",
+					"blob:",
+					"http://localhost:*",
+					"https://db.waspscripts.com",
+					"https://cdn.discordapp.com",
+					"https://api.dicebear.com",
+					"https://*.stripe.com"
+				],
 				"base-uri": ["self"],
 				"object-src": ["none"]
 			}
