@@ -1,7 +1,8 @@
 import { PUBLIC_SUPER_USER_ID } from "$env/static/public"
 import { stripe, createCheckoutSession } from "$lib/server/stripe.server"
 import { subscriptionsSchema, checkoutSchema } from "$lib/client/schemas"
-import { doLogin } from "$lib/server/supabase.server"
+import { doLogin, supabaseAdmin } from "$lib/server/supabase.server"
+import { formatError } from "$lib/utils"
 import { error, redirect } from "@sveltejs/kit"
 import { setError, superValidate } from "sveltekit-superforms/server"
 import { zod4 } from "sveltekit-superforms/adapters"
@@ -366,22 +367,6 @@ export const actions = {
 		const refund = Math.round(amount - Math.min(amount * 0.15, 500))
 
 		try {
-			await stripe.refunds.create({
-				payment_intent: intent,
-				amount: refund,
-				reason: "requested_by_customer",
-				refund_application_fee: false,
-				reverse_transfer: true
-			})
-		} catch (err) {
-			console.error(err)
-			error(
-				500,
-				"Failed to issue refund. Refresh the page, if this keeps happening, please contact support@waspscripts.com"
-			)
-		}
-
-		try {
 			await stripe.subscriptions.cancel(subscriptionID, {
 				cancellation_details: {
 					comment: "Refunded through waspscripts.com"
@@ -392,6 +377,36 @@ export const actions = {
 			error(
 				500,
 				"Failed to cancel subscription. Refresh the page, if this keeps happening, please contact support@waspscripts.com"
+			)
+		}
+
+		const [refundErr, { error: dbErr }] = await Promise.all([
+			stripe.refunds
+				.create({
+					payment_intent: intent,
+					amount: refund,
+					reason: "requested_by_customer",
+					refund_application_fee: false,
+					reverse_transfer: true
+				})
+				.then(() => null)
+				.catch((err: unknown) => err),
+			supabaseAdmin
+				.schema("profiles")
+				.from("subscriptions")
+				.update({ date_end: new Date().toISOString() })
+				.eq("id", subscriptionID)
+		])
+
+		if (dbErr)
+			console.error("Failed to end refunded subscription " + subscriptionID + ": " + formatError(dbErr))
+
+		if (refundErr) {
+			console.error("Refund failed for cancelled subscription " + subscriptionID + ": ", refundErr)
+			error(
+				500,
+				"Your subscription was cancelled but the refund failed. Please contact support@waspscripts.com with your subscription ID: " +
+					subscriptionID
 			)
 		}
 

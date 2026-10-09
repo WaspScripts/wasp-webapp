@@ -6,6 +6,10 @@ import { webhookError } from "$lib/server/webhooks.server"
 import { json } from "@sveltejs/kit"
 import type Stripe from "stripe"
 
+function endedAt(subscription: Stripe.Subscription) {
+	return subscription.ended_at ?? Math.floor(Date.now() / 1000)
+}
+
 export const POST = async ({ request }) => {
 	const sig = request.headers.get("stripe-signature") ?? ""
 	let event: Stripe.Event
@@ -66,7 +70,9 @@ export const POST = async ({ request }) => {
 
 			console.log("UPDATE profile.subscription: ", subscriptionUpdated.id)
 
-			const date_end = new Date(items[0].current_period_end * 1000).toISOString()
+			const end =
+				subscriptionUpdated.status === "canceled" ? endedAt(subscriptionUpdated) : items[0].current_period_end
+			const date_end = new Date(end * 1000).toISOString()
 			const date_start = new Date(subscriptionUpdated.start_date * 1000).toISOString()
 			const cancel = subscriptionUpdated.cancel_at_period_end
 
@@ -126,7 +132,7 @@ export const POST = async ({ request }) => {
 
 			console.log("DELETE profile.subscriptions: ", subscriptionDeleted.id)
 
-			const date_end = new Date(items[0].current_period_end * 1000).toISOString()
+			const date_end = new Date(endedAt(subscriptionDeleted) * 1000).toISOString()
 			const date_start = new Date(subscriptionDeleted.start_date * 1000).toISOString()
 			const cancel = subscriptionDeleted.cancel_at_period_end
 
