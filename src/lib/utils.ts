@@ -11,8 +11,9 @@ export const MB_SIZE = 1000000
 export const ACCEPTED_IMAGE_TYPES = ["image/webp"]
 
 export function formatError(err: AuthError | PostgrestError) {
-	console.error(err)
-	return JSON.stringify(err)
+	const id = crypto.randomUUID().slice(0, 8)
+	console.error(`[${id}]`, err)
+	return `${err.message} (ref: ${id})`
 }
 
 //String

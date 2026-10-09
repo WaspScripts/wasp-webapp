@@ -19,7 +19,7 @@ export const POST = async ({ request }) => {
 	try {
 		event = stripe.webhooks.constructEvent(body, sig, STRIPE_WEBHOOK_SECRET_SUBSCRIPTIONS)
 	} catch (err) {
-		webhookError(404, "Event is not valid!", { body, err })
+		webhookError(404, "Event is not valid!", { err: err instanceof Error ? err.message : err })
 	}
 
 	const { data, type } = event

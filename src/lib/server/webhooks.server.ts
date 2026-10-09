@@ -42,7 +42,7 @@ export async function verifySupabaseWebhook(request: Request, secret: string) {
 	}
 
 	if (!isValid) {
-		console.log("Signature is invalid!\n", "Signature: ", signature, "\nBody: ", body)
+		console.log("Signature is invalid!\n", "Signature: ", signature)
 		error(403, "Webhook signature is not valid")
 	}
 

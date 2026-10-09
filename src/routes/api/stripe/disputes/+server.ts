@@ -15,7 +15,7 @@ export const POST = async ({ request }) => {
 	try {
 		event = stripe.webhooks.constructEvent(body, sig, STRIPE_WEBHOOK_SECRET_DISPUTES)
 	} catch (err) {
-		webhookError(404, "Event is not valid!", { body, err })
+		webhookError(404, "Event is not valid!", { err: err instanceof Error ? err.message : err })
 	}
 
 	const { data, type } = event
@@ -26,7 +26,7 @@ export const POST = async ({ request }) => {
 	const dispute = data.object as Stripe.Dispute
 	if (dispute.status != "lost") return json({ success: "true" })
 
-	console.log(dispute)
+	console.log("Lost dispute: ", dispute.id)
 
 	const { balance_transactions: transactions, charge: chargeID } = dispute
 

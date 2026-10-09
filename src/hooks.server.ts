@@ -135,7 +135,7 @@ const performanceCheck: Handle = async ({ event, resolve }) => {
 	const { url } = event
 	const response = await resolve(event)
 	const loadTime = performance.now() - start
-	console.log(`└🚀 ${url} took ${loadTime.toFixed(2)} ms to load!`)
+	console.log(`└🚀 ${url.pathname} took ${loadTime.toFixed(2)} ms to load!`)
 	return response
 }
 

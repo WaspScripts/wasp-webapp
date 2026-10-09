@@ -15,7 +15,7 @@ export const POST = async ({ request }) => {
 	try {
 		event = stripe.webhooks.constructEvent(body, sig, STRIPE_WEBHOOK_SECRET_PRODUCTS)
 	} catch (err) {
-		webhookError(404, "Event is not valid!", { body, err })
+		webhookError(404, "Event is not valid!", { err: err instanceof Error ? err.message : err })
 	}
 
 	const { data, type } = event
@@ -28,7 +28,6 @@ export const POST = async ({ request }) => {
 
 	switch (type) {
 		case "product.created": {
-			console.log(data)
 			const productCreated = data.object as Stripe.Product
 			const { name } = productCreated
 			const metadata = productCreated.metadata as unknown as ProductMetadata
