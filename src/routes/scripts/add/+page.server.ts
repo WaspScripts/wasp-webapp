@@ -94,6 +94,10 @@ export const actions = {
 			return fail(400, withFiles({ form }))
 		}
 
+		if (form.data.status === true && profile.role != "administrator") {
+			return setError(form, "", "You cannot make a script official!")
+		}
+
 		const tmp = await scriptExists(supabaseServer, encodeSEO(form.data.title + " by " + profile.username))
 		if (tmp) {
 			const msg = "A script with that name by you already exists! Choose a different name."
