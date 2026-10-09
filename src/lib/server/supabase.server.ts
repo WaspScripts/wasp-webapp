@@ -188,6 +188,12 @@ export async function assertSubscriptionAccess(subscription: string, slug: strin
 export const LOGIN_REDIRECT_COOKIE = "login_redirect"
 
 /** Only same-origin absolute paths, so the post-login redirect can't leave the site. */
-export function isSafePath(path: string) {
-	return path.startsWith("/") && !path.startsWith("//") && !path.includes("\\")
+export function safePath(path: string, origin: string) {
+	if (!path.startsWith("/")) return null
+	try {
+		const url = new URL(path, origin)
+		return url.origin === origin ? url.pathname + url.search + url.hash : null
+	} catch {
+		return null
+	}
 }

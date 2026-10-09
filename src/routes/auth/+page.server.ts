@@ -1,5 +1,5 @@
 import { loginAsSchema } from "$lib/client/schemas.js"
-import { doLogin, isSafePath, LOGIN_REDIRECT_COOKIE } from "$lib/server/supabase.server"
+import { doLogin, safePath, LOGIN_REDIRECT_COOKIE } from "$lib/server/supabase.server"
 import { formatError } from "$lib/utils"
 import { error, redirect } from "@sveltejs/kit"
 import { setError, superValidate } from "sveltekit-superforms"
@@ -20,8 +20,8 @@ export const actions = {
 	login: async ({ locals: { supabaseServer }, cookies, url: { origin, searchParams } }) => {
 		console.log("LOGIN ACTION!")
 
-		const path = searchParams.get("path")
-		if (path && isSafePath(path)) {
+		const path = safePath(searchParams.get("path") ?? "", origin)
+		if (path) {
 			cookies.set(LOGIN_REDIRECT_COOKIE, path, {
 				path: "/",
 				httpOnly: true,

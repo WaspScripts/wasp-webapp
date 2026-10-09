@@ -1,16 +1,16 @@
 import { error, redirect } from "@sveltejs/kit"
 import { formatError } from "$lib/utils"
-import { isSafePath, LOGIN_REDIRECT_COOKIE, supabaseAdmin } from "$lib/server/supabase.server"
+import { safePath, LOGIN_REDIRECT_COOKIE, supabaseAdmin } from "$lib/server/supabase.server"
 import { createCustomer } from "$lib/server/stripe.server"
 
-export const GET = async ({ url: { searchParams }, cookies, locals: { supabaseServer } }) => {
+export const GET = async ({ url: { origin, searchParams }, cookies, locals: { supabaseServer } }) => {
 	console.log("💻 Logging in")
 	const err = searchParams.get("error")
 
 	const takeLoginRedirect = () => {
 		const path = cookies.get(LOGIN_REDIRECT_COOKIE)
 		cookies.delete(LOGIN_REDIRECT_COOKIE, { path: "/" })
-		return path && isSafePath(path) ? path : "/"
+		return (path && safePath(path, origin)) ?? "/"
 	}
 
 	if (err) {
