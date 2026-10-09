@@ -145,16 +145,6 @@ export const actions = {
 			stage: form.data.stage as TScriptStages
 		}
 
-		const { error: errData } = await supabaseServer
-			.schema("scripts")
-			.from("metadata")
-			.update(metadata)
-			.eq("id", data.id)
-
-		if (errData) {
-			return setError(form, "", "UPDATE scripts.metadata failed!\n\n" + JSON.stringify(errData))
-		}
-
 		const path = data.id + "/" + pad(1, 9) + "/"
 
 		const filePromises = []
@@ -173,16 +163,17 @@ export const actions = {
 			uploadFile(supabaseServer, "imgs", "scripts/" + data.id + "/banner.webp", form.data.banner)
 		)
 
-		const awaitedFiles = await Promise.all(filePromises)
+		const [{ error: errData }, uploads] = await Promise.all([
+			supabaseServer.schema("scripts").from("metadata").update(metadata).eq("id", data.id),
+			Promise.all(filePromises)
+		])
 
-		let fileErrors: string | undefined
-		for (let i = 0; i < awaitedFiles.length; i++) {
-			if (awaitedFiles[i]) {
-				fileErrors += "File upload failed!\n" + JSON.stringify(promises[i]) + "\n\n"
-			}
+		if (errData) {
+			return setError(form, "", "UPDATE scripts.metadata failed!\n\n" + JSON.stringify(errData))
 		}
 
-		if (fileErrors) return setError(form, "", fileErrors)
+		const fileErrors = uploads.filter(Boolean)
+		if (fileErrors.length > 0) return setError(form, "", "File upload failed!\n" + fileErrors.join("\n\n"))
 
 		const versions = { revision: 1, simba: form.data.simba, wasplib: form.data.wasplib, files: fileNames }
 

@@ -141,36 +141,34 @@ export const actions = {
 			)
 		}
 
-		const storage = Promise.all(storagePromises)
-		const database = Promise.all([
-			supabaseAdmin.schema("scripts").from("protected").update({ revision }).eq("id", id),
-			supabaseServer
-				.schema("scripts")
-				.from("versions")
-				.upsert({
-					id,
-					revision,
-					simba: form.data.simba,
-					wasplib: form.data.wasplib,
-					files: fileNames.length > 0 ? fileNames : undefined
-				})
-		])
+		const storageErrors = (await Promise.all(storagePromises)).filter(Boolean)
 
-		const awaitedPromises = await Promise.all([storage, database])
-
-		let fileErrors: string | undefined
-		for (let i = 0; i < awaitedPromises[0].length; i++) {
-			if (awaitedPromises[0][i]) {
-				fileErrors += "File upload failed!\n" + JSON.stringify(awaitedPromises[0][i]) + "\n\n"
-			}
+		if (storageErrors.length > 0) {
+			const newPath = script.id + "/" + pad(revision, 9) + "/"
+			await supabaseAdmin.storage.from("scripts").remove(fileNames.map((name) => newPath + name))
+			return setError(form, "", "File upload failed!\n" + storageErrors.join("\n\n"))
 		}
 
-		if (fileErrors) return setError(form, "", fileErrors)
+		const { error: versionsErr } = await supabaseServer
+			.schema("scripts")
+			.from("versions")
+			.upsert({
+				id,
+				revision,
+				simba: form.data.simba,
+				wasplib: form.data.wasplib,
+				files: fileNames.length > 0 ? fileNames : undefined
+			})
 
-		for (let i = 0; i < awaitedPromises[1].length; i++) {
-			const { error: err } = awaitedPromises[1][i]
-			if (err) return setError(form, "", "UPDATE versions and revisions failed\n\n" + formatError(err))
-		}
+		if (versionsErr) return setError(form, "", "UPDATE versions failed\n\n" + formatError(versionsErr))
+
+		const { error: revisionErr } = await supabaseAdmin
+			.schema("scripts")
+			.from("protected")
+			.update({ revision })
+			.eq("id", id)
+
+		if (revisionErr) return setError(form, "", "UPDATE revision failed\n\n" + formatError(revisionErr))
 
 		await updateScript(id)
 
