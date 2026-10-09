@@ -1,15 +1,13 @@
-import { UUID_V4_REGEX, formatError } from "$lib/utils"
+import { assertDashboardAccess, supabaseAdmin } from "$lib/server/supabase.server"
+import { formatError } from "$lib/utils"
 import { error } from "@sveltejs/kit"
 
-export const load = async ({ parent, params: { slug } }) => {
-	const { user, profile, supabaseClient, data } = await parent()
+export const load = async ({ parent, params: { slug }, locals: { user, getProfile } }) => {
 	if (!user) error(403, "You need to be logged in.")
-	if (!UUID_V4_REGEX.test(slug)) error(403, "Invalid dashboard UUID.")
-	if (user !== slug && profile?.role != "administrator")
-		error(403, "You cannot access another scripter dashboard.")
+	await assertDashboardAccess(user.id, slug, getProfile)
 
 	async function getStats() {
-		const { data, error: err } = await supabaseClient
+		const { data, error: err } = await supabaseAdmin
 			.schema("scripts")
 			.from("author_scripts")
 			.select("premium, scripts, total")
@@ -32,8 +30,11 @@ export const load = async ({ parent, params: { slug } }) => {
 		}
 	}
 
+	const statsPromise = getStats()
+	const { data } = await parent()
+
 	return {
-		statsPromise: getStats(),
+		statsPromise,
 		subscriptions: {
 			subscribers: data.count,
 			cancelling: data.cancelling,

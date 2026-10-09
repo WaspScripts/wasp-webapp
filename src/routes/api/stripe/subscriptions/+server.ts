@@ -70,6 +70,34 @@ export const POST = async ({ request }) => {
 			const date_start = new Date(subscriptionUpdated.start_date * 1000).toISOString()
 			const cancel = subscriptionUpdated.cancel_at_period_end
 
+			if (!cancel && subscriptionUpdated.status === "active") {
+				const { data: existing, error: errExisting } = await supabaseAdmin
+					.schema("profiles")
+					.from("subscriptions")
+					.select("disabled")
+					.eq("id", subscriptionUpdated.id)
+					.maybeSingle()
+
+				if (errExisting) {
+					webhookError(500, "Failed to SELECT profile.subscriptions", {
+						subscriptionUpdated,
+						err: formatError(errExisting)
+					})
+				}
+
+				if (existing?.disabled) {
+					try {
+						await stripe.subscriptions.update(subscriptionUpdated.id, { cancel_at_period_end: true })
+					} catch (err) {
+						webhookError(500, "Failed to re-cancel disabled subscription", {
+							subscription: subscriptionUpdated.id,
+							err
+						})
+					}
+					break
+				}
+			}
+
 			const { error: err } = await supabaseAdmin
 				.schema("profiles")
 				.from("subscriptions")

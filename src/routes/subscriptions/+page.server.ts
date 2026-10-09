@@ -160,17 +160,22 @@ export const actions = {
 
 	toggleSubscription: async ({
 		request,
-		locals: { supabaseServer, user, getProfile },
+		locals: { supabaseServer, user, getProfile, getSubscriptions },
 		url: { origin, searchParams }
 	}) => {
 		if (!user) {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
 		}
 
-		const promises = await Promise.all([getProfile(), superValidate(request, zod4(subscriptionsSchema))])
+		const promises = await Promise.all([
+			getProfile(),
+			superValidate(request, zod4(subscriptionsSchema)),
+			getSubscriptions()
+		])
 
 		const profile = promises[0]
 		const form = promises[1]
+		const subs = promises[2]
 
 		if (!profile) {
 			return await doLogin(supabaseServer, origin, new URLSearchParams("login&provider=discord"))
@@ -191,6 +196,14 @@ export const actions = {
 				form,
 				"",
 				"Something went wrong! Seems like no subscription was selected. If this keeps occuring please contact support@waspscripts.com"
+			)
+		}
+
+		if (subs.find((subscription) => subscription.id === subscriptionID)?.disabled) {
+			return setError(
+				form,
+				"",
+				"This subscription was cancelled by the script author and can't be renewed. If you think this is an error please contact support@waspscripts.com"
 			)
 		}
 
