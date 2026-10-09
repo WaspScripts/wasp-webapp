@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Head from "$lib/components/Head.svelte"
-	import { metaDescription, WEBSITE_URL } from "$lib/utils"
+	import { githubURL, metaDescription, WEBSITE_URL } from "$lib/utils"
 	import PayPal from "./PayPal.svelte"
 	import { page } from "$app/state"
 	import { Tabs } from "@skeletonlabs/skeleton-svelte"
@@ -65,7 +65,7 @@
 			alternateName: scripter.realname || undefined,
 			description: scripter.description || undefined,
 			image: scripter.profiles.avatar || undefined,
-			sameAs: scripter.github ? [scripter.github] : undefined
+			sameAs: scripter.github ? [githubURL(scripter.github)] : undefined
 		}
 	}}
 />
@@ -86,7 +86,7 @@
 			<div class="my-auto flex">
 				{#if $form.github}
 					<a
-						href={$form.github}
+						href={githubURL($form.github)}
 						class="mx-5 btn h-full preset-filled-surface-300-700 hover:text-secondary-500"
 					>
 						<GitFork />
@@ -143,8 +143,8 @@
 						{/if}
 					</label>
 					<label class="my-4 label">
-						<span class="label-text">GitHub:</span>
-						<input class="input" bind:value={$form.github} />
+						<span class="label-text">GitHub username:</span>
+						<input class="input" placeholder="Torwent" bind:value={$form.github} />
 						{#if $errors.github}
 							{#each $errors.github as err (err)}
 								<small class="text-error-500">{err}</small>

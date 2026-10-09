@@ -3,6 +3,7 @@ import type { Price, TScriptCategories, TScriptStages, TScriptStatus, TScriptTyp
 
 export const API_URL = "https://api.waspscripts.com" //http://localhost:8080
 export const WEBSITE_URL = "https://waspscripts.com"
+export const githubURL = (username: string) => "https://github.com/" + encodeURIComponent(username)
 export const UUID_V4_REGEX =
 	/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89AB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/i
 

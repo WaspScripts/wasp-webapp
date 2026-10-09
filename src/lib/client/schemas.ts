@@ -183,7 +183,10 @@ export const scripterSchema = z.object({
 		.max(32, "Must be less than 32 characters long.")
 		.includes(" ", { message: "This should be a sentence or at least a couple of words." })
 		.nullable(),
-	github: z.string().startsWith("https://github.com/", "This should be a github user profile.").nullable(),
+	github: z
+		.string()
+		.regex(/^[A-Za-z0-9-]{1,39}$/, "This should be your GitHub username, not a link.")
+		.nullable(),
 	paypal: z
 		.string()
 		.length(

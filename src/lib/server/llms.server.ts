@@ -12,6 +12,7 @@ import { replaceScriptContent } from "$lib/client/utils"
 import {
 	formatNumber,
 	formatTime,
+	githubURL,
 	isoDate,
 	scriptCategories,
 	scriptStages,
@@ -146,7 +147,7 @@ async function scripterMarkdown(supabase: Supabase, slug: string) {
 	const scripts = (await getPublishedScripts()).filter((script) => script.protected.author === scripter.id)
 	const facts = [`URL: ${WEBSITE_URL}/scripters/${scripter.url}`]
 	if (scripter.realname) facts.push(`Name: ${scripter.realname}`)
-	if (scripter.github) facts.push(`GitHub: ${scripter.github}`)
+	if (scripter.github) facts.push(`GitHub: ${githubURL(scripter.github)}`)
 	facts.push(`Published scripts: ${scripts.length}`)
 
 	const list = scripts
