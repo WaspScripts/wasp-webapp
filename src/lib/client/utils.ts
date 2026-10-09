@@ -9,18 +9,13 @@ export async function replaceQuery(url: URL, values: Record<string, string>, nos
 
 	const { origin, pathname, searchParams } = url
 	const currentPath = origin + pathname
-	let invalidate = false
 
 	const newSearchParams = new URLSearchParams(searchParams)
 
 	for (const [k, v] of Object.entries(values)) {
 		const encodedKey = encodeURIComponent(k)
-		if (v) {
-			newSearchParams.set(encodedKey, encodeURIComponent(v))
-		} else {
-			newSearchParams.delete(encodedKey)
-			invalidate = true
-		}
+		if (v) newSearchParams.set(encodedKey, encodeURIComponent(v))
+		else newSearchParams.delete(encodedKey)
 	}
 
 	const newSearchString = newSearchParams.toString()
@@ -29,8 +24,7 @@ export async function replaceQuery(url: URL, values: Record<string, string>, nos
 	await goto(path, {
 		keepFocus: true,
 		noScroll: noscroll,
-		replaceState: false,
-		invalidateAll: invalidate
+		replaceState: false
 	})
 }
 
