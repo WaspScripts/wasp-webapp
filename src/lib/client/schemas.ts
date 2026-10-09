@@ -77,6 +77,8 @@ export const bannerImage = z
 	.refine((file) => file.size <= 5 * MB_SIZE, "Max image size is 5MB.")
 	.refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), "Only .webp formats are allowed.")
 
+const SCRIPT_FILE_NAME = /^[A-Za-z0-9_\-()][A-Za-z0-9_\-() .]{0,99}$/
+
 export const scriptFile = z
 	.instanceof(File, { message: "Please upload a file." })
 	.refine((file) => file.size <= 5 * MB_SIZE, "Max script size is 5MB.")
@@ -94,6 +96,10 @@ export const scriptFile = z
 			file.name.endsWith(".obj") ||
 			file.name.endsWith(".mtl"),
 		"This file type is not allowed."
+	)
+	.refine(
+		(file) => SCRIPT_FILE_NAME.test(file.name) && !file.name.includes(".."),
+		"File names can only have letters, numbers, spaces, dots, dashes, underscores and parentheses."
 	)
 
 export const addScriptClientSchema = scriptInfoSchema.extend({

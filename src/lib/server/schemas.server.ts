@@ -67,6 +67,15 @@ async function isValidWaspLibVersion(version: string) {
 	return !error && !!count && count > 0
 }
 
+function hasUniqueFileNames(files: File[] | undefined, main: string | undefined) {
+	if (!files) return true
+	const names = files.map((file) => (file.name === main ? "script.simba" : file.name))
+	return new Set(names).size === names.length
+}
+
+const duplicateFilesMessage =
+	"Two files would end up with the same name. The main file is renamed to script.simba."
+
 export const addScriptServerSchema = scriptInfoSchema
 	.extend({
 		simba: z
@@ -81,6 +90,7 @@ export const addScriptServerSchema = scriptInfoSchema
 		script: z.array(scriptFile),
 		main: z.string()
 	})
+	.refine((schema) => hasUniqueFileNames(schema.script, schema.main), duplicateFilesMessage)
 	.refine(async (schema) => await checkServerImageDimensions(schema.cover, 300, 200))
 	.refine(async (schema) => await checkServerImageDimensions(schema.banner, 1920, 768))
 	.refine((schema) => isValidSimbaVersion(schema.simba), "Invalid Simba version.")
@@ -100,5 +110,6 @@ export const scriptFilesServerSchema = z
 		script: scriptFile.array().optional(),
 		main: z.string().nonempty().optional()
 	})
+	.refine((schema) => hasUniqueFileNames(schema.script, schema.main), duplicateFilesMessage)
 	.refine((schema) => isValidSimbaVersion(schema.simba), "Invalid Simba version.")
 	.refine((schema) => isValidWaspLibVersion(schema.wasplib), "Invalid WaspLib version.")
