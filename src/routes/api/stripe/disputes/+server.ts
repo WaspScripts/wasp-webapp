@@ -35,17 +35,6 @@ export const POST = async ({ request }) => {
 
 	const account = charge.on_behalf_of as string
 
-	const { data: balance, error: err } = await supabaseAdmin
-		.schema("profiles")
-		.from("balances")
-		.select("balance")
-		.eq("stripe", account)
-		.single()
-
-	if (err) {
-		webhookError(500, "Failed to SELECT profiles.balances", { account, err: formatError(err) })
-	}
-
 	const urlBase = "https://api.fxratesapi.com/latest?base=eur&"
 	const urlTail = "&resolution=1m&amount=1&places=6&format=json"
 
@@ -73,21 +62,22 @@ export const POST = async ({ request }) => {
 		webhookError(500, "Failed to fetch exchange rates", { url, e })
 	}
 
+	let amount = 0
 	for (let i = 0; i < values.length; i++) {
 		const rate = requestData.rates[values[i].currency]
 		if (!rate) webhookError(500, "No exchange rate for currency", { currency: values[i].currency })
-		balance.balance += values[i].amount / rate
+		amount += values[i].amount / rate
 	}
 
-	const { error: errUpdate } = await supabaseAdmin
+	const { data: updated, error: errUpdate } = await supabaseAdmin
 		.schema("profiles")
-		.from("balances")
-		.update(balance)
-		.eq("stripe", account)
+		.rpc("add_balance", { account, amount: Math.round(amount) })
 
 	if (errUpdate) {
 		webhookError(500, "Failed to UPDATE profiles.balances", { account, err: formatError(errUpdate) })
 	}
+
+	if (!updated) webhookError(500, "No profiles.balances row for account", { account })
 
 	return json({ success: "true" })
 }

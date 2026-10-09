@@ -329,6 +329,7 @@ export type Database = {
       }
     }
     Functions: {
+      add_balance: { Args: { account: string; amount: number }; Returns: boolean }
       can_access:
         | { Args: { accesser_id: string; script_id: string }; Returns: boolean }
         | { Args: { script_id: string }; Returns: boolean }
