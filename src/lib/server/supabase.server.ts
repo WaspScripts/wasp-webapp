@@ -34,7 +34,7 @@ export async function doLogin(
 }
 
 export async function uploadFile(supabase: SupabaseClient, bucket: string, path: string, file: File) {
-	const contentType = path.endsWith(".webp") || path.endsWith(".webp") ? "image/webp" : undefined
+	const contentType = bucket === "imgs" ? "image/webp" : "application/octet-stream"
 	const { error: err } = await supabase.storage.from(bucket).upload(path, file, { upsert: true, contentType })
 
 	if (err) {
