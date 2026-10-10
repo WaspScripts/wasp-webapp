@@ -177,12 +177,7 @@ export const profileSchema = z.object({
 		.string()
 		.min(6, "Must be more than 6 characters long.")
 		.max(32, "Must be less than 32 characters long.")
-		.optional(),
-	nonce: z
-		.string()
-		.regex(/^\d{6}$/, "The code must be 6 digits.")
 		.optional()
-		.or(z.literal(""))
 })
 
 export const scripterSchema = z.object({
