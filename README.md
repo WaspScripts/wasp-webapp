@@ -27,3 +27,5 @@ pnpm build
 ```
 
 You can preview the production build with `pnpm preview`.
+
+It's important to keep in mind that a self-hosted version of the website won't work well without the [database](https://github.com/WaspScripts/wasp-db).
