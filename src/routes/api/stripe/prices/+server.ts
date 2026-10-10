@@ -2,8 +2,7 @@ import { STRIPE_WEBHOOK_SECRET_PRICES } from "$env/static/private"
 import { stripe } from "$lib/server/stripe.server"
 import { supabaseAdmin } from "$lib/server/supabase.server"
 import type { Interval } from "$lib/types/collection"
-import { formatError } from "$lib/utils"
-import { webhookError } from "$lib/server/webhooks.server"
+import { refError } from "$lib/server/report.server"
 import { json } from "@sveltejs/kit"
 import type Stripe from "stripe"
 
@@ -16,7 +15,7 @@ export const POST = async ({ request }) => {
 	try {
 		event = stripe.webhooks.constructEvent(body, sig, STRIPE_WEBHOOK_SECRET_PRICES)
 	} catch (err) {
-		webhookError(404, "Event is not valid!", { err: err instanceof Error ? err.message : err })
+		refError(404, "Event is not valid!", { err: err instanceof Error ? err.message : err })
 	}
 
 	const { data, type } = event
@@ -33,7 +32,7 @@ export const POST = async ({ request }) => {
 				.eq("id", priceDeleted.id)
 
 			if (err) {
-				webhookError(500, "Failed to DELETE stripe.prices", { priceDeleted, err: formatError(err) })
+				refError(500, "Failed to DELETE stripe.prices", { priceDeleted, err })
 			}
 
 			break
@@ -55,7 +54,7 @@ export const POST = async ({ request }) => {
 				.eq("id", priceUpdated.id)
 
 			if (err) {
-				webhookError(500, "Failed to UPDATE stripe.prices", { priceUpdated, err: formatError(err) })
+				refError(500, "Failed to UPDATE stripe.prices", { priceUpdated, err })
 			}
 
 			break
@@ -78,14 +77,14 @@ export const POST = async ({ request }) => {
 				})
 
 			if (err) {
-				webhookError(500, "Failed to INSERT stripe.prices", { priceCreated, err: formatError(err) })
+				refError(500, "Failed to INSERT stripe.prices", { priceCreated, err })
 			}
 
 			break
 		}
 
 		default:
-			webhookError(404, "Price event doesn't have a valid type!", { type })
+			refError(404, "Price event doesn't have a valid type!", { type })
 	}
 
 	return json({

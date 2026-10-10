@@ -1,8 +1,7 @@
 import { STRIPE_WEBHOOK_SECRET_SUBSCRIPTIONS } from "$env/static/private"
 import { stripe } from "$lib/server/stripe.server"
 import { supabaseAdmin } from "$lib/server/supabase.server"
-import { formatError } from "$lib/utils"
-import { webhookError } from "$lib/server/webhooks.server"
+import { refError } from "$lib/server/report.server"
 import { json } from "@sveltejs/kit"
 import type Stripe from "stripe"
 
@@ -19,7 +18,7 @@ export const POST = async ({ request }) => {
 	try {
 		event = stripe.webhooks.constructEvent(body, sig, STRIPE_WEBHOOK_SECRET_SUBSCRIPTIONS)
 	} catch (err) {
-		webhookError(404, "Event is not valid!", { err: err instanceof Error ? err.message : err })
+		refError(404, "Event is not valid!", { err: err instanceof Error ? err.message : err })
 	}
 
 	const { data, type } = event
@@ -32,7 +31,7 @@ export const POST = async ({ request }) => {
 			if (subscriptionCreated.status !== "active") break
 			const items = subscriptionCreated.items.data
 			if (items.length != 1)
-				webhookError(409, "Subscription has multiple items only 1 was expected!", { subscriptionCreated })
+				refError(409, "Subscription has multiple items only 1 was expected!", { subscriptionCreated })
 
 			console.log("INSERT profile.subscriptions: ", subscriptionCreated.id)
 			if (subscriptionCreated.id === "sub_1SAmNRG22w4J2Ay5Ndilt8Tk") break //temp fix.... TODO REMOVE!
@@ -52,9 +51,9 @@ export const POST = async ({ request }) => {
 				})
 
 			if (err)
-				webhookError(500, "Failed to INSERT profile.subscriptions", {
+				refError(500, "Failed to INSERT profile.subscriptions", {
 					subscriptionCreated,
-					err: formatError(err)
+					err
 				})
 
 			break
@@ -66,7 +65,7 @@ export const POST = async ({ request }) => {
 
 			const items = subscriptionUpdated.items.data
 			if (items.length != 1)
-				webhookError(409, "Subscription has multiple items only 1 was expected!", { subscriptionUpdated })
+				refError(409, "Subscription has multiple items only 1 was expected!", { subscriptionUpdated })
 
 			console.log("UPDATE profile.subscription: ", subscriptionUpdated.id)
 
@@ -85,9 +84,9 @@ export const POST = async ({ request }) => {
 					.maybeSingle()
 
 				if (errExisting) {
-					webhookError(500, "Failed to SELECT profile.subscriptions", {
+					refError(500, "Failed to SELECT profile.subscriptions", {
 						subscriptionUpdated,
-						err: formatError(errExisting)
+						err: errExisting
 					})
 				}
 
@@ -95,7 +94,7 @@ export const POST = async ({ request }) => {
 					try {
 						await stripe.subscriptions.update(subscriptionUpdated.id, { cancel_at_period_end: true })
 					} catch (err) {
-						webhookError(500, "Failed to re-cancel disabled subscription", {
+						refError(500, "Failed to re-cancel disabled subscription", {
 							subscription: subscriptionUpdated.id,
 							err
 						})
@@ -115,9 +114,9 @@ export const POST = async ({ request }) => {
 				.eq("id", subscriptionUpdated.id)
 
 			if (err) {
-				webhookError(500, "Failed to UPDATE profile.subscriptions", {
+				refError(500, "Failed to UPDATE profile.subscriptions", {
 					subscriptionUpdated,
-					err: formatError(err)
+					err
 				})
 			}
 
@@ -128,7 +127,7 @@ export const POST = async ({ request }) => {
 			const subscriptionDeleted = data.object as Stripe.Subscription
 			const items = subscriptionDeleted.items.data
 			if (items.length != 1)
-				webhookError(409, "Subscription has multiple items only 1 was expected!", { subscriptionDeleted })
+				refError(409, "Subscription has multiple items only 1 was expected!", { subscriptionDeleted })
 
 			console.log("DELETE profile.subscriptions: ", subscriptionDeleted.id)
 
@@ -143,9 +142,9 @@ export const POST = async ({ request }) => {
 				.eq("id", subscriptionDeleted.id)
 
 			if (err) {
-				webhookError(500, "Failed to UPDATE profile.subscriptions on delete", {
+				refError(500, "Failed to UPDATE profile.subscriptions on delete", {
 					subscriptionDeleted,
-					err: formatError(err)
+					err
 				})
 			}
 
@@ -157,7 +156,7 @@ export const POST = async ({ request }) => {
 				try {
 					invoice = await stripe.invoices.retrieve(invoiceId)
 				} catch (err) {
-					webhookError(404, "Failed to retrieve invoice", {
+					refError(404, "Failed to retrieve invoice", {
 						invoiceId,
 						subscription: subscriptionDeleted.id,
 						err
@@ -168,7 +167,7 @@ export const POST = async ({ request }) => {
 					try {
 						await stripe.invoices.voidInvoice(invoiceId)
 					} catch (err) {
-						webhookError(404, "Failed to void invoice", {
+						refError(404, "Failed to void invoice", {
 							invoiceId,
 							subscription: subscriptionDeleted.id,
 							err
@@ -180,7 +179,7 @@ export const POST = async ({ request }) => {
 		}
 
 		default:
-			webhookError(404, "Subscription event doesn't have a valid type!", { type })
+			refError(404, "Subscription event doesn't have a valid type!", { type })
 	}
 
 	return json({ success: "true" })

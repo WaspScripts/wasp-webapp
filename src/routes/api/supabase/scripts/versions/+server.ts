@@ -1,7 +1,8 @@
 import { json } from "@sveltejs/kit"
 import { SUPABASE_WEBHOOK_SECRET } from "$env/static/private"
 import { getScriptVersion, resetScriptVersions } from "$lib/server/versions.server"
-import { webhookError, verifySupabaseWebhook } from "$lib/server/webhooks.server"
+import { verifySupabaseWebhook } from "$lib/server/webhooks.server"
+import { refError } from "$lib/server/report.server"
 
 export const POST = async ({ request }) => {
 	const body = await verifySupabaseWebhook(request, SUPABASE_WEBHOOK_SECRET)
@@ -9,7 +10,7 @@ export const POST = async ({ request }) => {
 	const payload = JSON.parse(body)
 
 	if (!payload || payload?.table != "versions") {
-		webhookError(404, "Something is wrong with the payload.", { payload })
+		refError(404, "Something is wrong with the payload.", { payload })
 	}
 
 	if (payload.type == "DELETE") {
@@ -21,7 +22,7 @@ export const POST = async ({ request }) => {
 		const revision: number | undefined = payload?.record?.revision
 
 		if (!id || !revision) {
-			webhookError(404, "Missing id or revision.", { payload })
+			refError(404, "Missing id or revision.", { payload })
 		}
 
 		const version = await getScriptVersion(id, revision)
@@ -35,15 +36,15 @@ export const POST = async ({ request }) => {
 		const old_revision: number | undefined = payload?.old_record?.revision
 
 		if (!id || !revision) {
-			webhookError(404, "Missing id or revision.", { payload })
+			refError(404, "Missing id or revision.", { payload })
 		}
 
 		if (!old_id || !old_revision) {
-			webhookError(404, "Missing old_id or old_revision.", { payload })
+			refError(404, "Missing old_id or old_revision.", { payload })
 		}
 
 		if (id !== old_id) {
-			webhookError(404, "old_id and id are different.", { payload })
+			refError(404, "old_id and id are different.", { payload })
 		}
 
 		const promises = await Promise.all([

@@ -1,8 +1,7 @@
 import { STRIPE_WEBHOOK_SECRET_DISPUTES } from "$env/static/private"
 import { stripe } from "$lib/server/stripe.server"
 import { supabaseAdmin } from "$lib/server/supabase.server"
-import { formatError } from "$lib/utils"
-import { webhookError } from "$lib/server/webhooks.server"
+import { refError } from "$lib/server/report.server"
 import { json } from "@sveltejs/kit"
 import type Stripe from "stripe"
 
@@ -15,13 +14,12 @@ export const POST = async ({ request }) => {
 	try {
 		event = stripe.webhooks.constructEvent(body, sig, STRIPE_WEBHOOK_SECRET_DISPUTES)
 	} catch (err) {
-		webhookError(404, "Event is not valid!", { err: err instanceof Error ? err.message : err })
+		refError(404, "Event is not valid!", { err: err instanceof Error ? err.message : err })
 	}
 
 	const { data, type } = event
 
-	if (type !== "charge.dispute.closed")
-		webhookError(404, "Dispute event doesn't have a valid type!", { type })
+	if (type !== "charge.dispute.closed") refError(404, "Dispute event doesn't have a valid type!", { type })
 
 	const dispute = data.object as Stripe.Dispute
 	if (dispute.status != "lost") return json({ success: "true" })
@@ -59,13 +57,13 @@ export const POST = async ({ request }) => {
 		const response = await fetch(url)
 		requestData = await response.json()
 	} catch (e) {
-		webhookError(500, "Failed to fetch exchange rates", { url, e })
+		refError(500, "Failed to fetch exchange rates", { url, e })
 	}
 
 	let amount = 0
 	for (let i = 0; i < values.length; i++) {
 		const rate = requestData.rates[values[i].currency]
-		if (!rate) webhookError(500, "No exchange rate for currency", { currency: values[i].currency })
+		if (!rate) refError(500, "No exchange rate for currency", { currency: values[i].currency })
 		amount += values[i].amount / rate
 	}
 
@@ -74,10 +72,10 @@ export const POST = async ({ request }) => {
 		.rpc("add_balance", { account, amount: Math.round(amount) })
 
 	if (errUpdate) {
-		webhookError(500, "Failed to UPDATE profiles.balances", { account, err: formatError(errUpdate) })
+		refError(500, "Failed to UPDATE profiles.balances", { account, err: errUpdate })
 	}
 
-	if (!updated) webhookError(500, "No profiles.balances row for account", { account })
+	if (!updated) refError(500, "No profiles.balances row for account", { account })
 
 	return json({ success: "true" })
 }
