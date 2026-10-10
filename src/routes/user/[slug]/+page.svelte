@@ -80,6 +80,24 @@
 				{/each}
 			{/if}
 		</label>
+		{#if $errors.nonce || $authForm.nonce}
+			<label class="my-4 label">
+				<span class="label-text">Verification code:</span>
+				<input
+					class="input"
+					class:border-error-500={$errors.nonce}
+					inputmode="numeric"
+					autocomplete="one-time-code"
+					maxlength="6"
+					bind:value={$authForm.nonce}
+				/>
+				{#if $errors.nonce}
+					{#each $errors.nonce as err (err)}
+						<small class="text-error-500">{err}</small>
+					{/each}
+				{/if}
+			</label>
+		{/if}
 
 		<button type="submit" class="mx-auto my-4 btn preset-filled-primary-500"> Update </button>
 	</form>

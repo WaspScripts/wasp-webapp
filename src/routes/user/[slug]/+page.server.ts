@@ -20,16 +20,36 @@ export const actions = {
 		if (!user) return setError(form, "", "You need to login to add a script.")
 		if (!form.valid) return setError(form, "", "Form is not valid!")
 
-		if (form.data.email === "" || user.email == form.data.email) form.data.email = undefined
-		if (form.data.password === "") form.data.password = undefined
+		const email = form.data.email === "" || user.email == form.data.email ? undefined : form.data.email
+		const password = form.data.password === "" ? undefined : form.data.password
+		const nonce = form.data.nonce === "" ? undefined : form.data.nonce
 
-		if (form.data.email || form.data.password) {
-			const { error: err } = await supabaseServer.auth.updateUser(form.data, {
-				emailRedirectTo: "https://waspscripts.com/auth/mail-change/"
-			})
+		if (email || password) {
+			const { error: err } = await supabaseServer.auth.updateUser(
+				{ email, password, nonce },
+				{ emailRedirectTo: "https://waspscripts.com/auth/mail-change/" }
+			)
+
+			if (err?.code === "reauthentication_needed") {
+				const { error: reauthErr } = await supabaseServer.auth.reauthenticate()
+				if (reauthErr) return setError(form, "", formatError(reauthErr))
+				return setError(
+					form,
+					"nonce",
+					"Changing your password requires a verification code. We've sent one to " +
+						user.email +
+						", enter it here and submit again."
+				)
+			}
+
+			if (err?.code === "reauthentication_not_valid") {
+				return setError(form, "nonce", "That verification code is invalid or expired.")
+			}
+
 			if (err) return setError(form, "", formatError(err))
 		}
 
-		return { form, email: form.data.email != null, password: form.data.password != null }
+		form.data.nonce = ""
+		return { form, email: email != null, password: password != null }
 	}
 }
