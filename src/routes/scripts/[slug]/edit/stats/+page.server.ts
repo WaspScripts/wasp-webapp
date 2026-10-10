@@ -1,11 +1,11 @@
 import { superValidate, setError, message } from "sveltekit-superforms/server"
-import { error } from "@sveltejs/kit"
 import { canEdit } from "$lib/client/supabase"
 import { doLogin } from "$lib/server/supabase.server"
-import { formatError } from "$lib/utils"
 import { zod4 } from "sveltekit-superforms/adapters"
 import { getScript, updateScript } from "$lib/server/scripts.server"
 import { scriptStatsSchema } from "$lib/client/schemas"
+import { refError } from "$lib/server/report.server"
+import { errorRef } from "$lib/server/report.server"
 
 export const load = async ({ url: { origin }, locals: { supabaseServer, user, session }, parent }) => {
 	if (!user || !session) {
@@ -31,7 +31,7 @@ export const load = async ({ url: { origin }, locals: { supabaseServer, user, se
 
 	for (let i = 0; i < promises.length; i++) {
 		const { error: err } = promises[i]
-		if (err) error(500, formatError(err))
+		if (err) refError(500, "Failed to load the script stats limits.", err)
 	}
 
 	const form = await superValidate(
@@ -114,10 +114,9 @@ export const actions = {
 
 		const awaitedUpdates = await Promise.all(updates)
 		const { error: errLimits } = awaitedUpdates[0]
-		if (errLimits) return setError(form, "", "UPDATE stats.limits failed\n\n" + JSON.stringify(errLimits))
+		if (errLimits) return setError(form, "", errorRef("UPDATE stats.limits failed!", errLimits))
 		const { error: errCLimits } = awaitedUpdates[1]
-		if (errCLimits)
-			return setError(form, "", "UPDATE stats.limits_custom failed\n\n" + JSON.stringify(errCLimits))
+		if (errCLimits) return setError(form, "", errorRef("UPDATE stats.limits_custom failed!", errCLimits))
 
 		await updateScript(id)
 		return message(form, "Script stats data updated! You may need to refresh the page to see the changes.")

@@ -2,7 +2,7 @@ import { setError, superValidate } from "sveltekit-superforms/server"
 import { fail, redirect } from "@sveltejs/kit"
 import { legalSchema } from "$lib/client/schemas"
 import { zod4 } from "sveltekit-superforms/adapters"
-import { formatError } from "$lib/utils"
+import { errorRef } from "$lib/server/report.server"
 
 export const load = async ({ parent, params: { slug }, locals: { supabaseServer } }) => {
 	await parent()
@@ -35,7 +35,7 @@ export const actions = {
 		const slug = params.slug as "privacy_policy" | "scripter_tos" | "user_tos"
 		const { error: err } = await supabaseServer.schema("info").from(slug).insert(form.data)
 
-		if (err) return setError(form, "", formatError(err))
+		if (err) return setError(form, "", errorRef("INSERT info." + slug + " failed!", err))
 		console.log(slug)
 		redirect(303, "/legal/" + slug)
 	}

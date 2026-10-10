@@ -1,7 +1,7 @@
 import { mdvsvexCompile } from "$lib/server/markdown.server"
-import { formatError } from "$lib/utils"
 import { error } from "@sveltejs/kit"
 import { sanitizeHtml } from "$lib/sanitize"
+import { refError } from "$lib/server/report.server"
 
 type validSlug = "privacy_policy" | "scripter_tos" | "user_tos"
 
@@ -30,13 +30,10 @@ export const load = async ({ params: { slug }, locals: { supabaseServer } }) => 
 			.order("version", { ascending: false })
 
 		if (err) {
-			error(
+			refError(
 				500,
-				"Server error, this is probably not an issue on your end!\n" +
-					"SELECT info." +
-					slug +
-					" failed!\n\n" +
-					formatError(err)
+				"Server error, this is probably not an issue on your end!\nSELECT info." + slug + " failed!",
+				err
 			)
 		}
 

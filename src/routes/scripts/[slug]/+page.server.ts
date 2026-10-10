@@ -1,11 +1,11 @@
 import { PUBLIC_SUPER_USER_ID } from "$env/static/public"
 import { createCheckoutSession } from "$lib/server/stripe.server"
 import { doLogin } from "$lib/server/supabase.server"
-import { formatError } from "$lib/utils"
 import { replaceScriptContent } from "$lib/client/utils"
 import { renderMarkdown } from "$lib/markdown"
 import { getScriptLimits } from "$lib/server/scripts.server"
 import { error, redirect } from "@sveltejs/kit"
+import { refError } from "$lib/server/report.server"
 
 const htmlCache = new Map<string, { content: string; html: string }>()
 
@@ -96,10 +96,10 @@ export const actions = {
 			.single()
 
 		if (priceErr) {
-			error(
+			refError(
 				500,
-				"Something went wrong! Seems like that price doesn't belong to that product. If this keeps occuring please contact support@waspscripts.com Erorr message:" +
-					formatError(priceErr)
+				"Something went wrong! Seems like that price doesn't belong to that product. If this keeps occuring please contact support@waspscripts.com Erorr message:",
+				priceErr
 			)
 		}
 

@@ -13,8 +13,9 @@ import {
 	doLogin,
 	supabaseAdmin
 } from "$lib/server/supabase.server"
+import { errorRef, refError } from "$lib/server/report.server"
 import type { Interval } from "$lib/types/collection"
-import { formatError, groupBy, UUID_V4_REGEX } from "$lib/utils"
+import { groupBy, UUID_V4_REGEX } from "$lib/utils"
 import { error, redirect } from "@sveltejs/kit"
 import type Stripe from "stripe"
 import { fail, setError, superValidate } from "sveltekit-superforms"
@@ -189,7 +190,7 @@ export const actions = {
 			.eq("id", product.id)
 			.single()
 
-		if (errProducts) return setError(form, "", errProducts.message)
+		if (errProducts) return setError(form, "", errorRef("SELECT stripe.products failed!", errProducts))
 		if (product.name !== productsData.name) {
 			const updated = await updateProduct(product.id, product.name)
 			if (!updated) return setError(form, "", "Failed to update product name!")
@@ -202,7 +203,7 @@ export const actions = {
 			.eq("product", product.id)
 			.eq("active", true)
 
-		if (errPrices) return setError(form, "", errPrices.message)
+		if (errPrices) return setError(form, "", errorRef("SELECT stripe.prices failed!", errPrices))
 
 		for (let i = 0; i < pricesData.length; i++) {
 			const currentPrice = pricesData[i]
@@ -277,12 +278,7 @@ export const actions = {
 			.maybeSingle()
 
 		if (err) {
-			error(
-				500,
-				"Server error, this is probably not an issue on your end!\n" +
-					"SELECT product failed!\n\n" +
-					formatError(err)
-			)
+			refError(500, "Server error, this is probably not an issue on your end!\nSELECT product failed!", err)
 		}
 
 		if (prodData) return setError(form, "", "You already have a product for that script!")
@@ -294,7 +290,7 @@ export const actions = {
 			.eq("id", form.data.id)
 			.single()
 
-		if (errProtected) return setError(form, "", formatError(errProtected))
+		if (errProtected) return setError(form, "", errorRef("SELECT scripts.protected failed!", errProtected))
 		await assertOwnerOrAdmin(data.author === slug, getProfile)
 
 		const { message: createScriptErr } = await createScriptProduct(form.data, data.scripts.title, data.author)
@@ -327,7 +323,7 @@ export const actions = {
 		const date_end = new Date(date_end_str).toISOString().toLocaleString()
 		const err = await addFreeAccess(id, product, date_end)
 
-		if (err) error(403, formatError(err))
+		if (err) refError(403, "Failed to add free access.", err)
 
 		return
 	},
@@ -376,7 +372,7 @@ export const actions = {
 
 		await assertProductAccess(product, slug, getProfile)
 		const err = await cancelFreeAccess(id, product)
-		if (err) error(403, formatError(err))
+		if (err) refError(403, "Failed to cancel free access.", err)
 
 		return
 	},
@@ -412,12 +408,8 @@ export const actions = {
 			.eq("id", subscription)
 
 		if (err) {
-			fail(503, {
-				message:
-					"Please contact Torwent and give him this message, Error: " +
-					formatError(err) +
-					" sub: " +
-					subscription
+			return fail(503, {
+				message: errorRef("Please contact Torwent and give him this message, sub: " + subscription, err)
 			})
 		}
 
@@ -445,14 +437,7 @@ export const actions = {
 			.select("id")
 
 		if (err) {
-			error(
-				503,
-				"Please contact Torwent and give him this message\n" +
-					"Product: " +
-					product +
-					"\n\n" +
-					formatError(err)
-			)
+			refError(503, "Please contact Torwent and give him this message\nProduct: " + product, err)
 		}
 
 		const failed: string[] = []

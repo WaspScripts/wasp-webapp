@@ -1,6 +1,5 @@
 import { getPublishedScripts, searchScriptsIndex, withoutContent } from "$lib/server/scripts.server"
-import { formatError } from "$lib/utils"
-import { error } from "@sveltejs/kit"
+import { refError } from "$lib/server/report.server"
 
 const MAX_AMOUNT = 100
 const FEATURED_TTL = 5 * 60 * 1000
@@ -42,11 +41,10 @@ export async function load({ depends, url, locals: { supabaseServer } }) {
 		const { data, error: err } = await supabaseServer.schema("scripts").from("featured").select("id")
 
 		if (err) {
-			error(
+			refError(
 				500,
-				"Server error, this is probably not an issue on your end!\n" +
-					"SELECT scripts.featured failed!" +
-					formatError(err)
+				"Server error, this is probably not an issue on your end!\nSELECT scripts.featured failed!",
+				err
 			)
 		}
 		const ids = new Set(data.flatMap((featured) => (featured.id ? [featured.id] : [])))

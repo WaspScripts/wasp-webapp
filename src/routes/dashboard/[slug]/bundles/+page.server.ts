@@ -12,10 +12,11 @@ import {
 	doLogin,
 	supabaseAdmin
 } from "$lib/server/supabase.server"
+import { errorRef, refError } from "$lib/server/report.server"
 import { getScripts } from "$lib/server/scripts.server"
 import type { Interval } from "$lib/types/collection"
 import type { Database } from "$lib/types/supabase"
-import { formatError, groupBy, UUID_V4_REGEX } from "$lib/utils"
+import { groupBy, UUID_V4_REGEX } from "$lib/utils"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { error, redirect } from "@sveltejs/kit"
 import type Stripe from "stripe"
@@ -56,11 +57,10 @@ export const load = async ({ locals: { supabaseServer }, params: { slug }, paren
 			.eq("author", slug)
 
 		if (err) {
-			error(
+			refError(
 				500,
-				"Server error, this is probably not an issue on your end!\n" +
-					"SELECT scripts.bundles failed!\n\n" +
-					formatError(err)
+				"Server error, this is probably not an issue on your end!\nSELECT scripts.bundles failed!",
+				err
 			)
 		}
 
@@ -174,7 +174,7 @@ async function createBundleProduct(supabase: SupabaseClient<Database>, bundle: B
 		console.error(
 			`createBundleProduct error on supabase insert with bundle: ${JSON.stringify(bundle)} and error: ${JSON.stringify(err)}`
 		)
-		return err
+		return { message: errorRef("Failed to create the bundle.", err) }
 	}
 
 	let product: Stripe.Product
@@ -261,7 +261,7 @@ export const actions = {
 			.eq("id", product.id)
 			.single()
 
-		if (errProducts) return setError(form, "", formatError(errProducts))
+		if (errProducts) return setError(form, "", errorRef("SELECT stripe.products failed!", errProducts))
 		if (!productsData.bundle) return setError(form, "", "That product is missing a bundle ID!")
 
 		if (product.name !== productsData.name) {
@@ -276,7 +276,7 @@ export const actions = {
 			.eq("product", product.id)
 			.eq("active", true)
 
-		if (errPrices) return setError(form, "", formatError(errPrices))
+		if (errPrices) return setError(form, "", errorRef("SELECT stripe.prices failed!", errPrices))
 
 		for (let i = 0; i < pricesData.length; i++) {
 			const currentPrice = pricesData[i]
@@ -333,7 +333,7 @@ export const actions = {
 			.update({ scripts: scripts })
 			.eq("id", productsData.bundle)
 
-		if (err) return setError(form, "", err.message)
+		if (err) return setError(form, "", errorRef("UPDATE scripts.bundles failed!", err))
 
 		redirect(303, pathname)
 	},
@@ -392,7 +392,7 @@ export const actions = {
 		const date_end = new Date(date_end_str).toISOString().toLocaleString()
 		const err = await addFreeAccess(id, product, date_end)
 
-		if (err) error(403, formatError(err))
+		if (err) refError(403, "Failed to add free access.", err)
 
 		return
 	},
@@ -414,7 +414,7 @@ export const actions = {
 
 		await assertProductAccess(product, slug, getProfile)
 		const err = await cancelFreeAccess(id, product)
-		if (err) error(403, formatError(err))
+		if (err) refError(403, "Failed to cancel free access.", err)
 
 		return
 	},
@@ -450,12 +450,8 @@ export const actions = {
 			.eq("id", subscription)
 
 		if (err) {
-			fail(503, {
-				message:
-					"Please contact Torwent and give him this message, Error: " +
-					formatError(err) +
-					" sub: " +
-					subscription
+			return fail(503, {
+				message: errorRef("Please contact Torwent and give him this message, sub: " + subscription, err)
 			})
 		}
 
@@ -483,14 +479,7 @@ export const actions = {
 			.select("id")
 
 		if (err) {
-			error(
-				503,
-				"Please contact Torwent and give him this message\n" +
-					"Product: " +
-					product +
-					"\n\n" +
-					formatError(err)
-			)
+			refError(503, "Please contact Torwent and give him this message\nProduct: " + product, err)
 		}
 
 		const failed: string[] = []

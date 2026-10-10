@@ -46,7 +46,7 @@ export const actions = {
 
 		const { data, error: err } = await supabaseServer.auth.refreshSession(form.data)
 
-		if (err) return setError(form, "", "Form is not valid \n" + JSON.stringify(err))
+		if (err) return setError(form, "", formatError(err))
 
 		console.log("Successfully logged in as: ", data.user?.id ?? "null")
 		redirect(303, "/")

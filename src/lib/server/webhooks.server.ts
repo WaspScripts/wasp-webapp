@@ -13,12 +13,6 @@ export function sendDiscordWebhook(url: string, body: object) {
 		.catch((err) => console.error("Failed to send Discord webhook", err))
 }
 
-export function webhookError(status: number, message: string, detail?: unknown): never {
-	const id = crypto.randomUUID().slice(0, 8)
-	console.error(`[${id}] ${message}`, detail ?? "")
-	error(status, `${message} (ref: ${id})`)
-}
-
 export async function verifySupabaseWebhook(request: Request, secret: string) {
 	const signature = request.headers.get("x-supabase-signature")
 	if (!signature) error(401, "Webhook signature is missing")

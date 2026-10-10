@@ -2,6 +2,7 @@ import { error, redirect } from "@sveltejs/kit"
 import { formatError } from "$lib/utils"
 import { safePath, LOGIN_REDIRECT_COOKIE, supabaseAdmin } from "$lib/server/supabase.server"
 import { createCustomer } from "$lib/server/stripe.server"
+import { refError } from "$lib/server/report.server"
 
 export const GET = async ({ url: { origin, searchParams }, cookies, locals: { supabaseServer } }) => {
 	console.log("💻 Logging in")
@@ -64,7 +65,7 @@ export const GET = async ({ url: { origin, searchParams }, cookies, locals: { su
 				role: null
 			})
 
-			if (err) error(500, "Failed to INSERT profile: " + formatError(err))
+			if (err) refError(500, "Failed to INSERT profile.", err)
 		}
 	}
 

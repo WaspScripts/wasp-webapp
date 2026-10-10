@@ -3,13 +3,13 @@ import { error } from "@sveltejs/kit"
 import { scriptFilesServerSchema } from "$lib/server/schemas.server"
 import { canEdit } from "$lib/client/supabase"
 import { doLogin, reuseFile, supabaseAdmin, updateImgFile, uploadFile } from "$lib/server/supabase.server"
-import { formatError } from "$lib/utils"
 import { zod4 } from "sveltekit-superforms/adapters"
 import { getScript, updateScript } from "$lib/server/scripts.server"
 import { pad } from "$lib/client/utils"
 import { getScriptVersion, getSimbaVersions, getWaspLibVersions } from "$lib/server/versions.server"
 import { DISCORD_UPDATE_WEBHOOK } from "$env/static/private"
 import { sendDiscordWebhook } from "$lib/server/webhooks.server"
+import { errorRef } from "$lib/server/report.server"
 
 export const load = async ({ url: { origin }, locals: { supabaseServer, user, session }, parent }) => {
 	if (!user || !session) {
@@ -165,7 +165,7 @@ export const actions = {
 				files: fileNames.length > 0 ? fileNames : undefined
 			})
 
-		if (versionsErr) return setError(form, "", "UPDATE versions failed\n\n" + formatError(versionsErr))
+		if (versionsErr) return setError(form, "", errorRef("UPDATE scripts.versions failed!", versionsErr))
 
 		const { error: revisionErr } = await supabaseAdmin
 			.schema("scripts")
@@ -173,7 +173,8 @@ export const actions = {
 			.update({ revision })
 			.eq("id", id)
 
-		if (revisionErr) return setError(form, "", "UPDATE revision failed\n\n" + formatError(revisionErr))
+		if (revisionErr)
+			return setError(form, "", errorRef("UPDATE scripts.protected revision failed!", revisionErr))
 
 		await updateScript(id)
 

@@ -1,7 +1,8 @@
 import { getScripter } from "$lib/client/supabase"
 import { getPublishedScripts } from "$lib/server/scripts.server"
-import { formatError, UUID_V4_REGEX } from "$lib/utils"
+import { UUID_V4_REGEX } from "$lib/utils"
 import { error } from "@sveltejs/kit"
+import { refError } from "$lib/server/report.server"
 
 export const load = async ({
 	url,
@@ -48,11 +49,10 @@ export const load = async ({
 			.in("product", products)
 
 		if (err) {
-			error(
+			refError(
 				500,
-				"Server error, this is probably not an issue on your end!\n" +
-					"SELECT scripts.prices failed!\n\n" +
-					formatError(err)
+				"Server error, this is probably not an issue on your end!\nSELECT scripts.prices failed!",
+				err
 			)
 		}
 
@@ -73,12 +73,7 @@ export const load = async ({
 			.eq("user_id", slug)
 
 		if (err) {
-			error(
-				500,
-				"Server error, this is probably not an issue on your end!\n" +
-					"SELECT product failed!\n\n" +
-					formatError(err)
-			)
+			refError(500, "Server error, this is probably not an issue on your end!\nSELECT product failed!", err)
 		}
 
 		return data.map((product) => ({

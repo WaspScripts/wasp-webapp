@@ -1,17 +1,9 @@
 import type { Database } from "$lib/types/supabase"
-import { formatError } from "$lib/utils"
+import { refError } from "$lib/server/report.server"
 import type { SupabaseClient } from "@supabase/supabase-js"
-import { error } from "@sveltejs/kit"
 
-function queryError(table: string, err: Parameters<typeof formatError>[0]): never {
-	error(
-		500,
-		"Server error, this is probably not an issue on your end!\n" +
-			"SELECT " +
-			table +
-			" failed!\n\n" +
-			formatError(err)
-	)
+function queryError(table: string, err: unknown): never {
+	refError(500, "Server error, this is probably not an issue on your end!\nSELECT " + table + " failed!", err)
 }
 
 export async function getActiveSubscriptions(supabase: SupabaseClient<Database>, products: string[]) {

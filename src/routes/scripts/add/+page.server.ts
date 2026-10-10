@@ -3,7 +3,7 @@ import { error, fail, redirect } from "@sveltejs/kit"
 import { addScriptServerSchema } from "$lib/server/schemas.server"
 import { scriptExists } from "$lib/client/supabase"
 import { doLogin, uploadFile } from "$lib/server/supabase.server"
-import { encodeSEO, formatError } from "$lib/utils"
+import { encodeSEO } from "$lib/utils"
 import { zod4 } from "sveltekit-superforms/adapters"
 import type { TScriptStages, TScriptStatus, TScriptTypes } from "$lib/types/collection"
 import { pad } from "$lib/client/utils"
@@ -11,6 +11,7 @@ import { updateScript } from "$lib/server/scripts.server"
 import { DISCORD_RELEASE_WEBHOOK } from "$env/static/private"
 import { sendDiscordWebhook } from "$lib/server/webhooks.server"
 import { getSimbaVersions, getWaspLibVersions } from "$lib/server/versions.server"
+import { errorRef } from "$lib/server/report.server"
 
 const scriptDefaultContent = `### {$title} by {$author}
 
@@ -135,7 +136,7 @@ export const actions = {
 			.single()
 
 		if (errScript) {
-			return setError(form, "", "INSERT scripts.scripts failed!\n\n" + JSON.stringify(errScript))
+			return setError(form, "", errorRef("INSERT scripts.scripts failed!", errScript))
 		}
 
 		const metadata = {
@@ -169,7 +170,7 @@ export const actions = {
 		])
 
 		if (errData) {
-			return setError(form, "", "UPDATE scripts.metadata failed!\n\n" + JSON.stringify(errData))
+			return setError(form, "", errorRef("UPDATE scripts.metadata failed!", errData))
 		}
 
 		const fileErrors = uploads.filter(Boolean)
@@ -184,7 +185,7 @@ export const actions = {
 			.eq("id", data.id)
 
 		if (err) {
-			return setError(form, "", formatError(err))
+			return setError(form, "", errorRef("UPDATE scripts.versions failed!", err))
 		}
 
 		await updateScript(data.id)

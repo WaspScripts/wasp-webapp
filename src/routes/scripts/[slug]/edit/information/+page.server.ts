@@ -5,6 +5,7 @@ import { zod4 } from "sveltekit-superforms/adapters"
 import { getScript, updateScript } from "$lib/server/scripts.server"
 import { scriptInfoSchema } from "$lib/client/schemas"
 import type { TScriptStages } from "$lib/types/collection"
+import { errorRef } from "$lib/server/report.server"
 
 export const load = async ({ url: { origin }, locals: { supabaseServer, user, session }, parent }) => {
 	if (!user || !session) {
@@ -96,10 +97,9 @@ export const actions = {
 
 		const awaitedUpdates = await Promise.all(updates)
 		const { error: errScript } = awaitedUpdates[0]
-		if (errScript) return setError(form, "", "UPDATE scripts.scripts failed\n\n" + JSON.stringify(errScript))
+		if (errScript) return setError(form, "", errorRef("UPDATE scripts.scripts failed!", errScript))
 		const { error: errMetadata } = awaitedUpdates[1]
-		if (errMetadata)
-			return setError(form, "", "UPDATE scripts.metadata failed\n\n" + JSON.stringify(errMetadata))
+		if (errMetadata) return setError(form, "", errorRef("UPDATE scripts.metadata failed!", errMetadata))
 
 		await updateScript(id)
 		return message(form, "Script information updated! You may need to refresh the page to see the changes.")

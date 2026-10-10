@@ -1,7 +1,7 @@
 import { assertDashboardAccess, supabaseAdmin } from "$lib/server/supabase.server"
 import { getSubscriptionCounts } from "$lib/server/dashboard.server"
-import { formatError } from "$lib/utils"
 import { error } from "@sveltejs/kit"
+import { refError } from "$lib/server/report.server"
 
 export const load = async ({ parent, params: { slug }, locals: { supabaseServer, user, getProfile } }) => {
 	if (!user) error(403, "You need to be logged in.")
@@ -16,11 +16,11 @@ export const load = async ({ parent, params: { slug }, locals: { supabaseServer,
 			.maybeSingle()
 
 		if (err) {
-			error(
+			refError(
 				500,
 				"Server error, this is probably not an issue on your end!\n" +
-					"SELECT scripts.author_scripts postgres function failed!\n\n" +
-					formatError(err)
+					"SELECT scripts.author_scripts postgres function failed!",
+				err
 			)
 		}
 

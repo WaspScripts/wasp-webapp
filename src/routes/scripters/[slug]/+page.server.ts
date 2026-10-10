@@ -8,11 +8,11 @@ import {
 	withoutContent
 } from "$lib/server/scripts.server"
 import type { Script } from "$lib/types/collection"
-import { formatError } from "$lib/utils"
 import { redirect } from "@sveltejs/kit"
 import { zod4 } from "sveltekit-superforms/adapters"
 import { setError, superValidate } from "sveltekit-superforms/server"
 import { sanitizeHtml } from "$lib/sanitize"
+import { errorRef } from "$lib/server/report.server"
 
 const compiled = new Map<string, { content: string; html: string }>()
 
@@ -103,7 +103,7 @@ export const actions = {
 			})
 			.eq("id", form.data.id)
 
-		if (err) return setError(form, "", formatError(err))
+		if (err) return setError(form, "", errorRef("UPDATE profiles.scripters failed!", err))
 
 		redirect(303, pathname)
 	}
