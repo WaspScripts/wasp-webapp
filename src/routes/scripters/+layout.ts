@@ -32,7 +32,8 @@ export const load = async ({ url: { searchParams }, parent }) => {
 
 		if (err) error(500, formatError(err))
 
-		if (!browser && data.length === 1) redirect(303, "/scripters/" + encodeSEO(data[0].profiles.username))
+		if (!browser && data.length === 1)
+			redirect(303, "/scripters/" + encodeURIComponent(encodeSEO(data[0].profiles.username)))
 
 		return { scripters: data, count: count ?? 0 }
 	}

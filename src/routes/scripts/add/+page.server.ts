@@ -212,7 +212,7 @@ export const actions = {
 				]
 			})
 
-			redirect(303, "/scripts/" + data.url)
+			redirect(303, "/scripts/" + encodeURIComponent(data.url))
 		}
 		redirect(303, "/scripts")
 	}
