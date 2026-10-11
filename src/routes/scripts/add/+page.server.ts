@@ -122,21 +122,28 @@ export const actions = {
 		}
 
 		const publicData = {
+			id: crypto.randomUUID(),
 			title: form.data.title,
 			description: form.data.description,
 			content: form.data.content,
 			published: form.data.published
 		}
 
-		const { data, error: errScript } = await supabaseServer
-			.schema("scripts")
-			.from("scripts")
-			.insert(publicData)
-			.select("id, url")
-			.single()
+		const { error: errScript } = await supabaseServer.schema("scripts").from("scripts").insert(publicData)
 
 		if (errScript) {
 			return setError(form, "", errorRef("INSERT scripts.scripts failed!", errScript))
+		}
+
+		const { data, error: errSelect } = await supabaseServer
+			.schema("scripts")
+			.from("scripts")
+			.select("id, url")
+			.eq("id", publicData.id)
+			.single()
+
+		if (errSelect) {
+			return setError(form, "", errorRef("SELECT scripts.scripts failed!", errSelect))
 		}
 
 		const metadata = {
